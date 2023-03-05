@@ -1,34 +1,25 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
 using TMPro;
-using Unity.VisualScripting;
-using UnityEditor.PackageManager;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class LoginScene : MonoBehaviour
+public class FLoginScene : MonoBehaviour
 {
     [SerializeField]
-    float PreWorkMinSec = 0f;
+    float preWorkMinSec = 0f;
     [SerializeField]
-    Button LoginButton;
+    GameObject loadingUI;
     [SerializeField]
-    GameObject LoadingUI;
-    [SerializeField]
-    TextMeshProUGUI LoadingMsg;
+    TextMeshProUGUI loadingMsg;
 
     delegate bool PreWorkFunc();
-    Dictionary<string, PreWorkFunc> m_PreWorkMap = new Dictionary<string, PreWorkFunc>();
+    Dictionary<string, PreWorkFunc> preWorkMap = new Dictionary<string, PreWorkFunc>();
 
     delegate void MainThreadFunc();
-    List<MainThreadFunc> m_MainThreadFuncQueue = new List<MainThreadFunc>();
+    List<MainThreadFunc> mainThreadFuncQueue = new List<MainThreadFunc>();
 
     void Start()
     {
@@ -40,40 +31,40 @@ public class LoginScene : MonoBehaviour
 
     void Update()
     {
-        if (0 < m_MainThreadFuncQueue.Count && m_MainThreadFuncQueue[0] != null)
+        if (0 < mainThreadFuncQueue.Count && mainThreadFuncQueue[0] != null)
         {
-            m_MainThreadFuncQueue[0]();
-            m_MainThreadFuncQueue.RemoveAt(0);
+            mainThreadFuncQueue[0]();
+            mainThreadFuncQueue.RemoveAt(0);
         }
     }
 
     void AddPreWork(string InMsg, PreWorkFunc InFunc)
     {
-        m_PreWorkMap.Add(InMsg, InFunc);
+        preWorkMap.Add(InMsg, InFunc);
     }
 
     void AddMainThreadFunc(MainThreadFunc InFunc)
     {
-        m_MainThreadFuncQueue.Add(InFunc);
+        mainThreadFuncQueue.Add(InFunc);
     }
 
     void LoadPreWork()
     {
-        if (m_PreWorkMap.Count == 0)
+        if (preWorkMap.Count == 0)
             return;
 
-        string preWorkType = m_PreWorkMap.Keys.First();
+        string preWorkType = preWorkMap.Keys.First();
         FDataNode node = FDataCenter.Instance.GetDataNodeWithQuery("PreWorkList.PreWork@type=" + preWorkType);
-        LoadingMsg.text = node.GetStringAttr("loadingMsg");
+        loadingMsg.text = node.GetStringAttr("loadingMsg");
 
-        PreWorkFunc func = m_PreWorkMap.Values.First();
+        PreWorkFunc func = preWorkMap.Values.First();
         Thread thread = new Thread(() =>
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
             if (func())
             {
-                while (watch.ElapsedMilliseconds < PreWorkMinSec * 1000) ;
+                while (watch.ElapsedMilliseconds < preWorkMinSec * 1000) ;
                 AddMainThreadFunc(OnCompletePreWork);
             }
             else
@@ -87,14 +78,14 @@ public class LoginScene : MonoBehaviour
 
     void OnCompletePreWork()
     {
-        m_PreWorkMap.Remove(m_PreWorkMap.Keys.First());
-        if (0 < m_PreWorkMap.Count)
+        preWorkMap.Remove(preWorkMap.Keys.First());
+        if (0 < preWorkMap.Count)
             LoadPreWork();
     }
 
     void OnFailPreWork()
     {
-        string preWorkType = m_PreWorkMap.Keys.First();
+        string preWorkType = preWorkMap.Keys.First();
         FDataNode node = FDataCenter.Instance.GetDataNodeWithQuery("PreWorkList.PreWork@type=" + preWorkType);
         
         string title = node.GetStringAttr("errorTitle");
@@ -103,6 +94,6 @@ public class LoginScene : MonoBehaviour
             Application.Quit();     
         });
 
-        LoadingUI.SetActive(false);
+        loadingUI.SetActive(false);
     }
 }

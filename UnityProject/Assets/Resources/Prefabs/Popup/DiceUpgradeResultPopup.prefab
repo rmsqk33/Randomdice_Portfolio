@@ -6120,7 +6120,7 @@ MonoBehaviour:
   m_text: "\uBD88 \uC8FC\uC0AC\uC704"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: aa47dc0d7c4b3a242b1f543a5cd88615, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: d27a7a28a85e19b468f3879591bd0bbf, type: 2}
+  m_sharedMaterial: {fileID: 3365016660689545898, guid: aa47dc0d7c4b3a242b1f543a5cd88615, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6511,14 +6511,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28abc613a532ac94884ecf843feee6c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DiceName: {fileID: 783643748629508681}
-  DiceGrade: {fileID: 9111492261442748828}
-  DiceIcon: {fileID: 580500117482820325}
-  DiceIconL: {fileID: 5064043295837855823}
-  DiceEye: {fileID: 6863229542232305500}
-  DiceClass: {fileID: 5565834625582665266}
-  CurrentCritical: {fileID: 4343354311459819799}
-  IncreaseCritical: {fileID: 585991203139721688}
+  diceName: {fileID: 783643748629508681}
+  diceGrade: {fileID: 9111492261442748828}
+  diceIcon: {fileID: 580500117482820325}
+  diceIconL: {fileID: 5064043295837855823}
+  diceEye: {fileID: 6863229542232305500}
+  diceClass: {fileID: 5565834625582665266}
+  currentCritical: {fileID: 4343354311459819799}
+  increaseCritical: {fileID: 585991203139721688}
 --- !u!1 &7477529202592931003
 GameObject:
   m_ObjectHideFlags: 0

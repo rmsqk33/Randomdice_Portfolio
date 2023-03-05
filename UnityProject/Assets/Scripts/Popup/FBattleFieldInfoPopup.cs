@@ -6,52 +6,47 @@ using UnityEngine.UI;
 public class FBattleFieldInfoPopup : FPopupBase
 {
     [SerializeField]
-    TextMeshProUGUI m_NameText;
+    TextMeshProUGUI nameText;
     [SerializeField]
-    Image m_BattleFieldImage;
+    Image battleFieldImage;
 
-    public delegate void ButtonHandler();
-    ButtonHandler m_UpgradeBtnHandler;
-    ButtonHandler m_UseBtnHandler;
-    ButtonHandler m_PurchaseBtnHandler;
-    
-    public ButtonHandler UpgradeHandler { set { m_UpgradeBtnHandler = value; } }
-    public ButtonHandler UseHandler { set { m_UseBtnHandler = value; } }
-    public ButtonHandler PurchaseBtnHandler { set { m_PurchaseBtnHandler = value; } }
+    int diceID;
     
     public void OpenAcquiredBattleFieldInfo(int InID)
     {
-        FBattleFieldData? data = FBattleFieldDataManager.Instance.FindBattleFieldData(InID);
+        diceID = InID;
+
+        FBattleFieldData data = FBattleFieldDataManager.Instance.FindBattleFieldData(InID);
         if (data == null)
             return;
 
-        m_NameText.text = data.Value.Name;
-        m_BattleFieldImage.sprite = Resources.Load<Sprite>(data.Value.SkinImage);
+        nameText.text = data.name;
+        battleFieldImage.sprite = Resources.Load<Sprite>(data.skinImagePath);
     }
 
     public void OpenNotAcquiredBattleFieldInfo(int InID)
     {
-        FBattleFieldData? data = FBattleFieldDataManager.Instance.FindBattleFieldData(InID);
+        diceID = InID;
+
+        FBattleFieldData data = FBattleFieldDataManager.Instance.FindBattleFieldData(InID);
         if (data == null)
             return;
 
-        m_NameText.text = data.Value.Name;
-        m_BattleFieldImage.sprite = Resources.Load<Sprite>(data.Value.SkinImage);
-    }
-
-    public void OnClickUpgrade()
-    {
-        m_UpgradeBtnHandler();
+        nameText.text = data.name;
+        battleFieldImage.sprite = Resources.Load<Sprite>(data.skinImagePath);
     }
 
     public void OnClickUse()
     {
-        m_UseBtnHandler();
+        FPresetController presetController = FLocalPlayer.Instance.FindController<FPresetController>();
+        if (presetController != null)
+        {
+            presetController.SetBattleFieldPreset(diceID);
+        }
     }
 
     public void OnClickPurchase()
     {
-        m_PurchaseBtnHandler();
     }
 
     public void OnClose()

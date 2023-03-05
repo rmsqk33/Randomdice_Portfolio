@@ -6,13 +6,13 @@ using UnityEngine.UI;
 public class FBattleFieldPreset : MonoBehaviour
 {
     [SerializeField]
-    List<Button> TabList;
+    List<Button> tabList;
     [SerializeField]
-    Image BattleFieldImage;
+    Image battleFieldImage;
     [SerializeField]
-    TextMeshProUGUI BattleFieldName;
+    TextMeshProUGUI battleFieldName;
 
-    int SelectedPresetIndex = 0;
+    int selectedPresetIndex = 0;
 
     private void Start()
     {
@@ -25,7 +25,7 @@ public class FBattleFieldPreset : MonoBehaviour
 
     public void SetPreset(int InPresetIndex)
     {
-        UnselectTab(SelectedPresetIndex);
+        UnselectTab(selectedPresetIndex);
         SelectTab(InPresetIndex);
 
         FPresetController presetController = FLocalPlayer.Instance.FindController<FPresetController>();
@@ -35,22 +35,22 @@ public class FBattleFieldPreset : MonoBehaviour
             SetBattleFieldPreset(battleFieldID);
         }
 
-        SelectedPresetIndex = InPresetIndex;
+        selectedPresetIndex = InPresetIndex;
     }
 
     public void SetBattleFieldPreset(int InID)
     {
-        FBattleFieldData? battleFieldData = FBattleFieldDataManager.Instance.FindBattleFieldData(InID);
+        FBattleFieldData battleFieldData = FBattleFieldDataManager.Instance.FindBattleFieldData(InID);
         if (battleFieldData != null)
         {
-            BattleFieldName.text = battleFieldData.Value.Name;
-            BattleFieldImage.sprite = Resources.Load<Sprite>(battleFieldData.Value.SkinImage);
+            battleFieldName.text = battleFieldData.name;
+            battleFieldImage.sprite = Resources.Load<Sprite>(battleFieldData.skinImagePath);
         }
     }
 
     public void OnClickTab(int InIndex)
     {
-        if (SelectedPresetIndex == InIndex)
+        if (selectedPresetIndex == InIndex)
             return;
 
         FPresetController presetController = FLocalPlayer.Instance.FindController<FPresetController>();
@@ -62,11 +62,11 @@ public class FBattleFieldPreset : MonoBehaviour
 
     void SelectTab(int InIndex)
     {
-        TabList[InIndex].GetComponent<Animator>().SetTrigger("Selected");
+        tabList[InIndex].GetComponent<Animator>().SetTrigger("Selected");
     }
 
     void UnselectTab(int InIndex)
     {
-        TabList[InIndex].GetComponent<Animator>().SetTrigger("Normal");
+        tabList[InIndex].GetComponent<Animator>().SetTrigger("Normal");
     }
 }

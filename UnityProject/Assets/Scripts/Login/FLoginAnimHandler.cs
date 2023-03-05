@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LoginAnimHandler : MonoBehaviour
+public class FLoginAnimHandler : MonoBehaviour
 {
     [SerializeField]
-    List<GameObject> ActiveList;
+    List<GameObject> activeList;
 
     void Start()
     {
-        foreach(GameObject gameObject in ActiveList)
+        foreach(GameObject gameObject in activeList)
         {
             gameObject.SetActive(false);
         }
@@ -17,7 +17,7 @@ public class LoginAnimHandler : MonoBehaviour
 
     void OnCompleteAnim()
     {
-        foreach(GameObject gameObject in ActiveList)
+        foreach(GameObject gameObject in activeList)
         {
             gameObject.SetActive(true);
         }

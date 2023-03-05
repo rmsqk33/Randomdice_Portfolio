@@ -370,7 +370,7 @@ GameObject:
   - component: {fileID: 569200537613959051}
   - component: {fileID: 3969952930540557486}
   m_Layer: 5
-  m_Name: Bg
+  m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1151,7 +1151,7 @@ GameObject:
   - component: {fileID: 9209733410314333424}
   - component: {fileID: 453369288207603038}
   m_Layer: 0
-  m_Name: Image
+  m_Name: ClickPrevention
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1227,7 +1227,7 @@ GameObject:
   - component: {fileID: 3903684881071597158}
   - component: {fileID: 1156802647043548312}
   m_Layer: 5
-  m_Name: TitleBg
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1598,17 +1598,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 802200f8fb903bb4dae2dd75b247acb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Title: {fileID: 1640787964257420740}
-  m_Price: {fileID: 1819376285}
-  m_BoxImage: {fileID: 7273992113457162202}
-  m_GoodsList:
+  title: {fileID: 1640787964257420740}
+  price: {fileID: 1819376285}
+  boxImage: {fileID: 7273992113457162202}
+  goodsList:
   - {fileID: 104674251201003978}
   - {fileID: 8606810080980649724}
   - {fileID: 4330771401416616552}
   - {fileID: 4621291237345166798}
   - {fileID: 5921944198591799886}
   - {fileID: 9153829623166515804}
-  m_LineList:
+  lineList:
   - {fileID: 5542697626401650659}
   - {fileID: 3536526296111239063}
 --- !u!1 &7883061899274575892
@@ -1923,6 +1923,10 @@ PrefabInstance:
     - target: {fileID: 1702701125692153590, guid: e0eaaf97ce348d74aba38ba4df196b82, type: 3}
       propertyPath: m_Name
       value: BoxGoods
+      objectReference: {fileID: 0}
+    - target: {fileID: 1702701125692153590, guid: e0eaaf97ce348d74aba38ba4df196b82, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3812049482950438464, guid: e0eaaf97ce348d74aba38ba4df196b82, type: 3}
       propertyPath: m_Pivot.x
@@ -2262,6 +2266,10 @@ PrefabInstance:
     - target: {fileID: 1702701125692153590, guid: e0eaaf97ce348d74aba38ba4df196b82, type: 3}
       propertyPath: m_Name
       value: BoxGoods (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1702701125692153590, guid: e0eaaf97ce348d74aba38ba4df196b82, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3812049482950438464, guid: e0eaaf97ce348d74aba38ba4df196b82, type: 3}
       propertyPath: m_Pivot.x

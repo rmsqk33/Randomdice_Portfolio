@@ -8,8 +8,8 @@ public class FPresetController : FControllerBase
 {
     static readonly int MAX_PRESET_PAGE = 5;
     static readonly int MAX_PRESET = 5;
-    int[] BattleFieldPresetIDList = new int[MAX_PRESET];
-    int[,] DicePresetIDList = new int[MAX_PRESET_PAGE, MAX_PRESET];
+    int[] battleFieldPresetIDList = new int[MAX_PRESET];
+    int[,] dicePresetIDList = new int[MAX_PRESET_PAGE, MAX_PRESET];
 
     public int SelectedPresetIndex { get; private set; }
 
@@ -43,7 +43,7 @@ public class FPresetController : FControllerBase
 
     public void SetBattleFieldPreset(int InID)
     {
-        BattleFieldPresetIDList[SelectedPresetIndex] = InID;
+        battleFieldPresetIDList[SelectedPresetIndex] = InID;
 
         FBattleFieldPreset battleFieldPresetUI = FindBattleFieldPresetUI();
         if (battleFieldPresetUI != null)
@@ -60,7 +60,7 @@ public class FPresetController : FControllerBase
         if (InIndex < 0 || MAX_PRESET <= InIndex)
             return 0;
 
-        return BattleFieldPresetIDList[InIndex];
+        return battleFieldPresetIDList[InIndex];
     }
 
     private FBattleFieldPreset FindBattleFieldPresetUI()
@@ -76,8 +76,8 @@ public class FPresetController : FControllerBase
         int prevIndex = GetDicePresetIndex(InID, SelectedPresetIndex);
         if (prevIndex != -1)
         {
-            int prevDiceID = DicePresetIDList[SelectedPresetIndex, InIndex];
-            DicePresetIDList[SelectedPresetIndex, prevIndex] = prevDiceID;
+            int prevDiceID = dicePresetIDList[SelectedPresetIndex, InIndex];
+            dicePresetIDList[SelectedPresetIndex, prevIndex] = prevDiceID;
             dicePresetUI.SetDicePreset(prevDiceID, prevIndex);
 
             packet.diceId = prevDiceID;
@@ -86,7 +86,7 @@ public class FPresetController : FControllerBase
             FServerManager.Instance.SendMessage(packet);
         }
 
-        DicePresetIDList[SelectedPresetIndex, InIndex] = InID;
+        dicePresetIDList[SelectedPresetIndex, InIndex] = InID;
         dicePresetUI.SetDicePreset(InID, InIndex);
 
         packet.diceId = InID;
@@ -99,7 +99,7 @@ public class FPresetController : FControllerBase
     {
         for (int i = 0; i < MAX_PRESET; ++i)
         {
-            if (DicePresetIDList[InIndex, i] == InID)
+            if (dicePresetIDList[InIndex, i] == InID)
                 return i;
         }
         return -1;
@@ -108,9 +108,9 @@ public class FPresetController : FControllerBase
     public delegate void ForeachDicePresetHandle(int InID);
     public void ForeachDicePreset(int InIndex, in ForeachDicePresetHandle InFunc)
     {
-        for (int i = 0; i < DicePresetIDList.GetLength(0); ++i)
+        for (int i = 0; i < dicePresetIDList.GetLength(0); ++i)
         {
-            InFunc(DicePresetIDList[InIndex, i]);
+            InFunc(dicePresetIDList[InIndex, i]);
         }
     }
 
@@ -123,7 +123,7 @@ public class FPresetController : FControllerBase
     {
         SelectedPresetIndex = InPacket.selectedPresetIndex;
 
-        Array.Copy(InPacket.battleFieldPreset, BattleFieldPresetIDList, InPacket.battleFieldPreset.Length);
-        Array.Copy(InPacket.dicePreset, DicePresetIDList, InPacket.dicePreset.Length);
+        Array.Copy(InPacket.battleFieldPreset, battleFieldPresetIDList, InPacket.battleFieldPreset.Length);
+        Array.Copy(InPacket.dicePreset, dicePresetIDList, InPacket.dicePreset.Length);
     }
 }

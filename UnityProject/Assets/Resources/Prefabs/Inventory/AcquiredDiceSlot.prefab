@@ -229,14 +229,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3410ae4bbc9b4c48b1a1a292f151c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Background: {fileID: 7822494790400995595}
-  DiceIcon: {fileID: 7822494792215864517}
-  DiceIcon_L: {fileID: 1469410175085549543}
-  DiceEye: {fileID: 7822494791786347978}
-  LevelText: {fileID: 7822494791310866907}
-  ExpGauge: {fileID: 7822494791663286478}
-  ExpText: {fileID: 7822494792117449317}
-  LevelUpIcon: {fileID: 7822494790954106189}
+  background: {fileID: 7822494790400995595}
+  diceIcon: {fileID: 7822494792215864517}
+  diceIconL: {fileID: 1469410175085549543}
+  diceEye: {fileID: 7822494791786347978}
+  level: {fileID: 7822494791310866907}
+  expGauge: {fileID: 7822494791663286478}
+  exp: {fileID: 7822494792117449317}
+  levelUpIcon: {fileID: 7822494790954106189}
 --- !u!95 &7822494790400995592
 Animator:
   serializedVersion: 4

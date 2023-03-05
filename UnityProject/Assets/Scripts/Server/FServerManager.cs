@@ -15,20 +15,20 @@ public class FServerManager : FSingleton<FServerManager>
     const int SERVER_PORT = 7777;
     const int PACKET_MAX = 10240;
 
-    private TcpClient m_TcpClient = null;
-    private NetworkStream m_NetStream = null;
-    private Thread m_ReceiveMessageThread = null;
+    private TcpClient tcpClient = null;
+    private NetworkStream netStream = null;
+    private Thread receiveMessageThread = null;
     public bool IsConnectedServer { get; private set; } = false;
 
     public delegate void PacketHandler(in byte[] InBuffer);
-    private Dictionary<PacketType, PacketHandler> m_PacketHandlerMap = new Dictionary<PacketType, PacketHandler>();
+    private Dictionary<PacketType, PacketHandler> packetHandlerMap = new Dictionary<PacketType, PacketHandler>();
 
     struct MessageData
     {
         public PacketType type;
         public byte[] buffer;
     }
-    private List<MessageData> m_MessageQueue = new List<MessageData>();
+    private List<MessageData> messageQueue = new List<MessageData>();
 
     void Update()
     {
@@ -37,16 +37,16 @@ public class FServerManager : FSingleton<FServerManager>
 
     void ExecuteMessage()
     {
-        if (m_MessageQueue.Count == 0)
+        if (messageQueue.Count == 0)
             return;
 
-        MessageData messageData = m_MessageQueue[0];
-        m_MessageQueue.RemoveAt(0);
+        MessageData messageData = messageQueue[0];
+        messageQueue.RemoveAt(0);
 
-        if (!m_PacketHandlerMap.ContainsKey(messageData.type))
+        if (!packetHandlerMap.ContainsKey(messageData.type))
             return;
 
-        m_PacketHandlerMap[messageData.type](messageData.buffer);
+        packetHandlerMap[messageData.type](messageData.buffer);
     }
 
     void OnApplicationQuit()
@@ -59,9 +59,9 @@ public class FServerManager : FSingleton<FServerManager>
         if(IsConnectedServer)
         {
             IsConnectedServer = false;
-            m_ReceiveMessageThread.Join();
-            m_NetStream.Close();
-            m_TcpClient.Close();
+            receiveMessageThread.Join();
+            netStream.Close();
+            tcpClient.Close();
         }
     }
 
@@ -72,11 +72,11 @@ public class FServerManager : FSingleton<FServerManager>
 
         try
         {
-            m_TcpClient = new TcpClient(SERVER_IP, SERVER_PORT);
-            m_NetStream = m_TcpClient.GetStream();
+            tcpClient = new TcpClient(SERVER_IP, SERVER_PORT);
+            netStream = tcpClient.GetStream();
 
-            m_ReceiveMessageThread = new Thread(ReceiveMessage);
-            m_ReceiveMessageThread.Start();
+            receiveMessageThread = new Thread(ReceiveMessage);
+            receiveMessageThread.Start();
 
             IsConnectedServer = true;
         }
@@ -97,7 +97,7 @@ public class FServerManager : FSingleton<FServerManager>
 
         while (IsConnectedServer)
         {
-            readSize += await m_NetStream.ReadAsync(buffer, readSize, PACKET_MAX - readSize);
+            readSize += await netStream.ReadAsync(buffer, readSize, PACKET_MAX - readSize);
 
             // 한번에 여러 패킷이 오는 경우를 대비하여 반복처리
             while (0 < readSize)
@@ -118,7 +118,7 @@ public class FServerManager : FSingleton<FServerManager>
                 int commonDataLength = sizeof(int) + sizeof(PacketType);
                 Array.Copy(buffer, commonDataLength, messageData.buffer, 0, packetSize - commonDataLength);
 
-                m_MessageQueue.Add(messageData);
+                messageQueue.Add(messageData);
 
                 readSize -= packetSize;
 
@@ -133,16 +133,16 @@ public class FServerManager : FSingleton<FServerManager>
 
     public void SendMessage(in PacketBase InPacket)
     {
-        if (m_NetStream == null)
+        if (netStream == null)
             return;
 
         try
         {
-            if (m_NetStream.CanWrite)
+            if (netStream.CanWrite)
             {
                 List<byte> buffer = new List<byte>();
                 InPacket.Serialize(buffer);
-                m_NetStream.Write(buffer.ToArray(), 0, buffer.Count());
+                netStream.Write(buffer.ToArray(), 0, buffer.Count());
             }
         }
         catch (SocketException e)
@@ -153,7 +153,7 @@ public class FServerManager : FSingleton<FServerManager>
 
     public void AddPacketHandler(PacketType InType, PacketHandler InHandler)
     {
-        m_PacketHandlerMap.Add(InType, InHandler);
+        packetHandlerMap.Add(InType, InHandler);
     }
 
 }

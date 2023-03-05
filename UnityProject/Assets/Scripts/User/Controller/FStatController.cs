@@ -44,10 +44,10 @@ public class FStatController : FControllerBase
 
     public void AddCritical(int InID, int InIncreaseLevel = 1)
     {
-        FDiceGradeData? data = FDiceDataManager.Instance.FindGradeDataByID(InID);
+        FDiceGradeData data = FDiceDataManager.Instance.FindGradeDataByID(InID);
         if (data != null)
         {
-            Critical += data.Value.Critical * InIncreaseLevel;
+            Critical += data.critical * InIncreaseLevel;
 
             FDiceInventory diceInventory = FindDiceInventoryUI();
             if (diceInventory != null)

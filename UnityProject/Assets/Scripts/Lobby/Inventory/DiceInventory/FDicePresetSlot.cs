@@ -8,34 +8,34 @@ using UnityEngine.UI;
 public class FDicePresetSlot : MonoBehaviour
 {
     [SerializeField]
-    Image m_DiceIcon;
+    Image diceIcon;
     [SerializeField]
-    Image m_DiceIcon_L;
+    Image diceIconL;
     [SerializeField]
-    TextMeshProUGUI m_Level;
+    TextMeshProUGUI level;
     [SerializeField]
-    Image m_PresetRegistGuide;
+    Image presetRegistGuideArrow;
 
     public void SetSlot(in FDice InSlot)
     {
-        FDiceData? diceData = FDiceDataManager.Instance.FindDiceData(InSlot.id);
+        FDiceData diceData = FDiceDataManager.Instance.FindDiceData(InSlot.id);
         if (diceData == null)
             return;
 
-        m_DiceIcon_L.gameObject.SetActive(diceData.Value.Grade == DiceGrade.DICE_GRADE_LEGEND);
-        m_DiceIcon.gameObject.SetActive(diceData.Value.Grade != DiceGrade.DICE_GRADE_LEGEND);
-        if (m_DiceIcon_L.IsActive())
-            m_DiceIcon_L.sprite = Resources.Load<Sprite>(diceData.Value.IconPath);
+        diceIconL.gameObject.SetActive(diceData.grade == DiceGrade.DICE_GRADE_LEGEND);
+        diceIcon.gameObject.SetActive(diceData.grade != DiceGrade.DICE_GRADE_LEGEND);
+        if (diceIconL.IsActive())
+            diceIconL.sprite = Resources.Load<Sprite>(diceData.iconPath);
         else
-            m_DiceIcon.sprite = Resources.Load<Sprite>(diceData.Value.IconPath);
+            diceIcon.sprite = Resources.Load<Sprite>(diceData.iconPath);
 
-        m_Level.text = InSlot.level.ToString();
+        level.text = InSlot.level.ToString();
     }
 
 
     public void SetPresetRegistActive(bool InActive)
     {
-        m_PresetRegistGuide.gameObject.SetActive(InActive);
+        presetRegistGuideArrow.gameObject.SetActive(InActive);
         GetComponent<Button>().interactable = InActive;
     }
 }

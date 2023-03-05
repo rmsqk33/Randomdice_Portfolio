@@ -1,11 +1,10 @@
 using Packet;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class FBattlefieldController : FControllerBase
 {
-    List<int> AcquiredBattleFielDList = new List<int>();
+    List<int> acquiredBattleFielDList = new List<int>();
 
     public FBattlefieldController(FLocalPlayer InOwner) : base(InOwner)
     {
@@ -18,7 +17,7 @@ public class FBattlefieldController : FControllerBase
             if (id == 0)
                 break;
 
-            AcquiredBattleFielDList.Add(id);
+            acquiredBattleFielDList.Add(id);
         }
 
         FBattleFieldInventory battleFieldInventory = FindBattleFieldInventoryUI();
@@ -28,7 +27,7 @@ public class FBattlefieldController : FControllerBase
 
     public bool IsAcquiredBattleField(int InID)
     {
-        return AcquiredBattleFielDList.Contains(InID);
+        return acquiredBattleFielDList.Contains(InID);
     }
 
     FBattleFieldInventory FindBattleFieldInventoryUI()

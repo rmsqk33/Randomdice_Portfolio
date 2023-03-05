@@ -1,14 +1,11 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using System.Xml.Schema;
 using UnityEngine;
 
 public class FDataCenter : FNonObjectSingleton<FDataCenter>
 {
-    FDataNode m_RootNode = new FDataNode();
+    FDataNode rootNode = new FDataNode();
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Initialize() 
@@ -19,6 +16,7 @@ public class FDataCenter : FNonObjectSingleton<FDataCenter>
         FDiceDataManager.Instance.Initialize();
         FBattleFieldDataManager.Instance.Initialize();
         FStoreDataManager.Instance.Initialize();
+        FBattleDataManager.Instance.Initialize();
     }
 
     void ParseXML(in string InPath)
@@ -34,18 +32,18 @@ public class FDataCenter : FNonObjectSingleton<FDataCenter>
 
                 FDataNode newNode = new FDataNode();
                 newNode.ParseXmlData(xmlDocument.FirstChild);
-                m_RootNode.AddChild(newNode);
+                rootNode.AddChild(newNode);
         }
     }
 
     public FDataNode GetDataNodeWithQuery(in string InQuery)
     {
-        return m_RootNode.GetDataNodeWithQuery(InQuery);
+        return rootNode.GetDataNodeWithQuery(InQuery);
     }
 
     public List<FDataNode> GetDataNodesWithQuery(in string InQuery)
     {
-        return m_RootNode.GetDataNodesWithQuery(InQuery);
+        return rootNode.GetDataNodesWithQuery(InQuery);
     }
 
     public int GetIntAttribute(in string InQuery)

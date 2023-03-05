@@ -12,7 +12,7 @@ public class FDice
 
 public class FDiceController : FControllerBase
 {
-    Dictionary<int, FDice> AcquiredDiceMap = new Dictionary<int, FDice>();
+    Dictionary<int, FDice> acquiredDiceMap = new Dictionary<int, FDice>();
 
     public FDiceController(FLocalPlayer InOwner) : base(InOwner)
     {
@@ -30,7 +30,7 @@ public class FDiceController : FControllerBase
             dice.count = diceData.count;
             dice.level = diceData.level;
 
-            AcquiredDiceMap.Add(diceData.id, dice);
+            acquiredDiceMap.Add(diceData.id, dice);
         }
 
         FDiceInventory diceInventory = FindDiceInventoryUI();
@@ -49,10 +49,10 @@ public class FDiceController : FControllerBase
             FDice dice = FindAcquiredDice(diceID);
             if (dice == null)
             {
-                FDiceGradeData? gradeData = FDiceDataManager.Instance.FindGradeDataByID(diceID);
+                FDiceGradeData gradeData = FDiceDataManager.Instance.FindGradeDataByID(diceID);
                 if (gradeData != null)
                 {
-                    AddAcquiredDice(diceID, diceCount, gradeData.Value.InitialLevel);
+                    AddAcquiredDice(diceID, diceCount, gradeData.initialLevel);
                 }
             }
             else
@@ -74,7 +74,7 @@ public class FDiceController : FControllerBase
             int diceCount = InPacket.count;
             int diceLevel = InPacket.level;
 
-            if (AcquiredDiceMap.ContainsKey(diceID))
+            if (acquiredDiceMap.ContainsKey(diceID))
             {
                 SetDiceCount(diceID, diceCount);
                 SetDiceLevel(diceID, diceLevel);
@@ -85,7 +85,7 @@ public class FDiceController : FControllerBase
                     statController.AddCritical(diceID);
                 }
 
-                FPopupManager.Instance.OpenDiceUpgradeResultPopup(AcquiredDiceMap[diceID]);
+                FPopupManager.Instance.OpenDiceUpgradeResultPopup(acquiredDiceMap[diceID]);
             }
         }
         else
@@ -96,41 +96,41 @@ public class FDiceController : FControllerBase
 
     public void RequestUpgradeDice(int InID)
     {
-        if (AcquiredDiceMap.ContainsKey(InID) == false)
+        FDice dice = FindAcquiredDice(InID);
+        if (dice == null)
         {
             OpenDiceUpgradeResultPopup(DiceUpgradeResult.DICE_UPGRADE_RESULT_INVALID_DICE);
             return;
         }
 
-        FDice dice = AcquiredDiceMap[InID];
-        FDiceGradeData? gradeData = FDiceDataManager.Instance.FindGradeDataByID(dice.id);
+        FDiceGradeData gradeData = FDiceDataManager.Instance.FindGradeDataByID(dice.id);
         if(gradeData == null)
         {
             OpenDiceUpgradeResultPopup(DiceUpgradeResult.DICE_UPGRADE_RESULT_INVALID_DICE);
             return;
         }
 
-        if(dice.level == gradeData.Value.MaxLevel)
+        if(dice.level == gradeData.maxLevel)
         {
             OpenDiceUpgradeResultPopup(DiceUpgradeResult.DICE_UPGRADE_RESULT_MAX_LEVEL);
             return;
         }
 
-        if(gradeData.Value.LevelDataMap.ContainsKey(dice.level) == false)
+        FDiceLevelData levelData = gradeData.FindDiceLevelData(dice.level);
+        if (levelData == null)
         {
             OpenDiceUpgradeResultPopup(DiceUpgradeResult.DICE_UPGRADE_RESULT_INVALID_DICE);
             return;
         }
 
-        FDiceLevelData diceLevelData = gradeData.Value.LevelDataMap[dice.level];
         FInventoryController inventoryController = FLocalPlayer.Instance.FindController<FInventoryController>();
-        if(inventoryController == null || inventoryController.Gold < diceLevelData.GoldCost)
+        if(inventoryController == null || inventoryController.Gold < levelData.goldCost)
         {
             OpenDiceUpgradeResultPopup(DiceUpgradeResult.DICE_UPGRADE_RESULT_NOT_ENOUGH_MONEY);
             return;
         }
 
-        if(dice.count < diceLevelData.DiceCountCost)
+        if(dice.count < levelData.diceCountCost)
         {
             OpenDiceUpgradeResultPopup(DiceUpgradeResult.DICE_UPGRADE_RESULT_NOT_ENOUGH_DICE);
             return;
@@ -145,7 +145,7 @@ public class FDiceController : FControllerBase
     public delegate void ForeachAcquiredDiceFunc(FDice InDice);
     public void ForeachAcquiredDice(ForeachAcquiredDiceFunc InFunc)
     {
-        foreach(var iter in AcquiredDiceMap)
+        foreach(var iter in acquiredDiceMap)
         {
             InFunc(iter.Value);
         }
@@ -153,7 +153,7 @@ public class FDiceController : FControllerBase
 
     public FDice FindAcquiredDice(int InID)
     {
-        return AcquiredDiceMap.ContainsKey(InID) ? AcquiredDiceMap[InID] : null;
+        return acquiredDiceMap.ContainsKey(InID) ? acquiredDiceMap[InID] : null;
     }
 
     void AddAcquiredDice(int InID, int InCount, int InLevel)
@@ -163,7 +163,7 @@ public class FDiceController : FControllerBase
         dice.count = InCount;
         dice.level = InLevel;
 
-        AcquiredDiceMap.Add(InID, dice);
+        acquiredDiceMap.Add(InID, dice);
 
         FStatController statController = FLocalPlayer.Instance.FindController<FStatController>();
         if (statController != null)
@@ -176,10 +176,10 @@ public class FDiceController : FControllerBase
 
     void SetDiceCount(int InID, int InCount)
     {
-        if (!AcquiredDiceMap.ContainsKey(InID))
+        if (!acquiredDiceMap.ContainsKey(InID))
             return;
 
-        AcquiredDiceMap[InID].count = InCount;
+        acquiredDiceMap[InID].count = InCount;
 
         FDiceInventory diceInventory = FindDiceInventoryUI();
         if (diceInventory != null)
@@ -188,20 +188,20 @@ public class FDiceController : FControllerBase
 
     void SetDiceLevel(int InID, int InLevel)
     {
-        if (!AcquiredDiceMap.ContainsKey(InID))
+        if (!acquiredDiceMap.ContainsKey(InID))
             return;
 
-        FDiceLevelData? diceLevelData = FDiceDataManager.Instance.FindDiceLevelData(InID, InLevel);
+        FDiceLevelData diceLevelData = FDiceDataManager.Instance.FindDiceLevelData(InID, InLevel);
         if (diceLevelData == null)
             return;
 
-        AcquiredDiceMap[InID].level = InLevel;
+        acquiredDiceMap[InID].level = InLevel;
 
         FDiceInventory diceInventory = FindDiceInventoryUI();
         if (diceInventory != null)
         {
             diceInventory.SetDiceLevel(InID, InLevel);
-            diceInventory.SetDiceMaxExp(InID, diceLevelData.Value.DiceCountCost);
+            diceInventory.SetDiceMaxExp(InID, diceLevelData.diceCountCost);
         }
     }
 

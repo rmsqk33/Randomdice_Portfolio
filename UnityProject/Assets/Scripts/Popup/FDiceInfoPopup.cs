@@ -6,37 +6,34 @@ using UnityEngine.UI;
 public class FDiceInfoPopup : FPopupBase
 {
     [SerializeField]
-    FAcquiredDiceSlot m_AcquiredDiceSlot;
+    FAcquiredDiceSlot acquiredDiceSlot;
     [SerializeField]
-    FNotAcquiredDiceSlot m_NotAcquiredDiceSlot;
+    FNotAcquiredDiceSlot notAcquiredDiceSlot;
     [SerializeField]
-    TextMeshProUGUI m_NameText;
+    TextMeshProUGUI nameText;
     [SerializeField]
-    TextMeshProUGUI m_Grade;
+    TextMeshProUGUI grade;
     [SerializeField]
-    TextMeshProUGUI m_Description;
+    TextMeshProUGUI description;
     [SerializeField]
-    List<FDiceStatInfo> m_StatInfoList;
+    List<FDiceStatInfo> statInfoList;
     [SerializeField]
-    TextMeshProUGUI m_Critical;
+    TextMeshProUGUI critical;
     [SerializeField]
-    TextMeshProUGUI m_UpgradeCritical;
+    TextMeshProUGUI upgradeCritical;
     [SerializeField]
-    TextMeshProUGUI m_UpgradeCost;
+    TextMeshProUGUI upgradeCost;
     [SerializeField]
-    Button m_UpgradeBtn;
+    Button upgradeBtn;
     [SerializeField]
-    Button m_UseBtn;
+    Button useBtn;
 
-    public delegate void ButtonHandler();
-    ButtonHandler m_UpgradeBtnHandler;
-    ButtonHandler m_UseBtnHandler;
-
-    public ButtonHandler UpgradeHandler { set { m_UpgradeBtnHandler = value; } }
-    public ButtonHandler UseHandler { set { m_UseBtnHandler = value; } }
+    int diceID;
 
     public void OpenAcquiredDiceInfo(int InID)
     {
+        diceID = InID;
+
         FDiceController diceController = FLocalPlayer.Instance.FindController<FDiceController>();
         if (diceController == null)
             return;
@@ -45,81 +42,93 @@ public class FDiceInfoPopup : FPopupBase
         if (dice == null)
             return;
 
-        FDiceData? diceData = FDiceDataManager.Instance.FindDiceData(InID);
+        FDiceData diceData = FDiceDataManager.Instance.FindDiceData(InID);
         if (diceData == null)
             return;
 
-        m_UpgradeBtn.gameObject.SetActive(true);
-        m_UseBtn.gameObject.SetActive(true);
-        m_NotAcquiredDiceSlot.gameObject.SetActive(false);
-        m_AcquiredDiceSlot.gameObject.SetActive(true);
-        m_AcquiredDiceSlot.Init(diceData.Value, dice);
+        upgradeBtn.gameObject.SetActive(true);
+        useBtn.gameObject.SetActive(true);
+        notAcquiredDiceSlot.gameObject.SetActive(false);
+        acquiredDiceSlot.gameObject.SetActive(true);
+        acquiredDiceSlot.Init(diceData, dice);
         
-        FDiceGradeData? gradeData = FDiceDataManager.Instance.FindGradeData(diceData.Value.Grade);
+        FDiceGradeData gradeData = FDiceDataManager.Instance.FindGradeData(diceData.grade);
         if (gradeData != null)
         {
-            if(gradeData.Value.LevelDataMap.ContainsKey(dice.level))
+            FDiceLevelData levelData = gradeData.FindDiceLevelData(dice.level);
+            if(levelData != null)
             {
-                FDiceLevelData levelData = gradeData.Value.LevelDataMap[dice.level];
-                m_UpgradeCost.text = levelData.GoldCost.ToString();
-                SetUpgradable(levelData.DiceCountCost <= dice.count);
-                SetCommonDiceInfo(diceData.Value, gradeData.Value);
+                upgradeCost.text = levelData.goldCost.ToString();
+                SetUpgradable(levelData.diceCountCost <= dice.count);
+                SetCommonDiceInfo(diceData, gradeData);
             }
         }
     }
 
     public void OpenNotAcquiredDiceInfo(int InID)
     {
-        FDiceData? diceData = FDiceDataManager.Instance.FindDiceData(InID);
+        diceID = InID;
+
+        FDiceData diceData = FDiceDataManager.Instance.FindDiceData(InID);
         if (diceData == null)
             return;
 
-        m_UpgradeBtn.gameObject.SetActive(false);
-        m_UseBtn.gameObject.SetActive(false);
-        m_AcquiredDiceSlot.gameObject.SetActive(false);
-        m_NotAcquiredDiceSlot.gameObject.SetActive(true);
-        m_NotAcquiredDiceSlot.Init(diceData.Value);
+        upgradeBtn.gameObject.SetActive(false);
+        useBtn.gameObject.SetActive(false);
+        acquiredDiceSlot.gameObject.SetActive(false);
+        notAcquiredDiceSlot.gameObject.SetActive(true);
+        notAcquiredDiceSlot.Init(diceData);
         SetUpgradable(false);
 
-        FDiceGradeData? gradeData = FDiceDataManager.Instance.FindGradeData(diceData.Value.Grade);
+        FDiceGradeData gradeData = FDiceDataManager.Instance.FindGradeData(diceData.grade);
         if(gradeData != null)
-            SetCommonDiceInfo(diceData.Value, gradeData.Value);
+            SetCommonDiceInfo(diceData, gradeData);
     }
 
     void SetUpgradable(bool InUpgradable)
     {
-        foreach(FDiceStatInfo stat in m_StatInfoList)
+        foreach(FDiceStatInfo stat in statInfoList)
         {
             stat.Upgradable = InUpgradable;
         }
-        m_UpgradeCritical.gameObject.SetActive(InUpgradable);
-        m_UpgradeBtn.enabled = InUpgradable;
-        m_UpgradeBtn.GetComponent<Animator>().SetTrigger(InUpgradable ? "Normal" : "Disabled");
+
+        upgradeCritical.gameObject.SetActive(InUpgradable);
+        upgradeBtn.enabled = InUpgradable;
+        upgradeBtn.GetComponent<Animator>().SetTrigger(InUpgradable ? "Normal" : "Disabled");
     }
 
     void SetCommonDiceInfo(in FDiceData InDiceData, in FDiceGradeData InGradeData)
     {
-        m_NameText.text = InDiceData.Name;
-        m_Description.text = InDiceData.Description;
+        nameText.text = InDiceData.name;
+        description.text = InDiceData.description;
 
         FStatController statController = FLocalPlayer.Instance.FindController<FStatController>();
         if(statController != null)
         {
-            m_Critical.text = statController.Critical + "%";
+            critical.text = statController.Critical + "%";
         }
 
-        m_Grade.text = InGradeData.GradeName;
-        m_UpgradeCritical.text = InGradeData.Critical + "%";
+        grade.text = InGradeData.gradeName;
+        upgradeCritical.text = InGradeData.critical + "%";
     }
 
     public void OnClickUpgrade()
     {
-        m_UpgradeBtnHandler();
+        FDiceController diceController = FLocalPlayer.Instance.FindController<FDiceController>();
+        if(diceController != null)
+        {
+            diceController.RequestUpgradeDice(diceID);
+        }
     }
 
     public void OnClickUse()
     {
-        m_UseBtnHandler();
+        FDiceInventory diceInventory = GameObject.FindObjectOfType<FDiceInventory>();
+        if(diceInventory != null)
+        {
+            diceInventory.SetPresetRegistActive(true);
+            Close();
+        }
     }
 
     public void OnClose()

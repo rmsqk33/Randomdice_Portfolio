@@ -1124,7 +1124,7 @@ GameObject:
   - component: {fileID: 7749842249328780763}
   - component: {fileID: 9107991951103549651}
   m_Layer: 0
-  m_Name: Image
+  m_Name: ClickPrevention
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2237,23 +2237,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd63291f91126b84481e2de6b03d53a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AcquiredDiceSlot: {fileID: 489869113431692899}
-  m_NotAcquiredDiceSlot: {fileID: 3196960007062433769}
-  m_NameText: {fileID: 1640787964257420740}
-  m_Grade: {fileID: 3109878583647738985}
-  m_Description: {fileID: 4793768921051395501}
-  m_StatInfoList:
+  acquiredDiceSlot: {fileID: 489869113431692899}
+  notAcquiredDiceSlot: {fileID: 3196960007062433769}
+  nameText: {fileID: 1640787964257420740}
+  grade: {fileID: 3109878583647738985}
+  description: {fileID: 4793768921051395501}
+  statInfoList:
   - {fileID: 1663580819486467573}
   - {fileID: 7981909540730007961}
   - {fileID: 4347762404362973188}
   - {fileID: 5009431326185350248}
   - {fileID: 1408540695794755963}
   - {fileID: 7664965847514922263}
-  m_Critical: {fileID: 4945470708634695692}
-  m_UpgradeCritical: {fileID: 2745823381116402473}
-  m_UpgradeCost: {fileID: 4007813636928061148}
-  m_UpgradeBtn: {fileID: 7926171196659355492}
-  m_UseBtn: {fileID: 2348314710018876860}
+  critical: {fileID: 4945470708634695692}
+  upgradeCritical: {fileID: 2745823381116402473}
+  upgradeCost: {fileID: 4007813636928061148}
+  upgradeBtn: {fileID: 7926171196659355492}
+  useBtn: {fileID: 2348314710018876860}
 --- !u!95 &7585379084425465128
 Animator:
   serializedVersion: 4
@@ -3371,7 +3371,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7822494790400995606, guid: a0c90aca3f4e5894d935f2826f4742bc, type: 3}
       propertyPath: m_Name
-      value: DisableDiceSlot
+      value: NotAcquiredDiceSlot
       objectReference: {fileID: 0}
     - target: {fileID: 7822494790400995606, guid: a0c90aca3f4e5894d935f2826f4742bc, type: 3}
       propertyPath: m_IsActive

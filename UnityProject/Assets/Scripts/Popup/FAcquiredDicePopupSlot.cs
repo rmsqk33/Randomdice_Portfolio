@@ -5,40 +5,40 @@ using UnityEngine.UI;
 public class FAcquiredDicePopupSlot : MonoBehaviour
 {
     [SerializeField]
-    TextMeshProUGUI m_NameText;
+    TextMeshProUGUI nameText;
     [SerializeField]
-    TextMeshProUGUI m_GradeText;
+    TextMeshProUGUI gradeText;
     [SerializeField]
-    TextMeshProUGUI m_CountText;
+    TextMeshProUGUI countText;
     [SerializeField]
-    Image m_DiceIcon;
+    Image diceIcon;
     [SerializeField]
-    Image m_DiceIconL;
+    Image diceIconL;
     [SerializeField]
-    Image m_Eye;
+    Image eye;
 
     public void SetSlot(int InDiceID, int InCount)
     {
-        FDiceData? diceData = FDiceDataManager.Instance.FindDiceData(InDiceID);
+        FDiceData diceData = FDiceDataManager.Instance.FindDiceData(InDiceID);
         if (diceData == null)
             return;
 
-        FDiceGradeData? diceGradeData = FDiceDataManager.Instance.FindGradeData(diceData.Value.Grade);
+        FDiceGradeData diceGradeData = FDiceDataManager.Instance.FindGradeData(diceData.grade);
         if (diceGradeData == null)
             return;
 
-        m_NameText.text = diceData.Value.Name;
-        m_GradeText.text = diceGradeData.Value.GradeName;
-        m_CountText.text = "x" + InCount.ToString();
+        nameText.text = diceData.name;
+        gradeText.text = diceGradeData.gradeName;
+        countText.text = "x" + InCount.ToString();
 
-        m_DiceIcon.gameObject.SetActive(diceData.Value.Grade != FEnum.DiceGrade.DICE_GRADE_LEGEND);
-        m_DiceIconL.gameObject.SetActive(diceData.Value.Grade == FEnum.DiceGrade.DICE_GRADE_LEGEND);
+        diceIcon.gameObject.SetActive(diceData.grade != FEnum.DiceGrade.DICE_GRADE_LEGEND);
+        diceIconL.gameObject.SetActive(diceData.grade == FEnum.DiceGrade.DICE_GRADE_LEGEND);
 
-        if (diceData.Value.Grade != FEnum.DiceGrade.DICE_GRADE_LEGEND)
-            m_DiceIcon.sprite = Resources.Load<Sprite>(diceData.Value.IconPath);
+        if (diceData.grade != FEnum.DiceGrade.DICE_GRADE_LEGEND)
+            diceIcon.sprite = Resources.Load<Sprite>(diceData.iconPath);
         else
-            m_DiceIconL.sprite = Resources.Load<Sprite>(diceData.Value.IconPath);
+            diceIconL.sprite = Resources.Load<Sprite>(diceData.iconPath);
 
-        m_Eye.color = diceData.Value.Color;
+        eye.color = diceData.color;
     }
 }

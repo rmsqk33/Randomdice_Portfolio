@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class FLocalPlayer : FSingleton<FLocalPlayer>
 {
-    private Dictionary<Type, FControllerBase> Controllers = new Dictionary<Type, FControllerBase>();
+    private Dictionary<Type, FControllerBase> controllers = new Dictionary<Type, FControllerBase>();
 
     protected override void Awake() 
     {
@@ -22,14 +20,14 @@ public class FLocalPlayer : FSingleton<FLocalPlayer>
     private void AddController<T>()
     {
         Type type = typeof(T);
-        Controllers.Add(type, (FControllerBase)Activator.CreateInstance(type, args:Instance));
+        controllers.Add(type, (FControllerBase)Activator.CreateInstance(type, args:Instance));
     }
 
     public T FindController<T>()
     {
         Type type = typeof(T);
-        if (Controllers.ContainsKey(type))
-            return (T)Convert.ChangeType(Controllers[type], type);
+        if (controllers.ContainsKey(type))
+            return (T)Convert.ChangeType(controllers[type], type);
 
         return default(T);
     }

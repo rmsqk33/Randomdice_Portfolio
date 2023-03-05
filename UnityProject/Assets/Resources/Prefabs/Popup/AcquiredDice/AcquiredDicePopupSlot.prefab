@@ -145,7 +145,7 @@ MonoBehaviour:
   m_text: x999
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: aa47dc0d7c4b3a242b1f543a5cd88615, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: d27a7a28a85e19b468f3879591bd0bbf, type: 2}
+  m_sharedMaterial: {fileID: 3365016660689545898, guid: aa47dc0d7c4b3a242b1f543a5cd88615, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5484,12 +5484,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e07c7951710481441aa01e724e4b520d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_NameText: {fileID: 929903927544655462}
-  m_GradeText: {fileID: 4460721764878317765}
-  m_CountText: {fileID: 3856275166018542810}
-  m_DiceIcon: {fileID: 7822494792215864517}
-  m_DiceIconL: {fileID: 1469410175085549543}
-  m_Eye: {fileID: 7822494791786347978}
+  nameText: {fileID: 929903927544655462}
+  gradeText: {fileID: 4460721764878317765}
+  countText: {fileID: 3856275166018542810}
+  diceIcon: {fileID: 7822494792215864517}
+  diceIconL: {fileID: 1469410175085549543}
+  eye: {fileID: 7822494791786347978}
 --- !u!95 &1420955162
 Animator:
   serializedVersion: 4
@@ -5752,7 +5752,7 @@ MonoBehaviour:
   m_text: "\uBD88 \uC8FC\uC0AC\uC704"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: aa47dc0d7c4b3a242b1f543a5cd88615, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: d27a7a28a85e19b468f3879591bd0bbf, type: 2}
+  m_sharedMaterial: {fileID: 3365016660689545898, guid: aa47dc0d7c4b3a242b1f543a5cd88615, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

@@ -1,10 +1,7 @@
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Packet;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine.SceneManagement;
 
 public class FAccountMananger : FNonObjectSingleton<FAccountMananger>

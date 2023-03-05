@@ -53,10 +53,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50e303917eef5b245b8cfab78d68718e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Icon: {fileID: 517201758537583999}
-  m_Title: {fileID: 29465583593618052}
-  m_Value: {fileID: 1349110005943639309}
-  m_UpgradeValue: {fileID: 5254029199719502011}
+  statIcon: {fileID: 517201758537583999}
+  title: {fileID: 29465583593618052}
+  value: {fileID: 1349110005943639309}
+  upgradeValue: {fileID: 5254029199719502011}
 --- !u!1 &2531059037122466875
 GameObject:
   m_ObjectHideFlags: 0

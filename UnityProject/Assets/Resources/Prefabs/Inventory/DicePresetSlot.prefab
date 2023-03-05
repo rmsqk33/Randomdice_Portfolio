@@ -131,10 +131,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5625390f2ac190c40b6121d5c4365bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_DiceIcon: {fileID: 2021394775851576411}
-  m_DiceIcon_L: {fileID: 2021394775490701438}
-  m_Level: {fileID: 2021394775854754655}
-  m_PresetRegistGuide: {fileID: 7757726331171129008}
+  diceIcon: {fileID: 2021394775851576411}
+  diceIconL: {fileID: 2021394775490701438}
+  level: {fileID: 2021394775854754655}
+  presetRegistGuideArrow: {fileID: 7757726331171129008}
 --- !u!114 &3116490065837534053
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -550,7 +550,7 @@ GameObject:
   - component: {fileID: 7757726331171129008}
   - component: {fileID: 5021443990111094667}
   m_Layer: 5
-  m_Name: GuideArrow
+  m_Name: presetRegistGuideArrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

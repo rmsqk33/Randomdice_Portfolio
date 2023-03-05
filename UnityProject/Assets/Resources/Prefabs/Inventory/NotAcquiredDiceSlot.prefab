@@ -57,10 +57,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96d3bcd79cde44041bbc909d9d9edf31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Background: {fileID: 7778790885735355406}
-  DiceIcon: {fileID: 7822494792215864517}
-  DiceIcon_L: {fileID: 1014272357460278536}
-  GradeText: {fileID: 7822494790699138354}
+  background: {fileID: 7778790885735355406}
+  diceIcon: {fileID: 7822494792215864517}
+  diceIconL: {fileID: 1014272357460278536}
+  gradeText: {fileID: 7822494790699138354}
 --- !u!222 &3837471819137895685
 CanvasRenderer:
   m_ObjectHideFlags: 0

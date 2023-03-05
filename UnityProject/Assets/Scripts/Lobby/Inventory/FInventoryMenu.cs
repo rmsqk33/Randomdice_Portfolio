@@ -1,26 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.PackageManager.Requests;
 using UnityEngine;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public class FInventoryMenu : FLobbyScrollMenuBase
 {
     [SerializeField]
-    private FGroupMenu m_Tab;
+    private FInventoryTabUI tabUI;
     [SerializeField]
-    int m_InitMenuIndex = 0;
+    int initTabIndex = 0;
 
     public override void OnActive()
     {
-        if (m_Tab.SelectedMenuIndex != m_InitMenuIndex)
-            m_Tab.SetSelectedMenu(m_InitMenuIndex);
+        if (tabUI.SelectedTabIndex != initTabIndex)
+            tabUI.SetSelectedTab(initTabIndex);
 
-        m_Tab.GetSelectedMenu().OnActive();
+        tabUI.GetSelectedTab().OnActive();
     }
 
     public override void OnDeactive()
     {
-        m_Tab.GetSelectedMenu().OnDeactive();
+        tabUI.GetSelectedTab().OnDeactive();
     }
 }

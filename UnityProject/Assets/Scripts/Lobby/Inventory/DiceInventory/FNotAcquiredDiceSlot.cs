@@ -8,41 +8,41 @@ using FEnum;
 public class FNotAcquiredDiceSlot : MonoBehaviour
 {
     [SerializeField]
-    Image Background;
+    Image background;
     [SerializeField]
-    Image DiceIcon;
+    Image diceIcon;
     [SerializeField]
-    Image DiceIcon_L;
+    Image diceIconL;
     [SerializeField]
-    TextMeshProUGUI GradeText;
+    TextMeshProUGUI gradeText;
 
     public int ID { get; set; }
 
     public delegate void ClickHandler(int InID);
-    ClickHandler m_ClickHandler;
-    public ClickHandler OnClickHandler { set { m_ClickHandler = value; } }
+    ClickHandler clickHandler;
+    public ClickHandler OnClickHandler { set { clickHandler = value; } }
 
     public void Init(in FDiceData InData)
     {
-        ID = InData.ID;
-        DiceIcon_L.gameObject.SetActive(InData.Grade == DiceGrade.DICE_GRADE_LEGEND);
-        DiceIcon.gameObject.SetActive(InData.Grade != DiceGrade.DICE_GRADE_LEGEND);
+        ID = InData.id;
+        diceIconL.gameObject.SetActive(InData.grade == DiceGrade.DICE_GRADE_LEGEND);
+        diceIcon.gameObject.SetActive(InData.grade != DiceGrade.DICE_GRADE_LEGEND);
 
-        if (DiceIcon_L.IsActive())
-            DiceIcon_L.sprite = Resources.Load<Sprite>(InData.notAcquiredIconPath);
+        if (diceIconL.IsActive())
+            diceIconL.sprite = Resources.Load<Sprite>(InData.notAcquiredIconPath);
         else
-            DiceIcon.sprite = Resources.Load<Sprite>(InData.notAcquiredIconPath);
+            diceIcon.sprite = Resources.Load<Sprite>(InData.notAcquiredIconPath);
 
-        FDiceGradeData? gradeData = FDiceDataManager.Instance.FindGradeData(InData.Grade);
+        FDiceGradeData gradeData = FDiceDataManager.Instance.FindGradeData(InData.grade);
         if (gradeData != null)
         {
-            Background.sprite = Resources.Load<Sprite>(gradeData.Value.BackgroundPath);
-            GradeText.text = gradeData.Value.GradeName;
+            background.sprite = Resources.Load<Sprite>(gradeData.backgroundPath);
+            gradeText.text = gradeData.gradeName;
         }
     }
 
     public void OnClickSlot()
     {
-        m_ClickHandler(ID);
+        clickHandler(ID);
     }
 }

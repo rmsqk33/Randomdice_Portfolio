@@ -1,11 +1,10 @@
 using Packet;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class FInventoryController : FControllerBase
 {
-    List<int> AcquiredBattleFielDList = new List<int>();
+    List<int> acquiredBattleFielDList = new List<int>();
 
     public int Gold { get; private set; }
     public int Dia { get; private set; }
