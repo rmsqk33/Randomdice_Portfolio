@@ -9,31 +9,37 @@ public class FBattleFieldInfoPopup : FPopupBase
     TextMeshProUGUI nameText;
     [SerializeField]
     Image battleFieldImage;
+    [SerializeField]
+    GameObject useBtn;
+    [SerializeField]
+    GameObject purchaseBtn;
+    [SerializeField]
+    TextMeshProUGUI price;
 
-    int diceID;
+    int battlefieldID;
     
-    public void OpenAcquiredBattleFieldInfo(int InID)
+    public void OpenPopup(int InID)
     {
-        diceID = InID;
+        battlefieldID = InID;
 
         FBattleFieldData data = FBattleFieldDataManager.Instance.FindBattleFieldData(InID);
         if (data == null)
             return;
 
-        nameText.text = data.name;
-        battleFieldImage.sprite = Resources.Load<Sprite>(data.skinImagePath);
-    }
-
-    public void OpenNotAcquiredBattleFieldInfo(int InID)
-    {
-        diceID = InID;
-
-        FBattleFieldData data = FBattleFieldDataManager.Instance.FindBattleFieldData(InID);
-        if (data == null)
+        FBattlefieldController battlefieldController = FLocalPlayer.Instance.FindController<FBattlefieldController>();
+        if (battlefieldController == null)
             return;
 
         nameText.text = data.name;
         battleFieldImage.sprite = Resources.Load<Sprite>(data.skinImagePath);
+
+        bool isAcquired = battlefieldController.IsAcquiredBattleField(InID);
+
+        useBtn.SetActive(isAcquired);
+        purchaseBtn.SetActive(isAcquired == false);
+
+        if (isAcquired == false)
+            price.text = data.price.ToString();
     }
 
     public void OnClickUse()
@@ -41,13 +47,19 @@ public class FBattleFieldInfoPopup : FPopupBase
         FPresetController presetController = FLocalPlayer.Instance.FindController<FPresetController>();
         if (presetController != null)
         {
-            presetController.SetBattleFieldPreset(diceID);
+            presetController.SetBattleFieldPreset(battlefieldID);
         }
-        Close();
+        FPopupManager.Instance.ClosePopup();
     }
 
     public void OnClickPurchase()
     {
+        FBattlefieldController battlefieldController = FLocalPlayer.Instance.FindController<FBattlefieldController>();
+        if(battlefieldController != null)
+        {
+            battlefieldController.RequestPurchaseBattlefield(battlefieldID);
+        }
+        FPopupManager.Instance.ClosePopup();
     }
 
     public void OnClose()

@@ -20,6 +20,8 @@ namespace Packet
 		PACKET_TYPE_S_PURCHASE_DICE,
 		PACKET_TYPE_C_PURCHASE_BOX,
 		PACKET_TYPE_S_PURCHASE_BOX,
+		PACKET_TYPE_C_PURCHASE_BATTLEFIELD,
+		PACKET_TYPE_S_PURCHASE_BATTLEFIELD,
 		PACKET_TYPE_S_ADD_DICE,
 		PACKET_TYPE_S_CHANGE_GOLD,
 		PACKET_TYPE_S_CHANGE_DIA,
@@ -765,6 +767,94 @@ namespace Packet
 
 		public int Deserialize(in byte[] InBuffer, int offset = 0)
 		{
+			resultType = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			return offset;
+		}
+
+	}
+
+	public class C_PURCHASE_BATTLEFIELD : PacketBase
+	{
+		public int id;
+
+		public C_PURCHASE_BATTLEFIELD()
+		{
+		}
+
+		public C_PURCHASE_BATTLEFIELD(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			size += sizeof(int);
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_C_PURCHASE_BATTLEFIELD;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+			InBuffer.AddRange(BitConverter.GetBytes(id));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			id = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			return offset;
+		}
+
+	}
+
+	public class S_PURCHASE_BATTLEFIELD : PacketBase
+	{
+		public int id;
+
+		public int resultType;
+
+		public S_PURCHASE_BATTLEFIELD()
+		{
+		}
+
+		public S_PURCHASE_BATTLEFIELD(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			size += sizeof(int);
+			size += sizeof(int);
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_S_PURCHASE_BATTLEFIELD;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+			InBuffer.AddRange(BitConverter.GetBytes(id));
+			InBuffer.AddRange(BitConverter.GetBytes(resultType));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			id = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
 			resultType = BitConverter.ToInt32(InBuffer, offset);
 			offset += sizeof(int);
 			return offset;

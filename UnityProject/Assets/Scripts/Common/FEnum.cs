@@ -17,6 +17,14 @@ namespace FEnum
         STORE_PURCHASE_RESULT_INVALID_GOODS,
     }
 
+    public enum BattlefieldPurchaseResult
+    {
+        BATTLEFIELD_PURCHASE_RESULT_SUCCESS,
+        BATTLEFIELD_PURCHASE_RESULT_NOT_ENOUGH_MONEY,
+        BATTLEFIELD_PURCHASE_RESULT_INVALID,
+        BATTLEFIELD_PURCHASE_RESULT_ALEADY_ACQUIRED,
+    }
+
     public enum DiceUpgradeResult
     {
         DICE_UPGRADE_RESULT_SUCCESS,

@@ -50,24 +50,14 @@ public class FPopupManager : FNonObjectSingleton<FPopupManager>
         popup.OpenNotAcquiredDiceInfo(InID);
     }
 
-    public void OpenAcquiredBattleFieldInfoPopup(int InID)
+    public void OpenBattleFieldInfoPopup(int InID)
     {
         FBattleFieldInfoPopup popup = null;
         GameObject gameObject = CreatePopup("Prefabs/Popup/BattleFieldInfoPopup");
         if (gameObject != null)
             popup = gameObject.GetComponent<FBattleFieldInfoPopup>();
 
-        popup.OpenAcquiredBattleFieldInfo(InID);
-    }
-
-    public void OpenNotAcquiredBattleFieldInfoPopup(int InID)
-    {
-        FBattleFieldInfoPopup popup = null;
-        GameObject gameObject = CreatePopup("Prefabs/Popup/BattleFieldInfoPopup");
-        if (gameObject != null)
-            popup = gameObject.GetComponent<FBattleFieldInfoPopup>();
-
-        popup.OpenNotAcquiredBattleFieldInfo(InID);
+        popup.OpenPopup(InID);
     }
 
     public void OpenDicePurchasePopup(int InID)
@@ -108,6 +98,16 @@ public class FPopupManager : FNonObjectSingleton<FPopupManager>
             popup = gameObject.GetComponent<FDiceUpgradeResultPopup>();
 
         popup.OpenPopup(InDice);
+    }
+
+    public void OpenAcquiredBattlefieldPopup(int InID)
+    {
+        FAcquiredBattlefieldPopup popup = null;
+        GameObject gameObject = CreatePopup("Prefabs/Popup/AcquiredBattlefieldPopup");
+        if (gameObject != null)
+            popup = gameObject.GetComponent<FAcquiredBattlefieldPopup>();
+
+        popup.OpenPopup(InID);
     }
 
     public void ClosePopup()

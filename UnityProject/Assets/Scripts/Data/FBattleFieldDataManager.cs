@@ -3,12 +3,14 @@ using System.Collections.Generic;
 public class FBattleFieldData
 {
     public readonly int id;
+    public readonly int price;
     public readonly string name;
     public readonly string skinImagePath;
 
-    public FBattleFieldData(int id, string name, string skinImagePath)
+    public FBattleFieldData(int id, int price, string name, string skinImagePath)
     {
         this.id = id;
+        this.price = price;
         this.name = name;
         this.skinImagePath = skinImagePath;
     }
@@ -24,10 +26,11 @@ public class FBattleFieldDataManager : FNonObjectSingleton<FBattleFieldDataManag
         foreach (FDataNode node in dataNodeList)
         {
             int id = node.GetIntAttr("id");
+            int price = node.GetIntAttr("price");
             string name = node.GetStringAttr("name");
             string skinImagePath = node.GetStringAttr("skinImage");
 
-            FBattleFieldData newData = new FBattleFieldData(id, name, skinImagePath);
+            FBattleFieldData newData = new FBattleFieldData(id, price, name, skinImagePath);
             battleFieldDataMap.Add(newData.id, newData);
         }
     }

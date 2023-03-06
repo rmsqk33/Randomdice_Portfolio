@@ -14,6 +14,7 @@ public class FPacketHandler
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_CHANGE_DIA, Handle_S_CHANGE_DIA);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_PURCHASE_DICE, Handle_S_PURCHASE_DICE);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_PURCHASE_BOX, Handle_S_PURCHASE_BOX);
+        FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_PURCHASE_BATTLEFIELD, Handle_S_PURCHASE_BATTLEFIELD);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_ADD_DICE, Handle_S_ADD_DICE);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_UPGRADE_DICE, Handle_S_UPGRADE_DICE);
         
@@ -144,5 +145,17 @@ public class FPacketHandler
             diceController.Handle_S_UPGRADE_DICE(pkt);
         }
     }
-    
+
+    static void Handle_S_PURCHASE_BATTLEFIELD(in byte[] InBuffer)
+    {
+        S_PURCHASE_BATTLEFIELD pkt = new S_PURCHASE_BATTLEFIELD(InBuffer);
+
+        FBattlefieldController battlefieldController = FLocalPlayer.Instance.FindController<FBattlefieldController>();
+        if (battlefieldController != null)
+        {
+            battlefieldController.Handle_S_PURCHASE_BATTLEFIELD(pkt);
+        }
+    }
+
+
 }
