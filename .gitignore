@@ -73,4 +73,5 @@ crashlytics-build.properties
 *.fcheck
 *.fcheck.meta
 UnityProject/Assetsaccount_data.json
-UnityProject/Assets/Resources/Font/NotoSansKR-Black SDF.asset
+UnityProject/Assets/Resources/Font/*.asset
+UnityProject/Assets/Resources/Font/*.asset.meta
