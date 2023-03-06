@@ -7,7 +7,7 @@ public class FLobbyScene : MonoBehaviour
     private void Awake()
     {
 #if DEBUG
-        if(!FServerManager.Instance.IsConnectedServer)
+        if (!FServerManager.Instance.IsConnectedServer)
         {
             FServerManager.Instance.ConnectServer();
             FAccountMananger.Instance.TryLogin();
