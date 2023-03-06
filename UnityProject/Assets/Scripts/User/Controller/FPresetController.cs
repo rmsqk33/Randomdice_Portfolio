@@ -11,10 +11,30 @@ public class FPresetController : FControllerBase
     int[] battleFieldPresetIDList = new int[MAX_PRESET];
     int[,] dicePresetIDList = new int[MAX_PRESET_PAGE, MAX_PRESET];
 
-    public int SelectedPresetIndex { get; private set; }
+    public int SelectedPresetIndex { get; private set; } = -1;
 
     public FPresetController(FLocalPlayer InOwner) : base(InOwner)
     {
+    }
+
+    public void Handle_S_USER_DATA(in S_USER_DATA InPacket)
+    {
+        SelectedPresetIndex = InPacket.selectedPresetIndex;
+
+        Array.Copy(InPacket.battleFieldPreset, battleFieldPresetIDList, InPacket.battleFieldPreset.Length);
+        Array.Copy(InPacket.dicePreset, dicePresetIDList, InPacket.dicePreset.Length);
+
+        FDiceInventory diceInventory = FindDiceInventory();
+        if (diceInventory != null)
+        {
+            diceInventory.SetPresetTab(SelectedPresetIndex);
+        }
+
+        FBattleFieldInventory battlefieldInventory = FindBattlefieldInventory();
+        if (battlefieldInventory != null)
+        {
+            battlefieldInventory.SetPresetTab(SelectedPresetIndex);
+        }
     }
 
     public void SetPreset(int InIndex)
@@ -24,16 +44,16 @@ public class FPresetController : FControllerBase
 
         SelectedPresetIndex = InIndex;
 
-        FDicePreset dicePresetUI = FindDicePresetUI();
-        if (dicePresetUI != null)
+        FDiceInventory diceInventory = FindDiceInventory();
+        if (diceInventory != null)
         {
-            dicePresetUI.SetPreset(InIndex);
+            diceInventory.SetPresetTab(InIndex);
         }
 
-        FBattleFieldPreset battleFieldPresetUI = FindBattleFieldPresetUI();
-        if (battleFieldPresetUI != null)
+        FBattleFieldInventory battlefieldInventory = FindBattlefieldInventory();
+        if (battlefieldInventory != null)
         {
-            battleFieldPresetUI.SetPreset(InIndex);
+            battlefieldInventory.SetPresetTab(InIndex);
         }
 
         C_CHANGE_PRESET packet = new C_CHANGE_PRESET();
@@ -45,9 +65,9 @@ public class FPresetController : FControllerBase
     {
         battleFieldPresetIDList[SelectedPresetIndex] = InID;
 
-        FBattleFieldPreset battleFieldPresetUI = FindBattleFieldPresetUI();
-        if (battleFieldPresetUI != null)
-            battleFieldPresetUI.SetBattleFieldPreset(InID);
+        FBattleFieldInventory battlefieldInventory = FindBattlefieldInventory();
+        if (battlefieldInventory != null)
+            battlefieldInventory.SetBattleFieldPreset(InID);
 
         C_CHANGE_PRESET_BATTLEFIELD packet = new C_CHANGE_PRESET_BATTLEFIELD();
         packet.battlefieldId = InID;
@@ -63,22 +83,22 @@ public class FPresetController : FControllerBase
         return battleFieldPresetIDList[InIndex];
     }
 
-    private FBattleFieldPreset FindBattleFieldPresetUI()
+    FBattleFieldInventory FindBattlefieldInventory()
     {
-        return GameObject.FindObjectOfType<FBattleFieldPreset>();
+        return FUIManager.Instance.FindUI<FBattleFieldInventory>();
     }
 
     public void SetDicePreset(int InID, int InIndex)
     {
         C_CHANGE_PRESET_DICE packet = new C_CHANGE_PRESET_DICE();
 
-        FDicePreset dicePresetUI = FindDicePresetUI();
+        FDiceInventory diceInventory = FindDiceInventory();
         int prevIndex = GetDicePresetIndex(InID, SelectedPresetIndex);
         if (prevIndex != -1)
         {
             int prevDiceID = dicePresetIDList[SelectedPresetIndex, InIndex];
             dicePresetIDList[SelectedPresetIndex, prevIndex] = prevDiceID;
-            dicePresetUI.SetDicePreset(prevDiceID, prevIndex);
+            diceInventory.SetDicePreset(prevDiceID, prevIndex);
 
             packet.diceId = prevDiceID;
             packet.slotIndex = prevIndex;
@@ -87,7 +107,7 @@ public class FPresetController : FControllerBase
         }
 
         dicePresetIDList[SelectedPresetIndex, InIndex] = InID;
-        dicePresetUI.SetDicePreset(InID, InIndex);
+        diceInventory.SetDicePreset(InID, InIndex);
 
         packet.diceId = InID;
         packet.slotIndex = InIndex;
@@ -97,10 +117,13 @@ public class FPresetController : FControllerBase
 
     int GetDicePresetIndex(int InID, int InIndex)
     {
-        for (int i = 0; i < MAX_PRESET; ++i)
+        if (0 <= InIndex && InIndex < MAX_PRESET_PAGE)
         {
-            if (dicePresetIDList[InIndex, i] == InID)
-                return i;
+            for (int i = 0; i < MAX_PRESET; ++i)
+            {
+                if (dicePresetIDList[InIndex, i] == InID)
+                    return i;
+            }
         }
         return -1;
     }
@@ -108,22 +131,17 @@ public class FPresetController : FControllerBase
     public delegate void ForeachDicePresetHandle(int InID);
     public void ForeachDicePreset(int InIndex, in ForeachDicePresetHandle InFunc)
     {
-        for (int i = 0; i < dicePresetIDList.GetLength(0); ++i)
+        if (0 <= InIndex && InIndex < MAX_PRESET_PAGE)
         {
-            InFunc(dicePresetIDList[InIndex, i]);
+            for (int i = 0; i < MAX_PRESET; ++i)
+            {
+                InFunc(dicePresetIDList[InIndex, i]);
+            }
         }
     }
 
-    FDicePreset FindDicePresetUI()
+    FDiceInventory FindDiceInventory()
     {
-        return GameObject.FindObjectOfType<FDicePreset>();
-    }
-
-    public void Handle_S_USER_DATA(in S_USER_DATA InPacket)
-    {
-        SelectedPresetIndex = InPacket.selectedPresetIndex;
-
-        Array.Copy(InPacket.battleFieldPreset, battleFieldPresetIDList, InPacket.battleFieldPreset.Length);
-        Array.Copy(InPacket.dicePreset, dicePresetIDList, InPacket.dicePreset.Length);
+        return FUIManager.Instance.FindUI<FDiceInventory>();
     }
 }

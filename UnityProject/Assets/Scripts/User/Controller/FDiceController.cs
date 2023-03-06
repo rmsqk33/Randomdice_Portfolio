@@ -221,6 +221,6 @@ public class FDiceController : FControllerBase
 
     FDiceInventory FindDiceInventoryUI()
     {
-        return GameObject.FindObjectOfType<FDiceInventory>();
+        return FUIManager.Instance.FindUI<FDiceInventory>();
     }
 }

@@ -43,6 +43,7 @@ public class FBattleFieldInfoPopup : FPopupBase
         {
             presetController.SetBattleFieldPreset(diceID);
         }
+        Close();
     }
 
     public void OnClickPurchase()

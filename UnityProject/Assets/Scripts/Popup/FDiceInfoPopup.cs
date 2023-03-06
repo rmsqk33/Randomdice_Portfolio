@@ -123,7 +123,7 @@ public class FDiceInfoPopup : FPopupBase
 
     public void OnClickUse()
     {
-        FDiceInventory diceInventory = GameObject.FindObjectOfType<FDiceInventory>();
+        FDiceInventory diceInventory = FUIManager.Instance.FindUI<FDiceInventory>();
         if(diceInventory != null)
         {
             diceInventory.SetPresetRegistActive(true);

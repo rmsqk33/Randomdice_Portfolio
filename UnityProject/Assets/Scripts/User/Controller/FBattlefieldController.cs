@@ -22,7 +22,7 @@ public class FBattlefieldController : FControllerBase
 
         FBattleFieldInventory battleFieldInventory = FindBattleFieldInventoryUI();
         if (battleFieldInventory != null)
-            battleFieldInventory.InitBattleFieldList();
+            battleFieldInventory.InitInventory();
     }
 
     public bool IsAcquiredBattleField(int InID)
@@ -32,8 +32,6 @@ public class FBattlefieldController : FControllerBase
 
     FBattleFieldInventory FindBattleFieldInventoryUI()
     {
-        return GameObject.FindObjectOfType<FBattleFieldInventory>();
+        return FUIManager.Instance.FindUI<FBattleFieldInventory>();
     }
-
-    
 }

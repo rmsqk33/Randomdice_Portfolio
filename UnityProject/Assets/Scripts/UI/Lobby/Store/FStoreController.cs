@@ -167,9 +167,9 @@ public class FStoreController : FControllerBase
         return null;
     }
 
-    private FStoreMenu FindStoreUI()
+    FStoreMenu FindStoreUI()
     {
-        return GameObject.FindObjectOfType<FStoreMenu>();
+        return FUIManager.Instance.FindUI<FStoreMenu>();
     }
 
 

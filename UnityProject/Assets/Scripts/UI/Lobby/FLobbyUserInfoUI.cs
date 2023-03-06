@@ -1,12 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FLobbyUserInfoUI : MonoBehaviour
+public class FLobbyUserInfoUI : FUIBase
 {
     [SerializeField]
     TextMeshProUGUI nameText = null;

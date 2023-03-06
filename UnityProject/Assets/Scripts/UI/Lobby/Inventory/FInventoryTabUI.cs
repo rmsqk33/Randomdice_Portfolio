@@ -7,7 +7,7 @@ public class FInventoryTabUI : MonoBehaviour
     [SerializeField]
     List<Button> tabButtonList;
     [SerializeField]
-    List<FInventoryBase> inventoryList;
+    List<GameObject> inventoryList;
 
     public int SelectedTabIndex { get; set; } = -1;
 
@@ -42,22 +42,15 @@ public class FInventoryTabUI : MonoBehaviour
         ActiveTab(InIndex);
     }
 
-    public FInventoryBase GetSelectedTab()
-    {
-        return inventoryList[SelectedTabIndex];
-    }
-
     void ActiveTab(int InIndex)
     {
         tabButtonList[InIndex].GetComponent<Animator>().SetTrigger("Selected");
         inventoryList[InIndex].gameObject.SetActive(true);
-        inventoryList[InIndex].OnActive();
     }
 
     void DeactiveTab(int InIndex)
     {
         tabButtonList[InIndex].GetComponent<Animator>().SetTrigger("Normal");
-        inventoryList[InIndex].OnDeactive();
         inventoryList[InIndex].gameObject.SetActive(false);
     }
 }

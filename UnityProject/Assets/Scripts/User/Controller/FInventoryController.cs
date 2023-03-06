@@ -41,8 +41,8 @@ public class FInventoryController : FControllerBase
         }
     }
 
-    private FLobbyUserInfoUI FindLobbyUserInfoUI()
+    FLobbyUserInfoUI FindLobbyUserInfoUI()
     {
-        return GameObject.FindObjectOfType<FLobbyUserInfoUI>();
+        return FUIManager.Instance.FindUI<FLobbyUserInfoUI>();
     }
 }

@@ -16,9 +16,17 @@ public class FDicePresetSlot : MonoBehaviour
     [SerializeField]
     Image presetRegistGuideArrow;
 
-    public void SetSlot(in FDice InSlot)
+    public void SetSlot(int InDiceID)
     {
-        FDiceData diceData = FDiceDataManager.Instance.FindDiceData(InSlot.id);
+        FDiceController diceController = FLocalPlayer.Instance.FindController<FDiceController>();
+        if (diceController == null)
+            return;
+
+        FDice dice = diceController.FindAcquiredDice(InDiceID);
+        if (dice == null)
+            return;
+
+        FDiceData diceData = FDiceDataManager.Instance.FindDiceData(InDiceID);
         if (diceData == null)
             return;
 
@@ -29,7 +37,7 @@ public class FDicePresetSlot : MonoBehaviour
         else
             diceIcon.sprite = Resources.Load<Sprite>(diceData.iconPath);
 
-        level.text = InSlot.level.ToString();
+        level.text = dice.level.ToString();
     }
 
 

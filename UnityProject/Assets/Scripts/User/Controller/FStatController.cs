@@ -57,13 +57,13 @@ public class FStatController : FControllerBase
         }
     }
 
-    private FDiceInventory FindDiceInventoryUI()
+    FDiceInventory FindDiceInventoryUI()
     {
-        return GameObject.FindObjectOfType<FDiceInventory>();
+        return FUIManager.Instance.FindUI<FDiceInventory>();
     }
 
-    private FLobbyUserInfoUI FindLobbyUserInfoUI()
+    FLobbyUserInfoUI FindLobbyUserInfoUI()
     {
-        return GameObject.FindObjectOfType<FLobbyUserInfoUI>();
+        return FUIManager.Instance.FindUI<FLobbyUserInfoUI>();
     }
 }
