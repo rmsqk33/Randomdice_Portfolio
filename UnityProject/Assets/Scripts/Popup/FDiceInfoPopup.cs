@@ -126,7 +126,7 @@ public class FDiceInfoPopup : FPopupBase
         FDiceInventory diceInventory = FUIManager.Instance.FindUI<FDiceInventory>();
         if(diceInventory != null)
         {
-            diceInventory.SetPresetRegistActive(true);
+            diceInventory.OpenPresetRegist(diceID);
             Close();
         }
     }

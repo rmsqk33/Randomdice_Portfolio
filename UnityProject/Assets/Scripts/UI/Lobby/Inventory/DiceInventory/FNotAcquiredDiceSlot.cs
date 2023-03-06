@@ -18,10 +18,6 @@ public class FNotAcquiredDiceSlot : MonoBehaviour
 
     public int ID { get; set; }
 
-    public delegate void ClickHandler(int InID);
-    ClickHandler clickHandler;
-    public ClickHandler OnClickHandler { set { clickHandler = value; } }
-
     public void Init(in FDiceData InData)
     {
         ID = InData.id;
@@ -43,6 +39,6 @@ public class FNotAcquiredDiceSlot : MonoBehaviour
 
     public void OnClickSlot()
     {
-        clickHandler(ID);
+        FPopupManager.Instance.OpenNotAcquiredDiceInfoPopup(ID);
     }
 }

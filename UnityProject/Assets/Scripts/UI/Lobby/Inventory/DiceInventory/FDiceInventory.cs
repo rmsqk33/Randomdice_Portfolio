@@ -81,7 +81,7 @@ public class FDiceInventory : FUIBase
 
     public void OnDeactive()
     {
-        SetPresetRegistActive(false);
+        ClosePresetRegist();
 
         diceScrollRect.velocity = Vector2.zero;
         diceScrollRect.content.anchoredPosition = initScrollPos;
@@ -89,7 +89,7 @@ public class FDiceInventory : FUIBase
 
     public void OnClickPresetRegistCancel()
     {
-        SetPresetRegistActive(false);
+        ClosePresetRegist();
     }
 
     public void OnChangeDiceInPreset(int InIndex)
@@ -99,7 +99,7 @@ public class FDiceInventory : FUIBase
         {
             presetController.SetDicePreset(selectedDiceID, InIndex);
         }
-        SetPresetRegistActive(false);
+        ClosePresetRegist();
     }
 
     public void OnClickPresetTab(int InIndex)
@@ -144,20 +144,26 @@ public class FDiceInventory : FUIBase
         acquiredDiceMap[InID].Level = InLevel;
     }
 
-    public void SetPresetRegistActive(bool InActive)
+    public void OpenPresetRegist(int InDiceID)
     {
-        diceScrollRect.gameObject.SetActive(!InActive);
-        
+        selectedDiceID = InDiceID;
+        diceScrollRect.gameObject.SetActive(false);
         foreach (FDicePresetSlot slot in presetSlotList)
         {
-            slot.SetPresetRegistActive(InActive);
+            slot.SetPresetRegistActive(true);
         }
+        presetRegistUI.SetDice(InDiceID);
+        presetRegistUI.gameObject.SetActive(true);
+    }
 
-        if (InActive)
+    public void ClosePresetRegist()
+    {
+        diceScrollRect.gameObject.SetActive(true);
+        foreach (FDicePresetSlot slot in presetSlotList)
         {
-            presetRegistUI.SetDice(selectedDiceID);
+            slot.SetPresetRegistActive(false);
         }
-        presetRegistUI.gameObject.SetActive(InActive);
+        presetRegistUI.gameObject.SetActive(false);
     }
 
     public void SetPresetTab(int InTabIndex)
@@ -214,7 +220,6 @@ public class FDiceInventory : FUIBase
 
         FAcquiredDiceSlot slot = Instantiate(acquiredDiceSlotPrefab, acquiredDiceListUI);
         slot.Init(diceData, InAcquiredDiceData);
-        slot.ClickHandler = OnClickAcquiredDiceSlot;
 
         acquiredDiceMap.Add(slot.ID, slot);
 
@@ -231,7 +236,6 @@ public class FDiceInventory : FUIBase
 
         FNotAcquiredDiceSlot slot = Instantiate(notAcquiredDiceSlotPrefab, notAcquiredDiceListUI);
         slot.Init(InData);
-        slot.OnClickHandler = OnClickNotAcquiredDiceSlot;
 
         notAcquiredDiceMap.Add(InData.id, slot);
     }
@@ -242,23 +246,6 @@ public class FDiceInventory : FUIBase
         {
             Destroy(notAcquiredDiceMap[InID].gameObject);
             notAcquiredDiceMap.Remove(InID);
-        }
-    }
-
-    void OnClickAcquiredDiceSlot(int InID)
-    {
-        if (acquiredDiceMap.ContainsKey(InID))
-        {
-            selectedDiceID = InID;
-            FPopupManager.Instance.OpenAcquiredDiceInfoPopup(InID);
-        }
-    }
-
-    void OnClickNotAcquiredDiceSlot(int InID)
-    {
-        if (notAcquiredDiceMap.ContainsKey(InID))
-        {
-            FPopupManager.Instance.OpenNotAcquiredDiceInfoPopup(InID);
         }
     }
 

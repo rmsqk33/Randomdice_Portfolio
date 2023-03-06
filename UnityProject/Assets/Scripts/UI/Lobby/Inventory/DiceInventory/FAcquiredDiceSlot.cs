@@ -27,9 +27,6 @@ public class FAcquiredDiceSlot : MonoBehaviour
     int currentCount = 1;
     int maxCount = 1;
 
-    public delegate void ClickHandlerDelicate(int InID);
-    ClickHandlerDelicate clickHandler;
-
     public int Level { set { level.text = value.ToString(); } }
     public int ID { get; set; }
     public int CurrentCount
@@ -50,8 +47,6 @@ public class FAcquiredDiceSlot : MonoBehaviour
         }
     }
     
-    public ClickHandlerDelicate ClickHandler { set { clickHandler = value; } }
-
     public void Init(in FDiceData InDiceData, in FDice InDice)
     {
         ID = InDice.id;
@@ -94,6 +89,6 @@ public class FAcquiredDiceSlot : MonoBehaviour
 
     public void OnClickSlot()
     {
-        clickHandler(ID);
+        FPopupManager.Instance.OpenAcquiredDiceInfoPopup(ID);
     }
 }
