@@ -1,6 +1,4 @@
 using FEnum;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,9 +6,7 @@ using UnityEngine.UI;
 public class FDicePresetSlot : MonoBehaviour
 {
     [SerializeField]
-    Image diceIcon;
-    [SerializeField]
-    Image diceIconL;
+    FDiceImage diceImage;
     [SerializeField]
     TextMeshProUGUI level;
     [SerializeField]
@@ -26,17 +22,7 @@ public class FDicePresetSlot : MonoBehaviour
         if (dice == null)
             return;
 
-        FDiceData diceData = FDiceDataManager.Instance.FindDiceData(InDiceID);
-        if (diceData == null)
-            return;
-
-        diceIconL.gameObject.SetActive(diceData.grade == DiceGrade.DICE_GRADE_LEGEND);
-        diceIcon.gameObject.SetActive(diceData.grade != DiceGrade.DICE_GRADE_LEGEND);
-        if (diceIconL.IsActive())
-            diceIconL.sprite = Resources.Load<Sprite>(diceData.iconPath);
-        else
-            diceIcon.sprite = Resources.Load<Sprite>(diceData.iconPath);
-
+        diceImage.SetImage(InDiceID);
         level.text = dice.level.ToString();
     }
 

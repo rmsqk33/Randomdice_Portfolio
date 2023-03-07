@@ -9,9 +9,7 @@ public class FDiceUpgradeResultPopup : FPopupBase
     [SerializeField]
     TextMeshProUGUI diceGrade;
     [SerializeField]
-    Image diceIcon;
-    [SerializeField]
-    Image diceIconL;
+    FDiceImage diceImage;
     [SerializeField]
     Image diceEye;
     [SerializeField]
@@ -37,16 +35,7 @@ public class FDiceUpgradeResultPopup : FPopupBase
 
         diceName.text = diceData.name;
         diceGrade.text = gradeData.gradeName;
-
-        diceIcon.gameObject.SetActive(diceData.grade != FEnum.DiceGrade.DICE_GRADE_LEGEND);
-        diceIconL.gameObject.SetActive(diceData.grade == FEnum.DiceGrade.DICE_GRADE_LEGEND);
-
-        if (diceData.grade != FEnum.DiceGrade.DICE_GRADE_LEGEND)
-            diceIcon.sprite = Resources.Load<Sprite>(diceData.iconPath);
-        else
-            diceIconL.sprite = Resources.Load<Sprite>(diceData.iconPath);
-
-        diceEye.color = diceData.color;
+        diceImage.SetImage(diceData);
         diceClass.text = "Å¬·¡½º " + InDice.level;
 
         currentCritical.text = (statController.Critical - gradeData.critical) + "%";

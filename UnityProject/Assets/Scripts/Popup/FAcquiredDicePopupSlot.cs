@@ -11,11 +11,7 @@ public class FAcquiredDicePopupSlot : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI countText;
     [SerializeField]
-    Image diceIcon;
-    [SerializeField]
-    Image diceIconL;
-    [SerializeField]
-    Image eye;
+    FDiceImage diceImage;
 
     public void SetSlot(int InDiceID, int InCount)
     {
@@ -30,15 +26,6 @@ public class FAcquiredDicePopupSlot : MonoBehaviour
         nameText.text = diceData.name;
         gradeText.text = diceGradeData.gradeName;
         countText.text = "x" + InCount.ToString();
-
-        diceIcon.gameObject.SetActive(diceData.grade != FEnum.DiceGrade.DICE_GRADE_LEGEND);
-        diceIconL.gameObject.SetActive(diceData.grade == FEnum.DiceGrade.DICE_GRADE_LEGEND);
-
-        if (diceData.grade != FEnum.DiceGrade.DICE_GRADE_LEGEND)
-            diceIcon.sprite = Resources.Load<Sprite>(diceData.iconPath);
-        else
-            diceIconL.sprite = Resources.Load<Sprite>(diceData.iconPath);
-
-        eye.color = diceData.color;
+        diceImage.SetImage(diceData);
     }
 }

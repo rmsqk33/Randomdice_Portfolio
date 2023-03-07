@@ -18,7 +18,9 @@ public class FDiceInventory : FUIBase
     [SerializeField]
     FNotAcquiredDiceSlot notAcquiredDiceSlotPrefab;
     [SerializeField]
-    FDicePresetRegist presetRegistUI;
+    GameObject presetRegistUI;
+    [SerializeField]
+    FDiceImage presetRegistUIDiceSlot;
     [SerializeField]
     ScrollRect diceScrollRect;
     [SerializeField]
@@ -152,7 +154,7 @@ public class FDiceInventory : FUIBase
         {
             slot.SetPresetRegistActive(true);
         }
-        presetRegistUI.SetDice(InDiceID);
+        presetRegistUIDiceSlot.SetImage(InDiceID);
         presetRegistUI.gameObject.SetActive(true);
     }
 

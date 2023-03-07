@@ -10,11 +10,7 @@ public class FAcquiredDiceSlot : MonoBehaviour
     [SerializeField]
     Image background;
     [SerializeField]
-    Image diceIcon;
-    [SerializeField]
-    Image diceIconL;
-    [SerializeField]
-    Image diceEye;
+    FDiceImage diceImage;
     [SerializeField]
     TextMeshProUGUI level;
     [SerializeField]
@@ -51,15 +47,7 @@ public class FAcquiredDiceSlot : MonoBehaviour
     {
         ID = InDice.id;
         Level = InDice.level;
-        diceEye.color = InDiceData.color;
-     
-        diceIconL.gameObject.SetActive(InDiceData.grade == DiceGrade.DICE_GRADE_LEGEND);
-        diceIcon.gameObject.SetActive(InDiceData.grade != DiceGrade.DICE_GRADE_LEGEND);
-
-        if (diceIconL.IsActive())
-            diceIconL.sprite = Resources.Load<Sprite>(InDiceData.iconPath);
-        else
-            diceIcon.sprite = Resources.Load<Sprite>(InDiceData.iconPath);
+        diceImage.SetImage(InDiceData);
 
         FDiceGradeData gradeData = FDiceDataManager.Instance.FindGradeData(InDiceData.grade);
         if (gradeData != null)

@@ -26,7 +26,7 @@ public class FNamePopup : FPopupBase
 
     public void OpenPopup()
     {
-
+        ErrorMessage = "";
     }
 
     public void OnClickOK()
