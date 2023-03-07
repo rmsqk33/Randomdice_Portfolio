@@ -110,6 +110,16 @@ public class FPopupManager : FNonObjectSingleton<FPopupManager>
         popup.OpenPopup(InID);
     }
 
+    public void OpenNamePopup()
+    {
+        FNamePopup popup = null;
+        GameObject gameObject = CreatePopup("Prefabs/Popup/NamePopup");
+        if (gameObject != null)
+            popup = gameObject.GetComponent<FNamePopup>();
+
+        popup.OpenPopup();
+    }
+
     public void ClosePopup()
     {
         if(openedPopup != null)

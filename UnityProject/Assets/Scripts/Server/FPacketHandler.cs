@@ -17,7 +17,8 @@ public class FPacketHandler
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_PURCHASE_BATTLEFIELD, Handle_S_PURCHASE_BATTLEFIELD);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_ADD_DICE, Handle_S_ADD_DICE);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_UPGRADE_DICE, Handle_S_UPGRADE_DICE);
-        
+        FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_CHANGE_NAME, Handle_S_CHANGE_NAME);
+
     }
 
     static void Handle_S_GUEST_LOGIN(in byte[] InBuffer)
@@ -157,5 +158,14 @@ public class FPacketHandler
         }
     }
 
+    static void Handle_S_CHANGE_NAME(in byte[] InBuffer)
+    {
+        S_CHANGE_NAME pkt = new S_CHANGE_NAME(InBuffer);
 
+        FStatController statController = FLocalPlayer.Instance.FindController<FStatController>();
+        if(statController != null)
+        {
+            statController.Handle_S_CAHNGE_NAME(pkt);
+        }
+    }
 }

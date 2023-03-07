@@ -29,6 +29,8 @@ namespace Packet
 		PACKET_TYPE_C_CHANGE_PRESET,
 		PACKET_TYPE_C_CHANGE_PRESET_DICE,
 		PACKET_TYPE_C_CHANGE_PRESET_BATTLEFIELD,
+		PACKET_TYPE_C_CHANGE_NAME,
+		PACKET_TYPE_S_CHANGE_NAME,
 		PACKET_TYPE_MAX,
 	}
 
@@ -1224,6 +1226,102 @@ namespace Packet
 			offset += sizeof(int);
 			battlefieldId = BitConverter.ToInt32(InBuffer, offset);
 			offset += sizeof(int);
+			return offset;
+		}
+
+	}
+
+	public class C_CHANGE_NAME : PacketBase
+	{
+		public string name = new string("");
+
+		public C_CHANGE_NAME()
+		{
+		}
+
+		public C_CHANGE_NAME(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			size += sizeof(int);
+			size += sizeof(char) * name.Length; 
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_C_CHANGE_NAME;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+			InBuffer.AddRange(BitConverter.GetBytes(name.Length));
+			InBuffer.AddRange(Encoding.Unicode.GetBytes(name));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			int name_length = BitConverter.ToInt32(InBuffer, offset) * sizeof(char);
+			offset += sizeof(int);
+			name = Encoding.Unicode.GetString(InBuffer, offset, name_length);
+			offset += name_length;
+			return offset;
+		}
+
+	}
+
+	public class S_CHANGE_NAME : PacketBase
+	{
+		public int resultType;
+
+		public string name = new string("");
+
+		public S_CHANGE_NAME()
+		{
+		}
+
+		public S_CHANGE_NAME(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			size += sizeof(int);
+			size += sizeof(int);
+			size += sizeof(char) * name.Length; 
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_S_CHANGE_NAME;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+			InBuffer.AddRange(BitConverter.GetBytes(resultType));
+			InBuffer.AddRange(BitConverter.GetBytes(name.Length));
+			InBuffer.AddRange(Encoding.Unicode.GetBytes(name));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			resultType = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			int name_length = BitConverter.ToInt32(InBuffer, offset) * sizeof(char);
+			offset += sizeof(int);
+			name = Encoding.Unicode.GetString(InBuffer, offset, name_length);
+			offset += name_length;
 			return offset;
 		}
 

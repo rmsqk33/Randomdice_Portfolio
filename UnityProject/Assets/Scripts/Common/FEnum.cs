@@ -32,5 +32,14 @@ namespace FEnum
         DICE_UPGRADE_RESULT_NOT_ENOUGH_MONEY,
         DICE_UPGRADE_RESULT_NOT_ENOUGH_DICE,
         DICE_UPGRADE_RESULT_MAX_LEVEL,
-    };
+    }
+
+    public enum ChangeNameResult
+    {
+        CHANGE_NAME_RESULT_SUCCESS,
+        CHANGE_NAME_RESULT_ALEADY,
+        CHANGE_NAME_RESULT_SPECIAL_CHARACTER,
+        CHANGE_NAME_RESULT_BLANK,
+    }
+
 }
