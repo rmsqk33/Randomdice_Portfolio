@@ -25,7 +25,6 @@ public class FBattleDiceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IDr
 
     FAllColorChanger colorChanger;
 
-    FLocalPlayerBattleBoardUI boardUI;
     Vector2 dragPosition;
     bool useDrag = true;
     Transform originParent;
@@ -49,7 +48,12 @@ public class FBattleDiceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IDr
 
         dragItem = this;
         dragPosition = eventData.position;
-        boardUI.OnBegieDrag(SlotIndex);
+
+        FBattlefieldUI ui = FindBattlefieldUI();
+        if (ui != null)
+        {
+            ui.OnBegieDrag(SlotIndex);
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -75,8 +79,12 @@ public class FBattleDiceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IDr
                 battleController.CombineDice(SlotIndex, dragItem.SlotIndex);
             }
         }
-        
-        boardUI.OnEndDrag();
+
+        FBattlefieldUI ui = FindBattlefieldUI();
+        if (ui != null)
+        {
+            ui.OnEndDrag();
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -87,7 +95,12 @@ public class FBattleDiceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IDr
         transform.SetParent(originParent, true);
 
         rectTransform.anchoredPosition = Vector2.zero;
-        boardUI.OnEndDrag();
+
+        FBattlefieldUI ui = FindBattlefieldUI();
+        if(ui != null)
+        {
+            ui.OnEndDrag();
+        }
     }
 
     public void SetDice(int InDiceID, int InEyeCount, int InSlotIndex, bool InUseDrag = true)
@@ -110,7 +123,6 @@ public class FBattleDiceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IDr
         useDrag = InUseDrag;
         if (InUseDrag)
         {
-            boardUI = FUIManager.Instance.FindUI<FLocalPlayerBattleBoardUI>();
             colorChanger = new FAllColorChanger(gameObject);
             originParent = transform.parent;
         }
@@ -127,5 +139,10 @@ public class FBattleDiceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IDr
     public void SetEnable(bool InEnabled)
     {
         colorChanger.SetEnable(InEnabled);
+    }
+
+    FBattlefieldUI FindBattlefieldUI()
+    {
+        return FUIManager.Instance.FindUI<FBattlefieldUI>();
     }
 }

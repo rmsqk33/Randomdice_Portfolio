@@ -188,11 +188,11 @@ public class FLocalPlayerBattleController : FControllerBase
         if (summonDiceMap.ContainsKey(InIndex))
             return;
 
-        FLocalPlayerBattleBoardUI boardUI = FindBattleBoardUI();
+        FBattlefieldUI boardUI = FindBattlefieldUI();
         if (boardUI == null)
             return;
 
-        FBattleDiceUI diceUI = boardUI.CreateDice(InDiceID, InEyeCount, InIndex);
+        FBattleDiceUI diceUI = boardUI.CreateLocalPlayerDice(InDiceID, InEyeCount, InIndex);
         summonDiceMap.Add(InIndex, new FBattleDice(InDiceID, InEyeCount, diceUI));
         emptyDiceSlotIndexList.Remove(InIndex);
 
@@ -212,10 +212,10 @@ public class FLocalPlayerBattleController : FControllerBase
 
         SetDiceSummonDisableReason(DiceSummonDisableReason.NOT_EMPTY_SLOT, 0 < emptyDiceSlotIndexList.Count);
 
-        FLocalPlayerBattleBoardUI boardUI = FindBattleBoardUI();
+        FBattlefieldUI boardUI = FindBattlefieldUI();
         if (boardUI != null)
         {
-            boardUI.RemoveDice(InIndex);
+            boardUI.RemoveLocalPlayerDice(InIndex);
         }
     }
 
@@ -299,9 +299,9 @@ public class FLocalPlayerBattleController : FControllerBase
         return null;
     }
 
-    private FLocalPlayerBattleBoardUI FindBattleBoardUI()
+    private FBattlefieldUI FindBattlefieldUI()
     {
-        return FUIManager.Instance.FindUI<FLocalPlayerBattleBoardUI>();
+        return FUIManager.Instance.FindUI<FBattlefieldUI>();
     }
 
     private FLocalPlayerBattlePanelUI FindBattlePanelUI()
