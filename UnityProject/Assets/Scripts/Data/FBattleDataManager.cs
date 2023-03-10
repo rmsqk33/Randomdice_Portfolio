@@ -1,47 +1,59 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FBattleDiceUpgradeData
+public class FBattleDiceLevelData
 {
-	public int Level { get; set; }
-	public int Cost { get; set; }
-	public float AttackRate { get; set; }
+	public readonly int level;
+	public readonly int cost;
+	public readonly double attackRate;
+
+    public FBattleDiceLevelData(int level, int cost, double attackRate)
+	{
+		this.level = level;
+		this.cost = cost;
+		this.attackRate = attackRate;
+    }
 }
 
 public class FBattleDataManager : FNonObjectSingleton<FBattleDataManager>
 {
-	Dictionary<int, FBattleDiceUpgradeData> diceUpgradeMap = new Dictionary<int, FBattleDiceUpgradeData>();
+	Dictionary<int, FBattleDiceLevelData> diceLevelMap = new Dictionary<int, FBattleDiceLevelData>();
 
     public int InitSP { get; private set; }
 	public int InitDiceSummonCost { get; private set; }
 	public int DiceSummonCostIncrease { get; private set; }
-
+    public int MaxLevel { get; private set; }
+    public int MaxEyeCount { get; private set; }
+    
     public void Initialize()
     {
-		FDataNode coopData = FDataCenter.Instance.GetDataNodeWithQuery("CoopData");
-        if (coopData != null)
+		FDataNode battleData = FDataCenter.Instance.GetDataNodeWithQuery("BattleData");
+        if (battleData != null)
 		{
-			InitSP = coopData.GetIntAttr("initSP");
-            InitDiceSummonCost = coopData.GetIntAttr("initDiceSummonCost");
-            DiceSummonCostIncrease = coopData.GetIntAttr("diceSummonCostIncrease");
+			InitSP = battleData.GetIntAttr("initSP");
+            InitDiceSummonCost = battleData.GetIntAttr("initDiceSummonCost");
+            DiceSummonCostIncrease = battleData.GetIntAttr("diceSummonCostIncrease");
+            MaxEyeCount = battleData.GetIntAttr("maxEyeCount");
 
-			List<FDataNode> diceUpgradeNodes = coopData.GetDataNodesWithQuery("DiceUpgrade.Dice");
+            List<FDataNode> diceUpgradeNodes = battleData.GetDataNodesWithQuery("DiceUpgrade.Dice");
 			foreach(FDataNode dataNode in diceUpgradeNodes)
 			{
-				FBattleDiceUpgradeData upgradeData = new FBattleDiceUpgradeData();
-                upgradeData.Level = dataNode.GetIntAttr("level");
-                upgradeData.Cost = dataNode.GetIntAttr("cost");
-                upgradeData.AttackRate = dataNode.GetIntAttr("attackRate");
+                int level = dataNode.GetIntAttr("level");
+                int cost = dataNode.GetIntAttr("cost");
+                double attackRate = dataNode.GetDoubleAttr("attackRate");
 
-				diceUpgradeMap.Add(upgradeData.Level, upgradeData);
+                FBattleDiceLevelData levelData = new FBattleDiceLevelData(level, cost, attackRate);
+				diceLevelMap.Add(levelData.level, levelData);
             }
+
+			MaxLevel = diceLevelMap.Count;
         }
     }
 
-	public FBattleDiceUpgradeData FindDiceUpgradeData(int InLevel)
+	public FBattleDiceLevelData FindDiceLevelData(int InLevel)
 	{
-		if(diceUpgradeMap.ContainsKey(InLevel))
-			return diceUpgradeMap[InLevel];
+		if(diceLevelMap.ContainsKey(InLevel))
+			return diceLevelMap[InLevel];
 
 		return null;
 	}

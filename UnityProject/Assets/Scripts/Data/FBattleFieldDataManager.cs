@@ -6,7 +6,7 @@ public class FBattleFieldData
     public readonly int price;
     public readonly string name;
     public readonly string skinImagePath;
-
+    
     public FBattleFieldData(int id, int price, string name, string skinImagePath)
     {
         this.id = id;

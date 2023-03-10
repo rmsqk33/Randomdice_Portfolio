@@ -1,5 +1,6 @@
 using Packet;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FPacketHandler
 {
@@ -68,6 +69,13 @@ public class FPacketHandler
         {
             statController.Handle_S_USER_DATA(pkt);
         }
+
+#if DEBUG
+        if(SceneManager.GetActiveScene().name == "BattleScene")
+        {
+            FLocalPlayer.Instance.AddController<FLocalPlayerBattleController>();
+        }
+#endif
     }
 
     static void Handle_S_STORE_DICE_LIST(in byte[] InBuffer)

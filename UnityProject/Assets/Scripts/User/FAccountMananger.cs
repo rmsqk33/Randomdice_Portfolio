@@ -28,6 +28,10 @@ public class FAccountMananger : FNonObjectSingleton<FAccountMananger>
     {
         if(InResult)
         {
+#if DEBUG
+            if (SceneManager.GetActiveScene().name == "BattleScene")
+                return;
+#endif
             SceneManager.LoadScene("LobbyScene");
         }
         else

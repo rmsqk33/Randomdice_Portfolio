@@ -1,20 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class FPopupManager : FNonObjectSingleton<FPopupManager>
 {
-    class CanvasSiblingComparer : IComparer<Canvas>
-    {
-        public int Compare(Canvas x, Canvas y)
-        {
-            return x.transform.GetSiblingIndex() - y.transform.GetSiblingIndex();
-        }
-    }
-
-
     FPopupBase openedPopup;
     Transform popupParent;
 
@@ -140,17 +128,11 @@ public class FPopupManager : FNonObjectSingleton<FPopupManager>
 
         if (popupParent == null)
         {
-            Canvas[] canvasArray = GameObject.FindObjectsOfType<Canvas>();
-            if (canvasArray.Length == 0)
+            Canvas topCanvas = FUIManager.Instance.FindTopCanvas();
+            if (topCanvas != null)
             {
-                GameObject.Destroy(popup);
-                return null;
+                popupParent = topCanvas.transform;
             }
-
-            List<Canvas> canvasList = canvasArray.ToList<Canvas>();
-            canvasList.Sort(new CanvasSiblingComparer());
-
-            popupParent = canvasList[canvasList.Count - 1].transform;
         }
 
         popup = GameObject.Instantiate(popup, popupParent);

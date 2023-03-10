@@ -59,9 +59,15 @@ public class FServerManager : FSingleton<FServerManager>
         if(IsConnectedServer)
         {
             IsConnectedServer = false;
-            receiveMessageThread.Join();
-            netStream.Close();
-            tcpClient.Close();
+
+            if(receiveMessageThread != null)
+                receiveMessageThread.Join();
+
+            if(netStream != null)
+                netStream.Close();
+
+            if(tcpClient != null)
+                tcpClient.Close();
         }
     }
 

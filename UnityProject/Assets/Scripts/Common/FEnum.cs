@@ -42,4 +42,15 @@ namespace FEnum
         CHANGE_NAME_RESULT_BLANK,
     }
 
+    public enum DiceUpgradeDisableReason
+    {
+        NOT_ENOUGH_SP,
+        MAX_LEVEL,
+    }
+
+    public enum DiceSummonDisableReason
+    { 
+        NOT_ENOUGH_SP,
+        NOT_EMPTY_SLOT,
+    }
 }

@@ -186,6 +186,7 @@ public class FDataNode
         {
             FDataAttribute newAttr = new FDataAttribute();
 
+            bool color = attr.Name == "color";
             if (bool.TryParse(attr.Value, out newAttr.BoolValue)) { }
             else if (int.TryParse(attr.Value, out newAttr.IntValue)) { }
             else if (double.TryParse(attr.Value, out newAttr.DoubleValue)) { }

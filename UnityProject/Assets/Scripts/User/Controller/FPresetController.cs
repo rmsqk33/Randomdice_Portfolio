@@ -6,10 +6,8 @@ using UnityEngine;
 
 public class FPresetController : FControllerBase
 {
-    static readonly int MAX_PRESET_PAGE = 5;
-    static readonly int MAX_PRESET = 5;
-    int[] battleFieldPresetIDList = new int[MAX_PRESET];
-    int[,] dicePresetIDList = new int[MAX_PRESET_PAGE, MAX_PRESET];
+    int[] battleFieldPresetIDList = new int[FGlobal.MAX_PRESET];
+    int[,] dicePresetIDList = new int[FGlobal.MAX_PRESET_PAGE, FGlobal.MAX_PRESET];
 
     public int SelectedPresetIndex { get; private set; } = -1;
 
@@ -77,7 +75,7 @@ public class FPresetController : FControllerBase
 
     public int GetBattleFieldPresetID(int InIndex)
     {
-        if (InIndex < 0 || MAX_PRESET <= InIndex)
+        if (InIndex < 0 || battleFieldPresetIDList.Length <= InIndex)
             return 0;
 
         return battleFieldPresetIDList[InIndex];
@@ -117,9 +115,9 @@ public class FPresetController : FControllerBase
 
     int GetDicePresetIndex(int InID, int InIndex)
     {
-        if (0 <= InIndex && InIndex < MAX_PRESET_PAGE)
+        if (0 <= InIndex && InIndex < dicePresetIDList.GetLength(1))
         {
-            for (int i = 0; i < MAX_PRESET; ++i)
+            for (int i = 0; i < dicePresetIDList.GetLength(0); ++i)
             {
                 if (dicePresetIDList[InIndex, i] == InID)
                     return i;
@@ -131,9 +129,9 @@ public class FPresetController : FControllerBase
     public delegate void ForeachDicePresetHandle(int InID);
     public void ForeachDicePreset(int InIndex, in ForeachDicePresetHandle InFunc)
     {
-        if (0 <= InIndex && InIndex < MAX_PRESET_PAGE)
+        if (0 <= InIndex && InIndex < dicePresetIDList.GetLength(1))
         {
-            for (int i = 0; i < MAX_PRESET; ++i)
+            for (int i = 0; i < dicePresetIDList.GetLength(0); ++i)
             {
                 InFunc(dicePresetIDList[InIndex, i]);
             }

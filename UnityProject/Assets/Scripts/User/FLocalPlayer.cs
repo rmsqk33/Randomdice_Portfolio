@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class FLocalPlayer : FSingleton<FLocalPlayer>
 {
@@ -17,10 +18,20 @@ public class FLocalPlayer : FSingleton<FLocalPlayer>
         AddController<FStoreController>();
     }
 
-    private void AddController<T>()
+    private void Update()
+    {
+        foreach(var pair in controllers)
+        {
+            pair.Value.Tick(Time.deltaTime);
+        }
+    }
+
+    public void AddController<T>()
     {
         Type type = typeof(T);
-        controllers.Add(type, (FControllerBase)Activator.CreateInstance(type, args:Instance));
+        FControllerBase controller = (FControllerBase)Activator.CreateInstance(type, args: Instance);
+        controllers.Add(type, controller);
+        controller.Initialize();
     }
 
     public T FindController<T>()
