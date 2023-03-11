@@ -1,8 +1,6 @@
 using FEnum;
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class FBattleDicePreset
@@ -33,7 +31,7 @@ public class FBattleDicePreset
 public class FBattleController : FControllerBase
 {
     private FBattleDicePreset[] dicePresetList = new FBattleDicePreset[FGlobal.MAX_PRESET];
-    private Dictionary<int, FBattleDice> summonDiceMap = new Dictionary<int, FBattleDice>();
+    private Dictionary<int, FLocalPlayerBattleDice> summonDiceMap = new Dictionary<int, FLocalPlayerBattleDice>();
     private List<int> emptyDiceSlotIndexList = Enumerable.Range(0, FGlobal.MAX_SUMMON_DICE).ToList();
 
     int sp;
@@ -188,12 +186,8 @@ public class FBattleController : FControllerBase
         if (summonDiceMap.ContainsKey(InIndex))
             return;
 
-        FBattlefieldUI boardUI = FindBattlefieldUI();
-        if (boardUI == null)
-            return;
-
-        FBattleDiceUI diceUI = boardUI.CreateLocalPlayerDice(InDiceID, InEyeCount, InIndex);
-        summonDiceMap.Add(InIndex, new FBattleDice(InDiceID, InEyeCount, diceUI));
+        FLocalPlayerBattleDice dice = FBattleObjectCreator.Instance.CreateLocalPlayerDice(InDiceID, InEyeCount, InIndex);
+        summonDiceMap.Add(InIndex, dice);
         emptyDiceSlotIndexList.Remove(InIndex);
 
         SetDiceEyeTotalCount(InDiceID, InEyeCount);
@@ -207,16 +201,11 @@ public class FBattleController : FControllerBase
 
         SetDiceEyeTotalCount(summonDiceMap[InIndex].DiceID, -summonDiceMap[InIndex].EyeCount);
 
+        GameObject.Destroy(summonDiceMap[InIndex].gameObject);
         summonDiceMap.Remove(InIndex);
         emptyDiceSlotIndexList.Add(InIndex);
 
         SetDiceSummonDisableReason(DiceSummonDisableReason.NOT_EMPTY_SLOT, 0 < emptyDiceSlotIndexList.Count);
-
-        FBattlefieldUI boardUI = FindBattlefieldUI();
-        if (boardUI != null)
-        {
-            boardUI.RemoveLocalPlayerDice(InIndex);
-        }
     }
 
     public delegate void ForeachBattleDicePresetDelegate(FBattleDicePreset InDice);
@@ -228,7 +217,7 @@ public class FBattleController : FControllerBase
         }
     }
 
-    public delegate void ForeachSummonDiceDelegate(FBattleDice InDice);
+    public delegate void ForeachSummonDiceDelegate(FLocalPlayerBattleDice InDice);
     public void ForeachSummonDice(ForeachSummonDiceDelegate InFunc)
     {
         foreach(var pair in summonDiceMap)
@@ -237,12 +226,31 @@ public class FBattleController : FControllerBase
         }
     }
 
-    public FBattleDice FindSummonDice(int InIndex)
+    public void ActiveDiceCombinable(int InSlotIndex)
     {
-        if (summonDiceMap.ContainsKey(InIndex))
-            return summonDiceMap[InIndex];
-     
-        return null;
+        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
+        if (battleController == null)
+            return;
+
+        if (summonDiceMap.ContainsKey(InSlotIndex) == false)
+            return;
+
+        ForeachSummonDice((FLocalPlayerBattleDice InDice) => {
+            if (InSlotIndex == InDice.SlotIndex)
+                return;
+
+            if (summonDiceMap[InSlotIndex].IsCombinable(InDice) == false)
+            {
+                summonDiceMap[InDice.SlotIndex].SetEnable(false);
+            }
+        });
+    }
+
+    public void DeactiveDiceCombinable()
+    {
+        ForeachSummonDice((FLocalPlayerBattleDice InDice) => {
+            InDice.SetEnable(true);
+        });
     }
 
     private void SetDiceSummonDisableReason(DiceSummonDisableReason InReason, bool InEnable)
@@ -297,11 +305,6 @@ public class FBattleController : FControllerBase
                 return info;
         }
         return null;
-    }
-
-    private FBattlefieldUI FindBattlefieldUI()
-    {
-        return FUIManager.Instance.FindUI<FBattlefieldUI>();
     }
 
     private FLocalPlayerBattlePanelUI FindBattlePanelUI()

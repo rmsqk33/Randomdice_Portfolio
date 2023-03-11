@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class FUIManager : FSingleton<FUIManager>
 {
+    Canvas topSiblingCanvas;
+
     class CanvasSiblingComparer : IComparer<Canvas>
     {
         public int Compare(Canvas x, Canvas y)
@@ -30,15 +32,23 @@ public class FUIManager : FSingleton<FUIManager>
         return (T)uiMap[type];
     }
 
-    public Canvas FindTopCanvas()
+    public Canvas TopSiblingCanvas
     {
-        Canvas[] canvasArray = GameObject.FindObjectsOfType<Canvas>();
-        if (canvasArray.Length == 0)
-            return null;
+        get
+        {
+            if(topSiblingCanvas == null)
+            {
+                Canvas[] canvasArray = GameObject.FindObjectsOfType<Canvas>();
+                if (canvasArray.Length == 0)
+                    return null;
 
-        List<Canvas> canvasList = canvasArray.ToList<Canvas>();
-        canvasList.Sort(new CanvasSiblingComparer());
+                List<Canvas> canvasList = canvasArray.ToList<Canvas>();
+                canvasList.Sort(new CanvasSiblingComparer());
 
-        return canvasList[canvasList.Count - 1];
+                topSiblingCanvas = canvasList[canvasList.Count - 1];
+            }
+
+            return topSiblingCanvas;
+        }
     }
 }

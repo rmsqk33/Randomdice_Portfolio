@@ -4,7 +4,6 @@ using UnityEngine;
 public class FPopupManager : FNonObjectSingleton<FPopupManager>
 {
     FPopupBase openedPopup;
-    Transform popupParent;
 
     public void OpenMsgPopup(in string InTitle, in string InMsg, FMsgPopup.OKButtonFunc InFunc = null)
     {
@@ -126,16 +125,7 @@ public class FPopupManager : FNonObjectSingleton<FPopupManager>
         if (popup == null)
             return null;
 
-        if (popupParent == null)
-        {
-            Canvas topCanvas = FUIManager.Instance.FindTopCanvas();
-            if (topCanvas != null)
-            {
-                popupParent = topCanvas.transform;
-            }
-        }
-
-        popup = GameObject.Instantiate(popup, popupParent);
+        popup = GameObject.Instantiate(popup, FUIManager.Instance.TopSiblingCanvas.transform);
         openedPopup = popup.GetComponent<FPopupBase>();
         
         return popup;
