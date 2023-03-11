@@ -79,7 +79,7 @@ public class FDiceController : FControllerBase
                 SetDiceCount(diceID, diceCount);
                 SetDiceLevel(diceID, diceLevel);
 
-                FStatController statController = FLocalPlayer.Instance.FindController<FStatController>();
+                FStatController statController = FGlobal.localPlayer.FindController<FStatController>();
                 if(statController != null)
                 {
                     statController.AddCritical(diceID);
@@ -123,7 +123,7 @@ public class FDiceController : FControllerBase
             return;
         }
 
-        FInventoryController inventoryController = FLocalPlayer.Instance.FindController<FInventoryController>();
+        FInventoryController inventoryController = FGlobal.localPlayer.FindController<FInventoryController>();
         if(inventoryController == null || inventoryController.Gold < levelData.goldCost)
         {
             OpenDiceUpgradeResultPopup(DiceUpgradeResult.DICE_UPGRADE_RESULT_NOT_ENOUGH_MONEY);
@@ -165,7 +165,7 @@ public class FDiceController : FControllerBase
 
         acquiredDiceMap.Add(InID, dice);
 
-        FStatController statController = FLocalPlayer.Instance.FindController<FStatController>();
+        FStatController statController = FGlobal.localPlayer.FindController<FStatController>();
         if (statController != null)
             statController.AddCritical(InID, InLevel);
 

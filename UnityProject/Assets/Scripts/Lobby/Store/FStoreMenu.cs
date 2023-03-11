@@ -44,7 +44,7 @@ public class FStoreMenu : FLobbyScrollMenuBase
     {
         diceList.ClearGoods();
 
-        FStoreController storeController = FLocalPlayer.Instance.FindController<FStoreController>();
+        FStoreController storeController = FGlobal.localPlayer.FindController<FStoreController>();
         if (storeController != null)
         {
             storeController.ForeachDiceGoodsList((in FDiceGoods InGoods) =>
@@ -107,7 +107,7 @@ public class FStoreMenu : FLobbyScrollMenuBase
 
     private void UpdateResetTime()
     {
-        FStoreController storeController = FLocalPlayer.Instance.FindController<FStoreController>();
+        FStoreController storeController = FGlobal.localPlayer.FindController<FStoreController>();
         if (storeController != null)
         {
             DateTime resetTime = new DateTime(1970, 1, 1, 9, 0, 0, 0);

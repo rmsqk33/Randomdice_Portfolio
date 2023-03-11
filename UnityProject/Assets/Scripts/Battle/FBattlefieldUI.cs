@@ -73,7 +73,7 @@ public class FBattlefieldUI : FUIBase
 
     void ActiveDiceCombinable(int InSlotIndex)
     {
-        FLocalPlayerBattleController battleController = FLocalPlayer.Instance.FindController<FLocalPlayerBattleController>();
+        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
         if (battleController == null)
             return;
 

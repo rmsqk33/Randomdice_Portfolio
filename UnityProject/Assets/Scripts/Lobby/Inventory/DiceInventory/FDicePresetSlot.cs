@@ -14,7 +14,7 @@ public class FDicePresetSlot : MonoBehaviour
 
     public void SetSlot(int InDiceID)
     {
-        FDiceController diceController = FLocalPlayer.Instance.FindController<FDiceController>();
+        FDiceController diceController = FGlobal.localPlayer.FindController<FDiceController>();
         if (diceController == null)
             return;
 

@@ -26,7 +26,7 @@ public class FBattleFieldInfoPopup : FPopupBase
         if (data == null)
             return;
 
-        FBattlefieldController battlefieldController = FLocalPlayer.Instance.FindController<FBattlefieldController>();
+        FBattlefieldController battlefieldController = FGlobal.localPlayer.FindController<FBattlefieldController>();
         if (battlefieldController == null)
             return;
 
@@ -44,7 +44,7 @@ public class FBattleFieldInfoPopup : FPopupBase
 
     public void OnClickUse()
     {
-        FPresetController presetController = FLocalPlayer.Instance.FindController<FPresetController>();
+        FPresetController presetController = FGlobal.localPlayer.FindController<FPresetController>();
         if (presetController != null)
         {
             presetController.SetBattleFieldPreset(battlefieldID);
@@ -54,7 +54,7 @@ public class FBattleFieldInfoPopup : FPopupBase
 
     public void OnClickPurchase()
     {
-        FBattlefieldController battlefieldController = FLocalPlayer.Instance.FindController<FBattlefieldController>();
+        FBattlefieldController battlefieldController = FGlobal.localPlayer.FindController<FBattlefieldController>();
         if(battlefieldController != null)
         {
             battlefieldController.RequestPurchaseBattlefield(battlefieldID);

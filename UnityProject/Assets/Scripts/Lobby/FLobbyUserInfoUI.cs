@@ -63,7 +63,7 @@ public class FLobbyUserInfoUI : FUIBase
 
     public void InitUserInfo()
     {
-        FStatController statControler = FLocalPlayer.Instance.FindController<FStatController>();
+        FStatController statControler = FGlobal.localPlayer.FindController<FStatController>();
         if (statControler != null)
         {
             Name = statControler.Name;
@@ -71,7 +71,7 @@ public class FLobbyUserInfoUI : FUIBase
             SetExp(statControler.Exp, statControler.MaxExp);
         }
 
-        FInventoryController inventoryController = FLocalPlayer.Instance.FindController<FInventoryController>();
+        FInventoryController inventoryController = FGlobal.localPlayer.FindController<FInventoryController>();
         if (inventoryController != null)
         {
             Gold = inventoryController.Gold;

@@ -30,7 +30,7 @@ public class FBattleDicePreset
     }
 }
 
-public class FLocalPlayerBattleController : FControllerBase
+public class FBattleController : FControllerBase
 {
     private FBattleDicePreset[] dicePresetList = new FBattleDicePreset[FGlobal.MAX_PRESET];
     private Dictionary<int, FBattleDice> summonDiceMap = new Dictionary<int, FBattleDice>();
@@ -43,7 +43,7 @@ public class FLocalPlayerBattleController : FControllerBase
     public int CardIncrease { get; set; }
     public int Wave { get; set; }
 
-    public FLocalPlayerBattleController(FLocalPlayer InOwner) : base(InOwner)
+    public FBattleController(FLocalPlayer InOwner) : base(InOwner)
     {
 
     }
@@ -90,7 +90,7 @@ public class FLocalPlayerBattleController : FControllerBase
         sp = FBattleDataManager.Instance.InitSP + 100000;
         diceSummonCost = FBattleDataManager.Instance.InitDiceSummonCost;
 
-        FPresetController presetController = FLocalPlayer.Instance.FindController<FPresetController>();
+        FPresetController presetController = FGlobal.localPlayer.FindController<FPresetController>();
         if(presetController != null)
         {
             FBattleDiceLevelData levelData = FBattleDataManager.Instance.FindDiceLevelData(1);

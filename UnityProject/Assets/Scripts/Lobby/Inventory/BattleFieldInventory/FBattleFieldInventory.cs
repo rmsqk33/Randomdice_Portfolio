@@ -36,7 +36,7 @@ public class FBattleFieldInventory : FUIBase
 
     public void InitInventory()
     {
-        FBattlefieldController battlefieldController = FLocalPlayer.Instance.FindController<FBattlefieldController>();
+        FBattlefieldController battlefieldController = FGlobal.localPlayer.FindController<FBattlefieldController>();
         if (battlefieldController != null)
         {
             FBattleFieldDataManager.Instance.ForeachBattleFieldData((FBattleFieldData InData) =>
@@ -48,7 +48,7 @@ public class FBattleFieldInventory : FUIBase
             });
         }
 
-        FPresetController presetController = FLocalPlayer.Instance.FindController<FPresetController>();
+        FPresetController presetController = FGlobal.localPlayer.FindController<FPresetController>();
         if (presetController != null)
         {
             SetPresetTab(presetController.SelectedPresetIndex);
@@ -57,7 +57,7 @@ public class FBattleFieldInventory : FUIBase
 
     public void OnEnable()
     {
-        FPresetController presetController = FLocalPlayer.Instance.FindController<FPresetController>();
+        FPresetController presetController = FGlobal.localPlayer.FindController<FPresetController>();
         if(presetController != null)
         {
             SetPresetTab(presetController.SelectedPresetIndex);
@@ -80,7 +80,7 @@ public class FBattleFieldInventory : FUIBase
         if (selectedPresetIndex == InIndex)
             return;
 
-        FPresetController presetController = FLocalPlayer.Instance.FindController<FPresetController>();
+        FPresetController presetController = FGlobal.localPlayer.FindController<FPresetController>();
         if (presetController != null)
         {
             presetController.SetPreset(InIndex);
@@ -98,7 +98,7 @@ public class FBattleFieldInventory : FUIBase
         UnselectPresetTab(selectedPresetIndex);
         SelectPresetTab(InTabIndex);
 
-        FPresetController presetController = FLocalPlayer.Instance.FindController<FPresetController>();
+        FPresetController presetController = FGlobal.localPlayer.FindController<FPresetController>();
         if (presetController != null)
         {
             int battleFieldID = presetController.GetBattleFieldPresetID(InTabIndex);

@@ -14,6 +14,14 @@ public class FAccountMananger : FNonObjectSingleton<FAccountMananger>
         public string id;
     }
 
+#if DEBUG
+    [RuntimeInitializeOnLoadMethod]
+    static void Test()
+    {
+        FAccountMananger.Instance.CreateLocalPlayer();
+    }
+#endif
+
     public bool TryLogin()
     {
         if (File.Exists(ACCOUNT_DATA_PATH))
@@ -28,6 +36,7 @@ public class FAccountMananger : FNonObjectSingleton<FAccountMananger>
     {
         if(InResult)
         {
+            CreateLocalPlayer();
 #if DEBUG
             if (SceneManager.GetActiveScene().name == "BattleScene")
                 return;
@@ -78,5 +87,15 @@ public class FAccountMananger : FNonObjectSingleton<FAccountMananger>
         C_CREATE_GUEST_ACCOUNT pkt = new C_CREATE_GUEST_ACCOUNT();
 
         FServerManager.Instance.SendMessage(pkt);
+    }
+
+    private void CreateLocalPlayer()
+    {
+        if (FGlobal.localPlayer == null)
+        {
+            GameObject gameObject = new GameObject("localPlayer");
+            FGlobal.localPlayer = gameObject.AddComponent<FLocalPlayer>();
+            GameObject.DontDestroyOnLoad(gameObject);
+        }
     }
 }

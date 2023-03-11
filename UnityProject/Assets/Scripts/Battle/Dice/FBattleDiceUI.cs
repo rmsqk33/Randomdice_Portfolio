@@ -3,9 +3,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using FEnum;
-using UnityEngine.Rendering;
-using Unity.VisualScripting;
-using System.Linq;
 
 public class FBattleDiceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHandler, IEndDragHandler
 {
@@ -73,7 +70,7 @@ public class FBattleDiceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IDr
 
         if (SlotIndex != dragItem.SlotIndex)
         {
-            FLocalPlayerBattleController battleController = FLocalPlayer.Instance.FindController<FLocalPlayerBattleController>();
+            FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
             if (battleController != null)
             {
                 battleController.CombineDice(SlotIndex, dragItem.SlotIndex);

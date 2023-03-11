@@ -1,9 +1,9 @@
 
 public class FControllerBase
 {
-    protected FLocalPlayer Owner { get; set; }
+    protected FObjectBase Owner { get; set; }
 
-    public FControllerBase(FLocalPlayer InOwner)
+    public FControllerBase(FObjectBase InOwner)
     {
         Owner = InOwner;
     }

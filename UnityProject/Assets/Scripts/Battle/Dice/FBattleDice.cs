@@ -19,7 +19,7 @@ public class FBattleDice
 
     public virtual void CombineDice(FBattleDice InDestDice)
     {
-        FLocalPlayerBattleController battleController = FLocalPlayer.Instance.FindController<FLocalPlayerBattleController>();
+        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
         if(battleController != null)
         {
             battleController.RemoveSummonDice(InDestDice.SlotIndex);

@@ -23,7 +23,7 @@ public class FDicePurchasePopup : FPopupBase
     {
         diceID = InID;
 
-        FStoreController storeController = FLocalPlayer.Instance.FindController<FStoreController>();
+        FStoreController storeController = FGlobal.localPlayer.FindController<FStoreController>();
         if(storeController == null)
         {
             Close();
@@ -60,7 +60,7 @@ public class FDicePurchasePopup : FPopupBase
 
     public void OnClickPurchase()
     {
-        FStoreController storeController = FLocalPlayer.Instance.FindController<FStoreController>();
+        FStoreController storeController = FGlobal.localPlayer.FindController<FStoreController>();
         if (storeController != null)
         {
             storeController.RequestPurchaseDice(diceID);

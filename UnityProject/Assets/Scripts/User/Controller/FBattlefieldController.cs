@@ -67,7 +67,7 @@ public class FBattlefieldController : FControllerBase
             return;
         }
 
-        FInventoryController inventoryController = FLocalPlayer.Instance.FindController<FInventoryController>();
+        FInventoryController inventoryController = FGlobal.localPlayer.FindController<FInventoryController>();
         if(inventoryController == null || inventoryController.Dia < battlefieldData.price)
         {
             OpenPurchaseBattlefieldResultPopup(BattlefieldPurchaseResult.BATTLEFIELD_PURCHASE_RESULT_NOT_ENOUGH_MONEY);

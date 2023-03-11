@@ -97,7 +97,7 @@ public class FStoreController : FControllerBase
             return;
         }
 
-        FInventoryController inventoryController = FLocalPlayer.Instance.FindController<FInventoryController>();
+        FInventoryController inventoryController = FGlobal.localPlayer.FindController<FInventoryController>();
         if (inventoryController == null || inventoryController.Gold < goods.price)
         {
             OpenPurchaseResultPopup(StorePurchaseResult.STORE_PURCHASE_RESULT_NOT_ENOUGH_MONEY);
@@ -119,7 +119,7 @@ public class FStoreController : FControllerBase
             return;
         }
 
-        FInventoryController inventoryController = FLocalPlayer.Instance.FindController<FInventoryController>();
+        FInventoryController inventoryController = FGlobal.localPlayer.FindController<FInventoryController>();
         if (inventoryController == null || inventoryController.Gold < boxData.price)
         {
             OpenPurchaseResultPopup(StorePurchaseResult.STORE_PURCHASE_RESULT_NOT_ENOUGH_MONEY);

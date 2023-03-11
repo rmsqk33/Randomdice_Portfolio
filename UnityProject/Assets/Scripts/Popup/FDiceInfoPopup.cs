@@ -34,7 +34,7 @@ public class FDiceInfoPopup : FPopupBase
     {
         diceID = InID;
 
-        FDiceController diceController = FLocalPlayer.Instance.FindController<FDiceController>();
+        FDiceController diceController = FGlobal.localPlayer.FindController<FDiceController>();
         if (diceController == null)
             return;
 
@@ -102,7 +102,7 @@ public class FDiceInfoPopup : FPopupBase
         nameText.text = InDiceData.name;
         description.text = InDiceData.description;
 
-        FStatController statController = FLocalPlayer.Instance.FindController<FStatController>();
+        FStatController statController = FGlobal.localPlayer.FindController<FStatController>();
         if(statController != null)
         {
             critical.text = statController.Critical + "%";
@@ -114,7 +114,7 @@ public class FDiceInfoPopup : FPopupBase
 
     public void OnClickUpgrade()
     {
-        FDiceController diceController = FLocalPlayer.Instance.FindController<FDiceController>();
+        FDiceController diceController = FGlobal.localPlayer.FindController<FDiceController>();
         if(diceController != null)
         {
             diceController.RequestUpgradeDice(diceID);

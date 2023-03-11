@@ -67,7 +67,7 @@ public class FBoxPurchasePopup : FPopupBase
 
     public void OnClickPurchase()
     {
-        FStoreController storeController = FLocalPlayer.Instance.FindController<FStoreController>();
+        FStoreController storeController = FGlobal.localPlayer.FindController<FStoreController>();
         if (storeController != null)
         {
             storeController.RequestPurchaseBox(boxID);

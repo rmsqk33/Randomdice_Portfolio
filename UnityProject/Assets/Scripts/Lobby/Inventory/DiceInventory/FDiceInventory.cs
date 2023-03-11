@@ -45,13 +45,13 @@ public class FDiceInventory : FUIBase
 
     public void InitInventory()
     {
-        FStatController statController = FLocalPlayer.Instance.FindController<FStatController>();
+        FStatController statController = FGlobal.localPlayer.FindController<FStatController>();
         if (statController != null)
         {
             Critical = statController.Critical;
         }
 
-        FDiceController diceController = FLocalPlayer.Instance.FindController<FDiceController>();
+        FDiceController diceController = FGlobal.localPlayer.FindController<FDiceController>();
         if (diceController != null)
         {
             ClearInventory();
@@ -65,7 +65,7 @@ public class FDiceInventory : FUIBase
             });
         }
 
-        FPresetController presetController = FLocalPlayer.Instance.FindController<FPresetController>();
+        FPresetController presetController = FGlobal.localPlayer.FindController<FPresetController>();
         if (presetController != null)
         {
             SetPresetTab(presetController.SelectedPresetIndex);
@@ -74,7 +74,7 @@ public class FDiceInventory : FUIBase
 
     public void OnEnable()
     {
-        FPresetController presetController = FLocalPlayer.Instance.FindController<FPresetController>();
+        FPresetController presetController = FGlobal.localPlayer.FindController<FPresetController>();
         if (presetController != null)
         {
             SetPresetTab(presetController.SelectedPresetIndex);
@@ -96,7 +96,7 @@ public class FDiceInventory : FUIBase
 
     public void OnChangeDiceInPreset(int InIndex)
     {
-        FPresetController presetController = FLocalPlayer.Instance.FindController<FPresetController>();
+        FPresetController presetController = FGlobal.localPlayer.FindController<FPresetController>();
         if (presetController != null)
         {
             presetController.SetDicePreset(selectedDiceID, InIndex);
@@ -109,7 +109,7 @@ public class FDiceInventory : FUIBase
         if (selectedPresetIndex == InIndex)
             return;
 
-        FPresetController presetController = FLocalPlayer.Instance.FindController<FPresetController>();
+        FPresetController presetController = FGlobal.localPlayer.FindController<FPresetController>();
         if (presetController != null)
         {
             presetController.SetPreset(InIndex);
@@ -176,7 +176,7 @@ public class FDiceInventory : FUIBase
         selectedPresetIndex = InTabIndex;
 
         int i = 0;
-        FPresetController presetController = FLocalPlayer.Instance.FindController<FPresetController>();
+        FPresetController presetController = FGlobal.localPlayer.FindController<FPresetController>();
         if (presetController != null)
         {
             presetController.ForeachDicePreset(InTabIndex, (int InID) =>

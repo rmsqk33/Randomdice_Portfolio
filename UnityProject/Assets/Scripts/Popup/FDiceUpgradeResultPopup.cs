@@ -29,7 +29,7 @@ public class FDiceUpgradeResultPopup : FPopupBase
         if (gradeData == null)
             return;
 
-        FStatController statController = FLocalPlayer.Instance.FindController<FStatController>();
+        FStatController statController = FGlobal.localPlayer.FindController<FStatController>();
         if (statController == null)
             return;
 

@@ -31,7 +31,7 @@ public class FLocalPlayerBattlePanelUI : FUIBase
 
     public void Init()
     {
-        FLocalPlayerBattleController battleController = FLocalPlayer.Instance.FindController<FLocalPlayerBattleController>();
+        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
         if (battleController != null)
         {
             SetSP(battleController.SP);
@@ -58,7 +58,7 @@ public class FLocalPlayerBattlePanelUI : FUIBase
             SetCardIncrease(battleController.CardIncrease);
         }
 
-        FStatController statController = FLocalPlayer.Instance.FindController<FStatController>();
+        FStatController statController = FGlobal.localPlayer.FindController<FStatController>();
         if(statController != null)
         {
             nickname.text = statController.Name;
@@ -68,7 +68,7 @@ public class FLocalPlayerBattlePanelUI : FUIBase
 
     public void OnClickSummonDice()
     {
-        FLocalPlayerBattleController battleController = FLocalPlayer.Instance.FindController<FLocalPlayerBattleController>();
+        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
         if (battleController != null)
         {
             battleController.SummonDiceRandomSlot();
@@ -77,7 +77,7 @@ public class FLocalPlayerBattlePanelUI : FUIBase
 
     public void OnClickUpgradeDice(int InIndex)
     {
-        FLocalPlayerBattleController battleController = FLocalPlayer.Instance.FindController<FLocalPlayerBattleController>();
+        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
         if (battleController != null)
         {
             battleController.DiceLevelUp(InIndex);

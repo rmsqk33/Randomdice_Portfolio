@@ -40,31 +40,31 @@ public class FPacketHandler
     {
         S_USER_DATA pkt = new S_USER_DATA(InBuffer);
 
-        FInventoryController inventoryController = FLocalPlayer.Instance.FindController<FInventoryController>();
+        FInventoryController inventoryController = FGlobal.localPlayer.FindController<FInventoryController>();
         if (inventoryController != null)
         {
             inventoryController.Handle_S_USER_DATA(pkt);
         }
 
-        FDiceController diceController = FLocalPlayer.Instance.FindController<FDiceController>();
+        FDiceController diceController = FGlobal.localPlayer.FindController<FDiceController>();
         if (diceController != null)
         {
             diceController.Handle_S_USER_DATA(pkt);
         }
 
-        FBattlefieldController battlefieldController = FLocalPlayer.Instance.FindController<FBattlefieldController>();
+        FBattlefieldController battlefieldController = FGlobal.localPlayer.FindController<FBattlefieldController>();
         if (battlefieldController != null)
         {
             battlefieldController.Handle_S_USER_DATA(pkt);
         }
 
-        FPresetController presetController = FLocalPlayer.Instance.FindController<FPresetController>();
+        FPresetController presetController = FGlobal.localPlayer.FindController<FPresetController>();
         if (presetController != null)
         {
             presetController.Handle_S_USER_DATA(pkt);
         }
 
-        FStatController statController = FLocalPlayer.Instance.FindController<FStatController>();
+        FStatController statController = FGlobal.localPlayer.FindController<FStatController>();
         if (statController != null)
         {
             statController.Handle_S_USER_DATA(pkt);
@@ -73,7 +73,7 @@ public class FPacketHandler
 #if DEBUG
         if(SceneManager.GetActiveScene().name == "BattleScene")
         {
-            FLocalPlayer.Instance.AddController<FLocalPlayerBattleController>();
+            FGlobal.localPlayer.AddController<FBattleController>();
         }
 #endif
     }
@@ -82,7 +82,7 @@ public class FPacketHandler
     {
         S_STORE_DICE_LIST pkt = new S_STORE_DICE_LIST(InBuffer);
 
-        FStoreController storeController = FLocalPlayer.Instance.FindController<FStoreController>();
+        FStoreController storeController = FGlobal.localPlayer.FindController<FStoreController>();
         if (storeController != null)
         {
             storeController.Handle_S_STORE_DICE_LIST(pkt);
@@ -93,7 +93,7 @@ public class FPacketHandler
     {
         S_PURCHASE_DICE pkt = new S_PURCHASE_DICE(InBuffer);
 
-        FStoreController storeController = FLocalPlayer.Instance.FindController<FStoreController>();
+        FStoreController storeController = FGlobal.localPlayer.FindController<FStoreController>();
         if (storeController != null)
         {
             storeController.Handle_S_PURCHASE_DICE(pkt);
@@ -104,7 +104,7 @@ public class FPacketHandler
     {
         S_ADD_DICE pkt = new S_ADD_DICE(InBuffer);
 
-        FDiceController diceController = FLocalPlayer.Instance.FindController<FDiceController>();
+        FDiceController diceController = FGlobal.localPlayer.FindController<FDiceController>();
         if (diceController != null)
         {
             diceController.Handle_S_ADD_DICE(pkt);
@@ -115,7 +115,7 @@ public class FPacketHandler
     {
         S_CHANGE_GOLD pkt = new S_CHANGE_GOLD(InBuffer);
 
-        FInventoryController inventoryController = FLocalPlayer.Instance.FindController<FInventoryController>();
+        FInventoryController inventoryController = FGlobal.localPlayer.FindController<FInventoryController>();
         if(inventoryController != null)
         {
             inventoryController.Handle_S_CHANGE_GOLD(pkt);
@@ -126,7 +126,7 @@ public class FPacketHandler
     {
         S_CHANGE_DIA pkt = new S_CHANGE_DIA(InBuffer);
 
-        FInventoryController inventoryController = FLocalPlayer.Instance.FindController<FInventoryController>();
+        FInventoryController inventoryController = FGlobal.localPlayer.FindController<FInventoryController>();
         if (inventoryController != null)
         {
             inventoryController.Handle_S_CHANGE_DIA(pkt);
@@ -137,7 +137,7 @@ public class FPacketHandler
     {
         S_PURCHASE_BOX pkt = new S_PURCHASE_BOX(InBuffer);
 
-        FStoreController storeController = FLocalPlayer.Instance.FindController<FStoreController>();
+        FStoreController storeController = FGlobal.localPlayer.FindController<FStoreController>();
         if(storeController != null)
         {
             storeController.Handle_S_PURCHASE_BOX(pkt);
@@ -148,7 +148,7 @@ public class FPacketHandler
     {
         S_UPGRADE_DICE pkt = new S_UPGRADE_DICE(InBuffer);
 
-        FDiceController diceController = FLocalPlayer.Instance.FindController<FDiceController>();
+        FDiceController diceController = FGlobal.localPlayer.FindController<FDiceController>();
         if (diceController != null)
         {
             diceController.Handle_S_UPGRADE_DICE(pkt);
@@ -159,7 +159,7 @@ public class FPacketHandler
     {
         S_PURCHASE_BATTLEFIELD pkt = new S_PURCHASE_BATTLEFIELD(InBuffer);
 
-        FBattlefieldController battlefieldController = FLocalPlayer.Instance.FindController<FBattlefieldController>();
+        FBattlefieldController battlefieldController = FGlobal.localPlayer.FindController<FBattlefieldController>();
         if (battlefieldController != null)
         {
             battlefieldController.Handle_S_PURCHASE_BATTLEFIELD(pkt);
@@ -170,7 +170,7 @@ public class FPacketHandler
     {
         S_CHANGE_NAME pkt = new S_CHANGE_NAME(InBuffer);
 
-        FStatController statController = FLocalPlayer.Instance.FindController<FStatController>();
+        FStatController statController = FGlobal.localPlayer.FindController<FStatController>();
         if(statController != null)
         {
             statController.Handle_S_CAHNGE_NAME(pkt);
