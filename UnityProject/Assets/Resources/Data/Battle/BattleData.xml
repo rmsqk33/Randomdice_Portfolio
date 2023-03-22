@@ -1,4 +1,4 @@
-<BattleData id="1" life="1" summonInterval="1.0" battlefieldPrefab="Prefabs/Battle/Field/Battlefield_1">
+<BattleData id="1" life="1" summonInterval="1.0">
     <Wave wave="1" card="1">
         <Enemy id="1" />
         <Enemy id="1" />

@@ -1,3 +1,3 @@
 <BattleFieldList>
-    <BattleField id="1" price="500" skinImage="Sprite/Lobby/Inventory/BattleField/rd_inventory_skin_board_0" name="기본"></BattleField>
+    <BattleField id="1" name="기본" price="500" skinImage="Sprite/Lobby/Inventory/BattleField/rd_inventory_skin_board_0" battlefieldPrefab="Prefabs/Battle/Field/Battlefield_1"></BattleField>
 </BattleFieldList>

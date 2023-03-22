@@ -6,13 +6,15 @@ public class FBattleFieldData
     public readonly int price;
     public readonly string name;
     public readonly string skinImagePath;
+    public readonly string battlefieldPrefab;
     
-    public FBattleFieldData(int id, int price, string name, string skinImagePath)
+    public FBattleFieldData(FDataNode InNode)
     {
-        this.id = id;
-        this.price = price;
-        this.name = name;
-        this.skinImagePath = skinImagePath;
+        id = InNode.GetIntAttr("id");
+        price = InNode.GetIntAttr("price");
+        name = InNode.GetStringAttr("name");
+        skinImagePath = InNode.GetStringAttr("skinImage");
+        battlefieldPrefab = InNode.GetStringAttr("battlefieldPrefab");
     }
 }
 
@@ -25,12 +27,7 @@ public class FBattleFieldDataManager : FNonObjectSingleton<FBattleFieldDataManag
         List<FDataNode> dataNodeList = FDataCenter.Instance.GetDataNodesWithQuery("BattleFieldList.BattleField");
         foreach (FDataNode node in dataNodeList)
         {
-            int id = node.GetIntAttr("id");
-            int price = node.GetIntAttr("price");
-            string name = node.GetStringAttr("name");
-            string skinImagePath = node.GetStringAttr("skinImage");
-
-            FBattleFieldData newData = new FBattleFieldData(id, price, name, skinImagePath);
+            FBattleFieldData newData = new FBattleFieldData(node);
             battleFieldDataMap.Add(newData.id, newData);
         }
     }

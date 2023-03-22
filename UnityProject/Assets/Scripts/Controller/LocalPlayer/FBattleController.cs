@@ -170,7 +170,14 @@ public class FBattleController : FControllerBase
                     ++i;
                 });
             }
+
+            FBattleFieldData battlefieldData = FBattleFieldDataManager.Instance.FindBattleFieldData(presetController.GetSelectedBattlefieldID());
+            if (battlefieldData != null)
+            {
+                GameObject.Instantiate(Resources.Load(battlefieldData.battlefieldPrefab));
+            }
         }
+
 
         FBattlePanelUI battleUI = FindBattlePanelUI();
         if(battleUI != null)
@@ -233,7 +240,6 @@ public class FBattleController : FControllerBase
         if (battleData == null)
             return;
 
-        GameObject.Instantiate(Resources.Load(battleData.battlefieldPrefab));
         wave = 0;
         NextWave();
     }

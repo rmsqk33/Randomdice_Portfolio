@@ -57,7 +57,6 @@ public class FBattleData
     public readonly int id;
     public readonly int life;
     public readonly float summonInterval;
-	public readonly string battlefieldPrefab;
 
 	Dictionary<int, FWaveData> waveDataMap = new Dictionary<int, FWaveData>();
 
@@ -66,7 +65,6 @@ public class FBattleData
 		id = InNode.GetIntAttr("id");
 		life = InNode.GetIntAttr("life");
 		summonInterval = InNode.GetFloatAttr("summonInterval");
-        battlefieldPrefab = InNode.GetStringAttr("battlefieldPrefab");
         
         InNode.ForeachChildNodes("Wave", (in FDataNode InNode) => {
 			FWaveData waveData = new FWaveData(InNode);

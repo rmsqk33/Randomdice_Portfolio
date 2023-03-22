@@ -73,6 +73,11 @@ public class FPresetController : FControllerBase
         FServerManager.Instance.SendMessage(packet);
     }
 
+    public int GetSelectedBattlefieldID()
+    {
+        return GetBattleFieldPresetID(SelectedPresetIndex);
+    }
+
     public int GetBattleFieldPresetID(int InIndex)
     {
         if (InIndex < 0 || battleFieldPresetIDList.Length <= InIndex)
