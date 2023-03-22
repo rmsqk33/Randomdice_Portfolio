@@ -98,7 +98,7 @@ public class FObjectManager : FSingleton<FObjectManager>
 
             FMoveController moveController = enemy.FindController<FMoveController>();
             FMoveController frontEnemyMoveController = FrontEnemy.FindController<FMoveController>();
-            if (frontEnemyMoveController.MoveDistance < moveController.MoveDistance)
+            if (moveController.RemainDistance < frontEnemyMoveController.RemainDistance)
             {
                 FrontEnemy = enemy;
             }

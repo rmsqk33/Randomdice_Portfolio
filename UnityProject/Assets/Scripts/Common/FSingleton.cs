@@ -24,10 +24,6 @@ public class FSingleton<T> : MonoBehaviour where T : MonoBehaviour
         if (instance == null)
         {
             instance = GetComponent<T>();
-            if(gameObject.transform.parent == null)
-            {
-                DontDestroyOnLoad(gameObject);
-            }
         }
         else if(instance.gameObject != gameObject) 
         {

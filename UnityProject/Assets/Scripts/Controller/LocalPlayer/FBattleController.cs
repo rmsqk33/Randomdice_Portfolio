@@ -145,7 +145,7 @@ public class FBattleController : FControllerBase
             FBattlePanelUI ui = FindBattlePanelUI();
             if (ui != null)
             {
-                ui.SetCardIncrease(totalCard);
+                ui.SetCardIncrease(cardIncrease);
             }
         }
     }
@@ -243,6 +243,10 @@ public class FBattleController : FControllerBase
         startedWave = false;
         ++Wave;
 
+        TotalCard += CardIncrease;
+        waveData = battleData.FindWaveData(Wave);
+        CardIncrease = waveData.card;
+
         FBattlePanelUI battleUI = FindBattlePanelUI();
         if (battleUI != null)
         {
@@ -252,7 +256,6 @@ public class FBattleController : FControllerBase
 
     public void StartWave()
     {
-        waveData = battleData.FindWaveData(Wave);
         summonCount = 0;
 
         enemySummonTimer.ResetElapsedTime();
