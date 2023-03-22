@@ -1,9 +1,0 @@
-<BattleData initSP="100" initDiceSummonCost="10" diceSummonCostIncrease="10" maxEyeCount="7">
-	<DiceUpgrade>
-		<Dice level="1" cost="100" attackRate="1.5"/>
-		<Dice level="2" cost="200" attackRate="2"/>
-		<Dice level="3" cost="400" attackRate="2.5"/>
-		<Dice level="4" cost="700" attackRate="3"/>
-		<Dice level="5" cost="0" attackRate="4"/>
-	</DiceUpgrade>
-</BattleData>

@@ -53,4 +53,34 @@ namespace FEnum
         NOT_ENOUGH_SP,
         NOT_EMPTY_SLOT,
     }
+
+    public enum IFFType
+    {
+        Neutral,
+        Enemy,
+        RemotePlayer,
+        LocalPlayer,
+    }
+
+    public enum EnemyType
+    { 
+        Normal,
+        MiddleBoss,
+        Boss
+    }
+
+    public enum SkillType
+    {
+        Basic,
+    }
+
+    public enum SkillTargetType
+    {
+        Front,
+    }
+
+    public enum SkillEffectType
+    {
+        Damage,
+    }
 }

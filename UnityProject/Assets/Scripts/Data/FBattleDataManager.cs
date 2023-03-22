@@ -1,22 +1,107 @@
+using FEnum;
+using System;
 using System.Collections.Generic;
-using UnityEngine;
+using UnityEditor.Experimental.GraphView;
+
+public class FEnemyData
+{
+	public readonly int id;
+	public readonly int hp;
+	public readonly int sp;
+    public readonly int hpIncreaseBySpawnCount;
+    public readonly int moveSpeed;
+    public readonly EnemyType enemyType;
+    public readonly string prefabPath;
+
+	public FEnemyData(FDataNode InNode)
+	{
+        id = InNode.GetIntAttr("id");
+        hp = InNode.GetIntAttr("hp");
+        sp = InNode.GetIntAttr("sp");
+        hpIncreaseBySpawnCount = InNode.GetIntAttr("hpIncreaseBySpawnCount");
+        moveSpeed = InNode.GetIntAttr("moveSpeed");
+        enemyType = (EnemyType)InNode.GetIntAttr("type");
+        prefabPath = InNode.GetStringAttr("prefab");
+	}
+}
+
+public class FWaveData
+{ 
+	public readonly int wave;
+	public readonly int card;
+	List<int> enemySummonList = new List<int>();
+
+	public int SummonCount { get { return enemySummonList.Count; } }
+
+	public FWaveData(FDataNode InWaveNode)
+	{
+		this.wave = InWaveNode.GetIntAttr("wave");
+		this.card = InWaveNode.GetIntAttr("card");
+
+        InWaveNode.ForeachChildNodes("Enemy", (in FDataNode InNode) => {
+			enemySummonList.Add(InNode.GetIntAttr("id"));
+		});
+    }
+
+	public int GetEnemyID(int InSummonIndex)
+	{
+		if(InSummonIndex < enemySummonList.Count)
+			return	enemySummonList[InSummonIndex];
+
+		return 0;
+	}
+}
+
+public class FBattleData
+{
+    public readonly int id;
+    public readonly int life;
+    public readonly float summonInterval;
+	public readonly string battlefieldPrefab;
+
+	Dictionary<int, FWaveData> waveDataMap = new Dictionary<int, FWaveData>();
+
+	public FBattleData(FDataNode InNode)
+	{
+		id = InNode.GetIntAttr("id");
+		life = InNode.GetIntAttr("life");
+		summonInterval = InNode.GetFloatAttr("summonInterval");
+        battlefieldPrefab = InNode.GetStringAttr("battlefieldPrefab");
+        
+        InNode.ForeachChildNodes("Wave", (in FDataNode InNode) => {
+			FWaveData waveData = new FWaveData(InNode);
+			waveDataMap.Add(waveData.wave, waveData);
+		});
+    }
+
+	public FWaveData FindWaveData(int InWave)
+	{
+		int wave = Math.Clamp(InWave, 1, waveDataMap.Count);
+		if (waveDataMap.ContainsKey(wave))
+			return waveDataMap[wave];
+
+		return null;
+    }
+}
 
 public class FBattleDiceLevelData
 {
 	public readonly int level;
 	public readonly int cost;
-	public readonly double attackRate;
+	public readonly float attackRate;
 
-    public FBattleDiceLevelData(int level, int cost, double attackRate)
+    public FBattleDiceLevelData(FDataNode InNode)
 	{
-		this.level = level;
-		this.cost = cost;
-		this.attackRate = attackRate;
+        level = InNode.GetIntAttr("level");
+        cost = InNode.GetIntAttr("cost");
+        attackRate = InNode.GetFloatAttr("attackRate");
     }
 }
 
 public class FBattleDataManager : FNonObjectSingleton<FBattleDataManager>
 {
+	Dictionary<int, FBattleData> battleDataMap = new Dictionary<int, FBattleData>();
+	Dictionary<int, FEnemyData> enemyDataMap = new Dictionary<int, FEnemyData>();
 	Dictionary<int, FBattleDiceLevelData> diceLevelMap = new Dictionary<int, FBattleDiceLevelData>();
 
     public int InitSP { get; private set; }
@@ -24,31 +109,53 @@ public class FBattleDataManager : FNonObjectSingleton<FBattleDataManager>
 	public int DiceSummonCostIncrease { get; private set; }
     public int MaxLevel { get; private set; }
     public int MaxEyeCount { get; private set; }
+    public int CoopBattleID { get; private set; }
+    public float WaveEndInterval { get; private set; }
     
     public void Initialize()
     {
-		FDataNode battleData = FDataCenter.Instance.GetDataNodeWithQuery("BattleData");
-        if (battleData != null)
+		FDataNode battleCommonDataNode = FDataCenter.Instance.GetDataNodeWithQuery("BattleCommonData");
+        if (battleCommonDataNode != null)
 		{
-			InitSP = battleData.GetIntAttr("initSP");
-            InitDiceSummonCost = battleData.GetIntAttr("initDiceSummonCost");
-            DiceSummonCostIncrease = battleData.GetIntAttr("diceSummonCostIncrease");
-            MaxEyeCount = battleData.GetIntAttr("maxEyeCount");
-
-            List<FDataNode> diceUpgradeNodes = battleData.GetDataNodesWithQuery("DiceUpgrade.Dice");
+			InitSP = battleCommonDataNode.GetIntAttr("initSP");
+            InitDiceSummonCost = battleCommonDataNode.GetIntAttr("initDiceSummonCost");
+            DiceSummonCostIncrease = battleCommonDataNode.GetIntAttr("diceSummonCostIncrease");
+            MaxEyeCount = battleCommonDataNode.GetIntAttr("maxEyeCount");
+            CoopBattleID = battleCommonDataNode.GetIntAttr("coopBattleID");
+            WaveEndInterval = battleCommonDataNode.GetFloatAttr("waveEndInterval");
+            
+            List<FDataNode> diceUpgradeNodes = battleCommonDataNode.GetDataNodesWithQuery("DiceUpgrade.Dice");
 			foreach(FDataNode dataNode in diceUpgradeNodes)
 			{
-                int level = dataNode.GetIntAttr("level");
-                int cost = dataNode.GetIntAttr("cost");
-                double attackRate = dataNode.GetDoubleAttr("attackRate");
-
-                FBattleDiceLevelData levelData = new FBattleDiceLevelData(level, cost, attackRate);
+                FBattleDiceLevelData levelData = new FBattleDiceLevelData(dataNode);
 				diceLevelMap.Add(levelData.level, levelData);
             }
 
 			MaxLevel = diceLevelMap.Count;
         }
+
+		List<FDataNode> enemyDataList = FDataCenter.Instance.GetDataNodesWithQuery("EnemyList.Enemy");
+		foreach(FDataNode dataNode in enemyDataList)
+		{
+			FEnemyData enemyData = new FEnemyData(dataNode);
+			enemyDataMap.Add(enemyData.id, enemyData);
+        }
+
+		List<FDataNode> battleDataNodeList = FDataCenter.Instance.GetDataNodesWithQuery("BattleData");
+		foreach(FDataNode node in battleDataNodeList)
+		{
+			FBattleData data = new FBattleData(node);
+            battleDataMap.Add(data.id, data);
+        }
     }
+
+	public FBattleData FindBattleData(int InID)
+	{
+		if (battleDataMap.ContainsKey(InID))
+			return battleDataMap[InID];
+
+		return null;
+	}
 
 	public FBattleDiceLevelData FindDiceLevelData(int InLevel)
 	{
@@ -57,4 +164,12 @@ public class FBattleDataManager : FNonObjectSingleton<FBattleDataManager>
 
 		return null;
 	}
+
+	public FEnemyData FindEnemyData(int InID)
+	{
+		if(enemyDataMap.ContainsKey(InID))
+			return enemyDataMap[InID];
+
+		return null;
+    }
 }

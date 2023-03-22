@@ -47,11 +47,11 @@ TagManager:
   - name: Object
     uniqueID: 4063600931
     locked: 0
-  - name: HUD
-    uniqueID: 3953831037
-    locked: 0
   - name: UI
     uniqueID: 1763993975
+    locked: 0
+  - name: HUD
+    uniqueID: 3953831037
     locked: 0
   - name: Effect
     uniqueID: 296304667

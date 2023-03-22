@@ -63,7 +63,7 @@ public class FLobbyUserInfoUI : FUIBase
 
     public void InitUserInfo()
     {
-        FStatController statControler = FGlobal.localPlayer.FindController<FStatController>();
+        FLocalPlayerStatController statControler = FGlobal.localPlayer.FindController<FLocalPlayerStatController>();
         if (statControler != null)
         {
             Name = statControler.Name;

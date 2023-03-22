@@ -1,108 +1,60 @@
-using FEnum;
-using Packet;
-using UnityEngine;
+using TMPro;
 
 public class FStatController : FControllerBase
 {
-    public int Level { get; set; }
-    public int Exp { get; set; }
-    public int MaxExp { get; set; }
-    public int Critical { get; private set; }
-    public string Name { get; set; }
+    int hp;
+    TextMeshPro hpText;
 
-    public FStatController(FLocalPlayer InOwner) : base(InOwner)
+    public int HP 
+    {
+        get { return hp; }
+        set 
+        { 
+            hp = value;
+            UpdateUI();
+        } 
+    }
+
+    public int SP { get; set; }
+
+    public FStatController(FObjectBase InOwner) : base(InOwner)
     {
     }
 
-    public void Handle_S_USER_DATA(in S_USER_DATA InPacket)
+    public override void Initialize()
     {
-        Name = InPacket.name;
-        Level = InPacket.level;
-        Exp = InPacket.exp;
-        MaxExp = FDataCenter.Instance.GetIntAttribute("UserClass.Class[@class=" + InPacket.level + "]@exp");
+        base.Initialize();
         
-        CalcCritical();
-
-        FLobbyUserInfoUI userInfoUI = FindLobbyUserInfoUI();
-        if (userInfoUI != null)
-        {
-            userInfoUI.InitUserInfo();
-        }
-
-        if(Name.Length == 0)
-        {
-            FPopupManager.Instance.OpenNamePopup();
-        }
+        hpText = FindChildComponent<TextMeshPro>("hpText");
     }
 
-    public void Handle_S_CAHNGE_NAME(in S_CHANGE_NAME InPacket)
+    public void OnDamage(int InDamage)
     {
-        ChangeNameResult result = (ChangeNameResult)InPacket.resultType;
-        if (result == ChangeNameResult.CHANGE_NAME_RESULT_SUCCESS)
-        {
-            Name = InPacket.name;
+        HP -= InDamage;
 
-            FLobbyUserInfoUI userInfoUI = FindLobbyUserInfoUI();
-            if (userInfoUI != null)
+        if(HP <= 0)
+        {
+            FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
+            if(battleController != null)
             {
-                userInfoUI.Name = Name;
+                battleController.SP += SP;
             }
 
-            FPopupManager.Instance.ClosePopup();
+            FObjectManager.Instance.RemoveEnemey(ObjectID);
         }
-        else
+    }
+
+    private void UpdateUI()
+    {
+        if (hpText != null)
         {
-            FNamePopup popup = FUIManager.Instance.FindUI<FNamePopup>();
-            if (popup != null)
-            {
-                string errorMessage = new string("");
-                switch (result)
-                {
-                    case ChangeNameResult.CHANGE_NAME_RESULT_ALEADY: errorMessage = "이미 있는 닉네임입니다"; break;
-                    case ChangeNameResult.CHANGE_NAME_RESULT_SPECIAL_CHARACTER: errorMessage = "특수문자는 사용할 수 없습니다"; break;
-                    case ChangeNameResult.CHANGE_NAME_RESULT_BLANK: errorMessage = "이름을 입력하세요"; break;
-                }
+            string text;
+            if (1000 <= hp)
+                text = hp / 1000 + "k";
+            else
+                text = hp.ToString();
 
-                popup.ErrorMessage = errorMessage;
-            }
+            hpText.text = text;
         }
-    }
-
-    public void AddCritical(int InID, int InIncreaseLevel = 1)
-    {
-        FDiceGradeData data = FDiceDataManager.Instance.FindGradeDataByID(InID);
-        if (data != null)
-        {
-            Critical += data.critical * InIncreaseLevel;
-
-            FDiceInventory diceInventory = FindDiceInventoryUI();
-            if (diceInventory != null)
-            {
-                diceInventory.Critical = Critical;
-            }
-        }
-    }
-
-    void CalcCritical()
-    {
-        Critical = 0;
-
-        FDiceController diceController = FindController<FDiceController>();
-        if(diceController != null)
-        {
-            diceController.ForeachAcquiredDice((FDice InDice) => {
-                AddCritical(InDice.id, InDice.level);
-            });
-        }
-    }
-
-    FDiceInventory FindDiceInventoryUI()
-    {
-        return FUIManager.Instance.FindUI<FDiceInventory>();
-    }
-
-    FLobbyUserInfoUI FindLobbyUserInfoUI()
-    {
-        return FUIManager.Instance.FindUI<FLobbyUserInfoUI>();
     }
 }

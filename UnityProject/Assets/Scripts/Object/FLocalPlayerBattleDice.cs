@@ -2,61 +2,46 @@ using FEnum;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
+using UnityEngine.Rendering;
 
 public class FLocalPlayerBattleDice : FObjectBase, IBeginDragHandler, IDragHandler, IDropHandler, IEndDragHandler
 {
-    static int dragIndex;
+    static FLocalPlayerBattleDice dragObject;
 
     [SerializeField]
-    Image diceImage;
+    SpriteRenderer diceImage;
     [SerializeField]
-    Image diceImageL;
-    [SerializeField]
-    RectTransform rectTransform;
+    SpriteRenderer diceImageL;
     [SerializeField]
     Animator eyeAnimator;
     [SerializeField]
-    List<Transform> eyePositionList;
+    List<Transform> eyeList;
 
     FAllColorChanger colorChanger;
-    Transform originParent;
 
-    public int DiceID { get; set; }
-    public int EyeCount { get; set; }
     public int SlotIndex { get; set; }
-
-    private void Awake()
-    {
-        originParent = transform.parent;
-        colorChanger = new FAllColorChanger(gameObject);
-    }
-
+    
     public void Initialize(int InDiceID, int InEyeCount, int InSlotIndex)
     {
-        FDiceData diceData = FDiceDataManager.Instance.FindDiceData(InDiceID);
-        if (diceData == null)
-            return;
-
-        DiceID = InDiceID;
-        EyeCount = InEyeCount;
+        ContentID = InDiceID;
         SlotIndex = InSlotIndex;
 
-        diceImage.gameObject.SetActive(diceData.grade != DiceGrade.DICE_GRADE_LEGEND);
-        diceImageL.gameObject.SetActive(diceData.grade == DiceGrade.DICE_GRADE_LEGEND);
-        if (diceData.grade != DiceGrade.DICE_GRADE_LEGEND)
-            diceImage.sprite = Resources.Load<Sprite>(diceData.iconPath);
-        else
-            diceImageL.sprite = Resources.Load<Sprite>(diceData.iconPath);
+        InitUI(InEyeCount);
 
-        eyeAnimator.SetInteger("EyeCount", InEyeCount);
+        AddController<FIFFController>();
+        FindController<FIFFController>().IFFType = IFFType.LocalPlayer;
+
+        AddController<FBattleDiceController>();
+        FindController<FBattleDiceController>().Initialize(InSlotIndex, eyeList.GetRange(0, InEyeCount));
+
+        AddController<FSkillController>();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        transform.SetParent(FUIManager.Instance.TopSiblingCanvas.transform, true);
-
-        dragIndex = SlotIndex;
+        dragObject = this;
+        SetEnableCollider(false);
+        SetSortingOrder(9999);
 
         FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
         if (battleController != null)
@@ -67,29 +52,22 @@ public class FLocalPlayerBattleDice : FObjectBase, IBeginDragHandler, IDragHandl
 
     public void OnDrag(PointerEventData eventData)
     {
-        Canvas topSiblingCanvas = FUIManager.Instance.TopSiblingCanvas;
-        Vector2 pos;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(topSiblingCanvas.transform as RectTransform, Input.mousePosition, topSiblingCanvas.worldCamera, out pos);
-        transform.position = topSiblingCanvas.transform.TransformPoint(pos);
+        WorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 
     public void OnDrop(PointerEventData eventData)
     {
-        if (SlotIndex == dragIndex)
+        if (SlotIndex == dragObject.SlotIndex)
             return;
 
-        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
-        if (battleController == null)
-            return;
-
-        battleController.CombineDice(SlotIndex, dragIndex);
-        battleController.DeactiveDiceCombinable();
-    }
-
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        transform.SetParent(originParent, true);
-        rectTransform.anchoredPosition = Vector2.zero;
+        FBattleDiceController diceController = dragObject.FindController<FBattleDiceController>();
+        if(diceController != null)
+        {
+            if(diceController.IsCombinable(this))
+            {
+                diceController.CombineDice(this);
+            }
+        }
 
         FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
         if (battleController != null)
@@ -98,29 +76,17 @@ public class FLocalPlayerBattleDice : FObjectBase, IBeginDragHandler, IDragHandl
         }
     }
 
-    public void CombineDice(FLocalPlayerBattleDice InDestDice)
+    public void OnEndDrag(PointerEventData eventData)
     {
+        LocalPosition = Vector2.zero;
+        SetEnableCollider(true);
+        SetSortingOrder(0);
+
         FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
         if (battleController != null)
         {
-            battleController.RemoveSummonDice(InDestDice.SlotIndex);
-            battleController.RemoveSummonDice(SlotIndex);
-            battleController.SummonDiceRandomDice(InDestDice.SlotIndex, InDestDice.EyeCount + 1);
+            battleController.DeactiveDiceCombinable();
         }
-    }
-
-    public bool IsCombinable(FLocalPlayerBattleDice InDestDice)
-    {
-        if (InDestDice.DiceID != DiceID)
-            return false;
-
-        if (InDestDice.EyeCount != EyeCount)
-            return false;
-
-        if (FBattleDataManager.Instance.MaxEyeCount <= EyeCount)
-            return false;
-
-        return true;
     }
 
     public void SetEnable(bool InEnabled)
@@ -128,4 +94,44 @@ public class FLocalPlayerBattleDice : FObjectBase, IBeginDragHandler, IDragHandl
         colorChanger.SetEnable(InEnabled);
     }
 
+    private void InitUI(int InEyeCount)
+    {
+        FDiceData diceData = FDiceDataManager.Instance.FindDiceData(ContentID);
+        if (diceData == null)
+            return;
+
+        diceImage.gameObject.SetActive(diceData.grade != DiceGrade.DICE_GRADE_LEGEND);
+        diceImageL.gameObject.SetActive(diceData.grade == DiceGrade.DICE_GRADE_LEGEND);
+        if (diceData.grade != DiceGrade.DICE_GRADE_LEGEND)
+            diceImage.sprite = Resources.Load<Sprite>(diceData.iconPath);
+        else
+            diceImageL.sprite = Resources.Load<Sprite>(diceData.iconPath);
+
+        eyeAnimator.SetInteger("EyeCount", InEyeCount);
+        for (int i = 0; i < InEyeCount; ++i)
+        {
+            SpriteRenderer sprite = eyeList[i].GetComponentInChildren<SpriteRenderer>(true);
+            sprite.color = diceData.color;
+        }
+
+        colorChanger = new FAllColorChanger(gameObject);
+    }
+
+    private void SetEnableCollider(bool InEnable)
+    {
+        Collider2D collider = GetComponent<Collider2D>();
+        if (collider != null)
+        {
+            collider.enabled = InEnable;
+        }
+    }
+
+    private void SetSortingOrder(int InOrder)
+    {
+        SortingGroup sortingGroup = GetComponent<SortingGroup>();
+        if(sortingGroup != null)
+        {
+            sortingGroup.sortingOrder = InOrder;
+        }
+    }
 }

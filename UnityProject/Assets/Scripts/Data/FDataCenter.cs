@@ -17,6 +17,8 @@ public class FDataCenter : FNonObjectSingleton<FDataCenter>
         FBattleFieldDataManager.Instance.Initialize();
         FStoreDataManager.Instance.Initialize();
         FBattleDataManager.Instance.Initialize();
+        FEffectDataManager.Instance.Initialize();
+        FSkillDataManager.Instance.Initialize();
     }
 
     void ParseXML(in string InPath)
@@ -66,14 +68,14 @@ public class FDataCenter : FNonObjectSingleton<FDataCenter>
         return node.GetBoolAttr(attrName);
     }
 
-    public double GetDoubleAttribute(in string InQuery)
+    public float GetFloatAttribute(in string InQuery)
     {
         FDataNode node = GetDataNodeWithQuery(InQuery);
         if (node == null)
             return 0f;
 
         string attrName = GetAttrNameInQuery(InQuery);
-        return node.GetDoubleAttr(attrName);
+        return node.GetFloatAttr(attrName);
     }
 
     public string GetStringAttribute(in string InQuery)

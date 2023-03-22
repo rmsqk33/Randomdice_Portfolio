@@ -102,7 +102,7 @@ public class FDiceInfoPopup : FPopupBase
         nameText.text = InDiceData.name;
         description.text = InDiceData.description;
 
-        FStatController statController = FGlobal.localPlayer.FindController<FStatController>();
+        FLocalPlayerStatController statController = FGlobal.localPlayer.FindController<FLocalPlayerStatController>();
         if(statController != null)
         {
             critical.text = statController.Critical + "%";

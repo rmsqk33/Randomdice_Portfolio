@@ -64,7 +64,7 @@ public class FPacketHandler
             presetController.Handle_S_USER_DATA(pkt);
         }
 
-        FStatController statController = FGlobal.localPlayer.FindController<FStatController>();
+        FLocalPlayerStatController statController = FGlobal.localPlayer.FindController<FLocalPlayerStatController>();
         if (statController != null)
         {
             statController.Handle_S_USER_DATA(pkt);
@@ -170,7 +170,7 @@ public class FPacketHandler
     {
         S_CHANGE_NAME pkt = new S_CHANGE_NAME(InBuffer);
 
-        FStatController statController = FGlobal.localPlayer.FindController<FStatController>();
+        FLocalPlayerStatController statController = FGlobal.localPlayer.FindController<FLocalPlayerStatController>();
         if(statController != null)
         {
             statController.Handle_S_CAHNGE_NAME(pkt);

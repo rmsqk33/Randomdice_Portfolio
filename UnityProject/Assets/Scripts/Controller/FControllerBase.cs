@@ -2,6 +2,8 @@
 public class FControllerBase
 {
     protected FObjectBase Owner { get; set; }
+    public int ObjectID { get { return Owner.ObjectID; } }
+    public int ContentID { get { return Owner.ContentID; } }
 
     public FControllerBase(FObjectBase InOwner)
     {
@@ -15,5 +17,10 @@ public class FControllerBase
     protected T FindController<T>() where T : FControllerBase
     {
         return Owner.FindController<T>();
+    }
+
+    public T FindChildComponent<T>(string InName)
+    {
+        return Owner.FindChildComponent<T>(InName);
     }
 }

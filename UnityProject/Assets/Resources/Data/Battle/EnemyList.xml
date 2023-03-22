@@ -1,0 +1,6 @@
+<EnemyList>
+    <Enemy id="1" sp="10" hpIncreaseBySpawnCount="10" moveSpeed="120" hp="100" prefab="Prefabs/Battle/Enemy/NormalEnemy1" />
+    <Enemy id="2" sp="10" hpIncreaseBySpawnCount="10" moveSpeed="240" hp="100" prefab="Prefabs/Battle/Enemy/NormalEnemy1" />
+    <Enemy id="3" sp="50" hpIncreaseBySpawnCount="100" moveSpeed="120" hp="500" prefab="Prefabs/Battle/Enemy/NormalEnemy1" />
+    <Enemy id="4" sp="100" hpIncreaseBySpawnCount="1000" moveSpeed="60" hp="12000" prefab="Prefabs/Battle/Enemy/NormalEnemy1" />
+</EnemyList>

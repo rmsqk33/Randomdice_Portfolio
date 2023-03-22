@@ -10,7 +10,7 @@ public class FDataNode
     {
         public string StrValue;
         public int IntValue;
-        public double DoubleValue;
+        public float FloatValue;
         public bool BoolValue;
         public Color ColorValue;
     }
@@ -38,10 +38,10 @@ public class FDataNode
         return 0;
     }
 
-    public double GetDoubleAttr(in string InName)
+    public float GetFloatAttr(in string InName)
     {
         if (dataAttributes.ContainsKey(InName))
-            return dataAttributes[InName].DoubleValue;
+            return dataAttributes[InName].FloatValue;
 
         return 0f;
     }
@@ -134,6 +134,14 @@ public class FDataNode
         return retNodeList;
     }
 
+    public FDataNode FindChildNode(in string InName)
+    {
+        if (childNodes.ContainsKey(InName))
+            return childNodes[InName][0];
+
+        return null;
+    }
+
     public delegate void ForeachChildNodesFunc(in FDataNode InNode);
     public void ForeachChildNodes(in string InName, in ForeachChildNodesFunc InFunc)
     {
@@ -185,14 +193,15 @@ public class FDataNode
         foreach (XmlAttribute attr in InNode.Attributes)
         {
             FDataAttribute newAttr = new FDataAttribute();
-
-            bool color = attr.Name == "color";
-            if (bool.TryParse(attr.Value, out newAttr.BoolValue)) { }
-            else if (int.TryParse(attr.Value, out newAttr.IntValue)) { }
-            else if (double.TryParse(attr.Value, out newAttr.DoubleValue)) { }
-            else if (ColorUtility.TryParseHtmlString(attr.Value, out newAttr.ColorValue)) { }
-            
             newAttr.StrValue = attr.Value;
+
+            if (ColorUtility.TryParseHtmlString(attr.Value, out newAttr.ColorValue)) { }
+            else if (bool.TryParse(attr.Value, out newAttr.BoolValue)) { }
+            else
+            {
+                float.TryParse(attr.Value, out newAttr.FloatValue);
+                int.TryParse(attr.Value, out newAttr.IntValue);
+            }
 
             dataAttributes.Add(attr.Name, newAttr);
         }

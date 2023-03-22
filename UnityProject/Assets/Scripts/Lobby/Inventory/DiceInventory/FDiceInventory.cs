@@ -45,7 +45,7 @@ public class FDiceInventory : FUIBase
 
     public void InitInventory()
     {
-        FStatController statController = FGlobal.localPlayer.FindController<FStatController>();
+        FLocalPlayerStatController statController = FGlobal.localPlayer.FindController<FLocalPlayerStatController>();
         if (statController != null)
         {
             Critical = statController.Critical;

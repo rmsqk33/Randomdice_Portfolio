@@ -6,6 +6,9 @@ using UnityEngine.UI;
 
 public class FAllColorChanger
 {
+    SpriteRenderer[] spriteList;
+    List<Color> spriteOriginColorList = new List<Color>();
+
     Image[] imageList;
     List<Color> imageOriginColorList = new List<Color>();
 
@@ -17,6 +20,12 @@ public class FAllColorChanger
 
     public FAllColorChanger(GameObject InOwner)
     {
+        spriteList = InOwner.GetComponentsInChildren<SpriteRenderer>();
+        foreach (SpriteRenderer sprite in spriteList)
+        {
+            spriteOriginColorList.Add(sprite.color);
+        }
+
         imageList = InOwner.GetComponentsInChildren<Image>();
         foreach(Image image in imageList)
         {
@@ -36,7 +45,12 @@ public class FAllColorChanger
             return;
 
         enable = InEnable;
-        for(int i = 0; i < imageList.Length; ++i)
+        for (int i = 0; i < spriteList.Length; ++i)
+        {
+            spriteList[i].color = enable ? spriteOriginColorList[i] : disableColor;
+        }
+
+        for (int i = 0; i < imageList.Length; ++i)
         {
             imageList[i].color = enable ? imageOriginColorList[i] : disableColor;
         }
