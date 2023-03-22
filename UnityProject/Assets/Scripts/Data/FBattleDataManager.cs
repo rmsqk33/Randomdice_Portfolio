@@ -108,6 +108,7 @@ public class FBattleDataManager : FNonObjectSingleton<FBattleDataManager>
     public int MaxLevel { get; private set; }
     public int MaxEyeCount { get; private set; }
     public int CoopBattleID { get; private set; }
+    public float BattleStartInterval { get; private set; }
     public float WaveEndInterval { get; private set; }
     
     public void Initialize()
@@ -120,6 +121,7 @@ public class FBattleDataManager : FNonObjectSingleton<FBattleDataManager>
             DiceSummonCostIncrease = battleCommonDataNode.GetIntAttr("diceSummonCostIncrease");
             MaxEyeCount = battleCommonDataNode.GetIntAttr("maxEyeCount");
             CoopBattleID = battleCommonDataNode.GetIntAttr("coopBattleID");
+            BattleStartInterval = battleCommonDataNode.GetFloatAttr("battleStartInterval");
             WaveEndInterval = battleCommonDataNode.GetFloatAttr("waveEndInterval");
             
             List<FDataNode> diceUpgradeNodes = battleCommonDataNode.GetDataNodesWithQuery("DiceUpgrade.Dice");

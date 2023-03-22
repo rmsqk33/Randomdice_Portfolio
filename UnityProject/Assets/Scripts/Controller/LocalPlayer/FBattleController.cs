@@ -1,10 +1,9 @@
 using FEnum;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class FBattleDicePreset
+public class FEquipBattleDice
 {
     public readonly int index;
     public readonly int diceID;
@@ -17,7 +16,7 @@ public class FBattleDicePreset
 
     public bool IsUpgradable { get { return upgradeDisableFlag == 0; } }
 
-    public FBattleDicePreset(int index, int diceID)
+    public FEquipBattleDice(int index, int diceID)
     {
         this.index = index;
         this.diceID = diceID;
@@ -31,7 +30,7 @@ public class FBattleDicePreset
 
 public class FBattleController : FControllerBase
 {
-    private FBattleDicePreset[] dicePresetList = new FBattleDicePreset[FGlobal.MAX_PRESET];
+    private FEquipBattleDice[] equipDiceList = new FEquipBattleDice[FGlobal.MAX_PRESET];
     private Dictionary<int, FLocalPlayerBattleDice> summonDiceMap = new Dictionary<int, FLocalPlayerBattleDice>();
     private List<int> emptyDiceSlotIndexList = Enumerable.Range(0, FGlobal.MAX_SUMMON_DICE).ToList();
 
@@ -43,10 +42,11 @@ public class FBattleController : FControllerBase
     int cardIncrease;
     int wave;
     int summonCount;
-    float summonInterval;
-    float waveEndCheckElapsed;
     bool startedWave;
 
+    FTimer enemySummonTimer = new FTimer();
+    FTimer waveEndCheckTimer = new FTimer(FBattleDataManager.Instance.WaveEndInterval);
+    
     FBattleData battleData;
     FWaveData waveData;
 
@@ -115,6 +115,7 @@ public class FBattleController : FControllerBase
             if(life <= 0)
             {
                 //게임 종료 처리
+                //startedWave = false;
             }
         }
     }
@@ -162,11 +163,11 @@ public class FBattleController : FControllerBase
             {
                 int i = 0;
                 presetController.ForeachDicePreset(presetController.SelectedPresetIndex, (int InDiceID) => {
-                    FBattleDicePreset battleDice = new FBattleDicePreset(i, InDiceID);
+                    FEquipBattleDice battleDice = new FEquipBattleDice(i, InDiceID);
                     battleDice.upgradeCost = levelData.cost;
                     battleDice.attackRate = levelData.attackRate;
                     battleDice.SetUpgradeDisableFlag(DiceUpgradeDisableReason.NOT_ENOUGH_SP, battleDice.upgradeCost <= SP);
-                    dicePresetList[i] = battleDice;
+                    equipDiceList[i] = battleDice;
                     ++i;
                 });
             }
@@ -192,45 +193,37 @@ public class FBattleController : FControllerBase
 
     public override void Tick(float InDeltaTime)
     {
+        if (startedWave == false)
+            return;
+
         CreateEnemyProcess(InDeltaTime);
         CheckEndWaveProcess(InDeltaTime);
     }
 
     void CreateEnemyProcess(float InDeltaTime)
     {
-        if (startedWave == false)
-            return;
-
         if (waveData.SummonCount <= summonCount)
             return;
 
-        summonInterval -= InDeltaTime;
-        if (summonInterval <= 0)
+        if (enemySummonTimer.IsElapsedCheckTime(InDeltaTime))
         {
             int enemyID = waveData.GetEnemyID(summonCount);
             FObjectManager.Instance.CreateEnemy(enemyID);
-
-            summonInterval = battleData.summonInterval;
-
             ++summonCount;
         }
     }
 
     void CheckEndWaveProcess(float InDeltaTime)
     {
-        if (startedWave == false)
+        if (summonCount < waveData.SummonCount)
             return;
 
-        if (0 < FObjectManager.Instance.EnemyCount || summonCount < waveData.SummonCount)
-        {
-            waveEndCheckElapsed = 0;
+        if (0 < FObjectManager.Instance.EnemyCount)
             return;
-        }
 
-        waveEndCheckElapsed += InDeltaTime;
-        if (FBattleDataManager.Instance.WaveEndInterval <= waveEndCheckElapsed)
+        if (waveEndCheckTimer.IsElapsedCheckTime(InDeltaTime))
         {
-            NextWave();
+            StartNextWaveAlarm();
         }
     }
 
@@ -240,16 +233,15 @@ public class FBattleController : FControllerBase
         if (battleData == null)
             return;
 
-        wave = 0;
-        NextWave();
+        enemySummonTimer.Interval = battleData.summonInterval;
+
+        StartNextWaveAlarm();
     }
 
-    public void NextWave()
+    public void StartNextWaveAlarm()
     {
         startedWave = false;
-        
         ++Wave;
-        waveData = battleData.FindWaveData(Wave);
 
         FBattlePanelUI battleUI = FindBattlePanelUI();
         if (battleUI != null)
@@ -260,18 +252,21 @@ public class FBattleController : FControllerBase
 
     public void StartWave()
     {
-        startedWave = true;
-
-        waveEndCheckElapsed = 0;
+        waveData = battleData.FindWaveData(Wave);
         summonCount = 0;
+
+        enemySummonTimer.ResetElapsedTime();
+        waveEndCheckTimer.ResetElapsedTime();
+
+        startedWave = true;
     }
 
     public void DiceLevelUp(int InIndex)
     {
-        if (dicePresetList.Count() <= InIndex)
+        if (InIndex < 0 || equipDiceList.Count() <= InIndex)
             return;
 
-        FBattleDicePreset dice = dicePresetList[InIndex];
+        FEquipBattleDice dice = equipDiceList[InIndex];
         if (FBattleDataManager.Instance.MaxLevel <= dice.level)
             return;
 
@@ -311,14 +306,14 @@ public class FBattleController : FControllerBase
         DiceSummonCost += FBattleDataManager.Instance.DiceSummonCostIncrease;
 
         int summonSlotIndex = Random.Range(0, emptyDiceSlotIndexList.Count);
-        int summonDiceID = dicePresetList[Random.Range(0, dicePresetList.Count())].diceID;
+        int summonDiceID = equipDiceList[Random.Range(0, equipDiceList.Count())].diceID;
 
         CreateSummonDice(emptyDiceSlotIndexList[summonSlotIndex], summonDiceID, InEyeCount);
     }
 
     public void SummonDiceRandomDice(int InSlotIndex, int InEyeCount)
     {
-        int summonDiceID = dicePresetList[Random.Range(0, dicePresetList.Count())].diceID;
+        int summonDiceID = equipDiceList[Random.Range(0, equipDiceList.Count())].diceID;
 
         CreateSummonDice(InSlotIndex, summonDiceID, InEyeCount);
     }
@@ -351,10 +346,10 @@ public class FBattleController : FControllerBase
         SetDiceSummonDisableReason(DiceSummonDisableReason.NOT_EMPTY_SLOT, 0 < emptyDiceSlotIndexList.Count);
     }
 
-    public delegate void ForeachBattleDicePresetDelegate(FBattleDicePreset InDice);
+    public delegate void ForeachBattleDicePresetDelegate(FEquipBattleDice InDice);
     public void ForeachBattleDicePreset(ForeachBattleDicePresetDelegate InFunc)
     {
-        foreach(FBattleDicePreset dice in dicePresetList)
+        foreach(FEquipBattleDice dice in equipDiceList)
         {
             InFunc(dice);
         }
@@ -414,7 +409,7 @@ public class FBattleController : FControllerBase
 
     private void SetDiceEyeTotalCount(int InDiceID, int InDelta)
     {
-        FBattleDicePreset preset = FindBattleDicePreset(InDiceID);
+        FEquipBattleDice preset = FindBattleDicePreset(InDiceID);
         if(preset != null)
         {
             preset.eyeCount += InDelta;
@@ -430,7 +425,7 @@ public class FBattleController : FControllerBase
     private void UpdateDiceUpgradableBySP()
     {
         FBattlePanelUI ui = FindBattlePanelUI();
-        ForeachBattleDicePreset((FBattleDicePreset InDice) =>
+        ForeachBattleDicePreset((FEquipBattleDice InDice) =>
         {
             bool prevState = InDice.IsUpgradable;
             InDice.SetUpgradeDisableFlag(DiceUpgradeDisableReason.NOT_ENOUGH_SP, InDice.upgradeCost <= sp);
@@ -441,9 +436,9 @@ public class FBattleController : FControllerBase
         });
     }
 
-    private FBattleDicePreset FindBattleDicePreset(int InDiceID)
+    private FEquipBattleDice FindBattleDicePreset(int InDiceID)
     {
-        foreach(FBattleDicePreset info in dicePresetList)
+        foreach(FEquipBattleDice info in equipDiceList)
         {
             if (info.diceID == InDiceID)
                 return info;

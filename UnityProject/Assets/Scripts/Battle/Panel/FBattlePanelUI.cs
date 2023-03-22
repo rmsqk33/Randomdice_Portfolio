@@ -50,7 +50,7 @@ public class FBattlePanelUI : FUIBase
             SetDiceSummonBtnEnable(battleController.IsDiceSummonable);
 
             int i = 0;
-            battleController.ForeachBattleDicePreset((FBattleDicePreset InDice) =>
+            battleController.ForeachBattleDicePreset((FEquipBattleDice InDice) =>
             {
                 if (localPlayerDiceSlotList.Count <= i)
                     return;
