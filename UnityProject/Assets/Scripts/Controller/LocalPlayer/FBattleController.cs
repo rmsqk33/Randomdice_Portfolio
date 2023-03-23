@@ -114,8 +114,7 @@ public class FBattleController : FControllerBase
             life = value;
             if(life <= 0)
             {
-                //게임 종료 처리
-                //startedWave = false;
+                EndBattle();
             }
         }
     }
@@ -200,7 +199,7 @@ public class FBattleController : FControllerBase
         CheckEndWaveProcess(InDeltaTime);
     }
 
-    void CreateEnemyProcess(float InDeltaTime)
+    private void CreateEnemyProcess(float InDeltaTime)
     {
         if (waveData.SummonCount <= summonCount)
             return;
@@ -213,7 +212,7 @@ public class FBattleController : FControllerBase
         }
     }
 
-    void CheckEndWaveProcess(float InDeltaTime)
+    private void CheckEndWaveProcess(float InDeltaTime)
     {
         if (summonCount < waveData.SummonCount)
             return;
@@ -236,6 +235,12 @@ public class FBattleController : FControllerBase
         enemySummonTimer.Interval = battleData.summonInterval;
 
         StartNextWaveAlarm();
+    }
+
+    private void EndBattle()
+    {
+        startedWave = false;
+        FPopupManager.Instance.OpenBattleResultPopup();
     }
 
     public void StartNextWaveAlarm()
