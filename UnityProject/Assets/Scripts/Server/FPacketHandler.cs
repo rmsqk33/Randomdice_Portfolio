@@ -71,7 +71,7 @@ public class FPacketHandler
         }
 
 #if DEBUG
-        if(SceneManager.GetActiveScene().name == "BattleScene")
+        if (SceneManager.GetActiveScene().name == "BattleScene")
         {
             FGlobal.localPlayer.AddController<FBattleController>();
         }

@@ -1,3 +1,4 @@
+using FEnum;
 using System;
 using System.IO;
 using UnityEngine;
@@ -15,7 +16,7 @@ public class FAccountMananger : FNonObjectSingleton<FAccountMananger>
     }
 
 #if DEBUG
-    [RuntimeInitializeOnLoadMethod]
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Test()
     {
         FAccountMananger.Instance.CreateLocalPlayer();
@@ -41,7 +42,7 @@ public class FAccountMananger : FNonObjectSingleton<FAccountMananger>
             if (SceneManager.GetActiveScene().name == "BattleScene")
                 return;
 #endif
-            SceneManager.LoadScene("LobbyScene");
+        FSceneManager.Instance.ChangeScene(SceneType.Lobby);
         }
         else
         {

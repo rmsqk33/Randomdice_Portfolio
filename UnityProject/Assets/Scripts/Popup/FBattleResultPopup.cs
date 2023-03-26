@@ -1,6 +1,6 @@
+using FEnum;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class FBattleResultPopup : FPopupBase
 {
@@ -23,8 +23,11 @@ public class FBattleResultPopup : FPopupBase
 
     public void OnClick()
     {
-        Time.timeScale = 1;
+        FSceneManager.Instance.ChangeSceneAfterLoading(SceneType.Lobby, FGlobal.FadeTime);
+    }
 
-        SceneManager.LoadScene("LobbyScene");
+    private void OnDestroy()
+    {
+        Time.timeScale = 1;
     }
 }

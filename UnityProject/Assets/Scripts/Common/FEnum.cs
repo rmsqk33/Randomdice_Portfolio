@@ -83,4 +83,14 @@ namespace FEnum
     {
         Damage,
     }
+
+    public enum SceneType
+    {
+        None,
+        Login,
+        Lobby,
+        Battle,
+        Loading,
+    }
+
 }
