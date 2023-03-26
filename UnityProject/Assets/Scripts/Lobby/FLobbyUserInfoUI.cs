@@ -11,6 +11,8 @@ public class FLobbyUserInfoUI : FUIBase
     [SerializeField]
     TextMeshProUGUI dia = null;
     [SerializeField]
+    TextMeshProUGUI card = null;
+    [SerializeField]
     TextMeshProUGUI exp = null;
     [SerializeField]
     TextMeshProUGUI level = null;
@@ -25,6 +27,7 @@ public class FLobbyUserInfoUI : FUIBase
     public string Name { set { nameText.text = value; } }
     public int Gold { set { gold.text = value.ToString(); } }
     public int Dia { set { dia.text = value.ToString(); } }
+    public int Card { set { card.text = value.ToString(); } }
     public Sprite ClassIcon { set{ classIcon.sprite = value; }}
     
     public int Level
@@ -32,13 +35,13 @@ public class FLobbyUserInfoUI : FUIBase
         set
         {
             level.text = value.ToString();
-            Sprite classIcon = Resources.Load<Sprite>(FDataCenter.Instance.GetStringAttribute("UserClass.Class[@class=" + level + "]@icon"));
+            Sprite classIcon = Resources.Load<Sprite>(FDataCenter.Instance.GetStringAttribute("UserClass.Class[@class=" + value + "]@icon"));
             if (classIcon != null)
                 ClassIcon = classIcon;
         }
     }
 
-    public int CurrentExp
+    public int Exp
     {
         set
         {
@@ -76,6 +79,7 @@ public class FLobbyUserInfoUI : FUIBase
         {
             Gold = inventoryController.Gold;
             Dia = inventoryController.Dia;
+            Card = inventoryController.Card;
         }
     }
 

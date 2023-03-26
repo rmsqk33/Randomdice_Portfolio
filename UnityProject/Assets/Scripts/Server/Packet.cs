@@ -31,6 +31,9 @@ namespace Packet
 		PACKET_TYPE_C_CHANGE_PRESET_BATTLEFIELD,
 		PACKET_TYPE_C_CHANGE_NAME,
 		PACKET_TYPE_S_CHANGE_NAME,
+		PACKET_TYPE_C_BATTLE_RESULT,
+		PACKET_TYPE_S_CHANGE_EXP,
+		PACKET_TYPE_S_CHANGE_LEVEL,
 		PACKET_TYPE_MAX,
 	}
 
@@ -1322,6 +1325,135 @@ namespace Packet
 			offset += sizeof(int);
 			name = Encoding.Unicode.GetString(InBuffer, offset, name_length);
 			offset += name_length;
+			return offset;
+		}
+
+	}
+
+	public class C_BATTLE_RESULT : PacketBase
+	{
+		public int battleId;
+
+		public int clearWave;
+
+		public C_BATTLE_RESULT()
+		{
+		}
+
+		public C_BATTLE_RESULT(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			size += sizeof(int);
+			size += sizeof(int);
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_C_BATTLE_RESULT;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+			InBuffer.AddRange(BitConverter.GetBytes(battleId));
+			InBuffer.AddRange(BitConverter.GetBytes(clearWave));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			battleId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			clearWave = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			return offset;
+		}
+
+	}
+
+	public class S_CHANGE_EXP : PacketBase
+	{
+		public int exp;
+
+		public S_CHANGE_EXP()
+		{
+		}
+
+		public S_CHANGE_EXP(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			size += sizeof(int);
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_S_CHANGE_EXP;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+			InBuffer.AddRange(BitConverter.GetBytes(exp));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			exp = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			return offset;
+		}
+
+	}
+
+	public class S_CHANGE_LEVEL : PacketBase
+	{
+		public int level;
+
+		public S_CHANGE_LEVEL()
+		{
+		}
+
+		public S_CHANGE_LEVEL(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			size += sizeof(int);
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_S_CHANGE_LEVEL;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+			InBuffer.AddRange(BitConverter.GetBytes(level));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			level = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
 			return offset;
 		}
 

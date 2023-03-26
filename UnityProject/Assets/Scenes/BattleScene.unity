@@ -2718,6 +2718,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1164654002658054198, guid: 64f5e421b52712d4ead46c58eb297d44, type: 3}
+      propertyPath: m_text
+      value: 999
+      objectReference: {fileID: 0}
     - target: {fileID: 1164654003570206669, guid: 64f5e421b52712d4ead46c58eb297d44, type: 3}
       propertyPath: m_Name
       value: LocalPlayerBattleDiceSlot

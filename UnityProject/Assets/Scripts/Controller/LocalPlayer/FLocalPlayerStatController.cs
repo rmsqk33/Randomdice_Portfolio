@@ -4,11 +4,17 @@ using UnityEngine;
 
 public class FLocalPlayerStatController : FControllerBase
 {
-    public int Level { get; set; }
-    public int Exp { get; set; }
-    public int MaxExp { get; set; }
-    public int Critical { get; private set; }
-    public string Name { get; set; }
+    private int level;
+    private int exp;
+    private int maxExp;
+    private int critical;
+    private string name;
+
+    public int Level { get { return level; } }
+    public int Exp { get { return exp; } }
+    public int MaxExp { get { return maxExp; } }
+    public int Critical { get { return critical; } }
+    public string Name { get { return name; } }
 
     public FLocalPlayerStatController(FLocalPlayer InOwner) : base(InOwner)
     {
@@ -16,10 +22,9 @@ public class FLocalPlayerStatController : FControllerBase
 
     public void Handle_S_USER_DATA(in S_USER_DATA InPacket)
     {
-        Name = InPacket.name;
-        Level = InPacket.level;
-        Exp = InPacket.exp;
-        MaxExp = FDataCenter.Instance.GetIntAttribute("UserClass.Class[@class=" + InPacket.level + "]@exp");
+        name = InPacket.name;
+        exp = InPacket.exp;
+        SetLevel(InPacket.level);
         
         CalcCritical();
 
@@ -35,17 +40,40 @@ public class FLocalPlayerStatController : FControllerBase
         }
     }
 
+    public void Handle_S_CHANGE_EXP(in S_CHANGE_EXP InPacket)
+    {
+        exp = InPacket.exp;
+
+        FLobbyUserInfoUI ui = FindLobbyUserInfoUI();
+        if (ui != null)
+        {
+            ui.Exp = exp;
+        }
+    }
+
+    public void Handle_S_CHANGE_LEVEL(in S_CHANGE_LEVEL InPacket)
+    {
+        SetLevel(InPacket.level);
+
+        FLobbyUserInfoUI ui = FindLobbyUserInfoUI();
+        if (ui != null)
+        {
+            ui.Level = level;
+            ui.MaxExp = maxExp;
+        }
+    }
+
     public void Handle_S_CAHNGE_NAME(in S_CHANGE_NAME InPacket)
     {
         ChangeNameResult result = (ChangeNameResult)InPacket.resultType;
         if (result == ChangeNameResult.CHANGE_NAME_RESULT_SUCCESS)
         {
-            Name = InPacket.name;
+            name = InPacket.name;
 
             FLobbyUserInfoUI userInfoUI = FindLobbyUserInfoUI();
             if (userInfoUI != null)
             {
-                userInfoUI.Name = Name;
+                userInfoUI.Name = name;
             }
 
             FPopupManager.Instance.ClosePopup();
@@ -73,19 +101,19 @@ public class FLocalPlayerStatController : FControllerBase
         FDiceGradeData data = FDiceDataManager.Instance.FindGradeDataByID(InID);
         if (data != null)
         {
-            Critical += data.critical * InIncreaseLevel;
+            critical += data.critical * InIncreaseLevel;
 
             FDiceInventory diceInventory = FindDiceInventoryUI();
             if (diceInventory != null)
             {
-                diceInventory.Critical = Critical;
+                diceInventory.Critical = critical;
             }
         }
     }
 
     void CalcCritical()
     {
-        Critical = 0;
+        critical = 0;
 
         FDiceController diceController = FindController<FDiceController>();
         if(diceController != null)
@@ -94,6 +122,12 @@ public class FLocalPlayerStatController : FControllerBase
                 AddCritical(InDice.id, InDice.level);
             });
         }
+    }
+
+    void SetLevel(int InLevel)
+    {
+        level = InLevel;
+        maxExp = FDataCenter.Instance.GetIntAttribute("UserClass.Class[@class=" + level + "]@exp");
     }
 
     FDiceInventory FindDiceInventoryUI()

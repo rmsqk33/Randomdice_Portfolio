@@ -1,13 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
-using System.Text;
 using System;
 using UnityEngine;
 using Packet;
 using System.Linq;
-using Unity.VisualScripting;
 
 public class FServerManager : FSingleton<FServerManager>
 {
@@ -21,6 +18,7 @@ public class FServerManager : FSingleton<FServerManager>
     public bool IsConnectedServer { get; private set; } = false;
 
     public delegate void PacketHandler(in byte[] InBuffer);
+
     private Dictionary<PacketType, PacketHandler> packetHandlerMap = new Dictionary<PacketType, PacketHandler>();
 
     struct MessageData

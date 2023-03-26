@@ -13,6 +13,9 @@ public class FPacketHandler
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_STORE_DICE_LIST, Handle_S_STORE_DICE_LIST);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_CHANGE_GOLD, Handle_S_CHANGE_GOLD);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_CHANGE_DIA, Handle_S_CHANGE_DIA);
+        FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_CHANGE_CARD, Handle_S_CHANGE_CARD);
+        FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_CHANGE_EXP, Handle_S_CHANGE_EXP);
+        FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_CHANGE_LEVEL, Handle_S_CHANGE_LEVEL);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_PURCHASE_DICE, Handle_S_PURCHASE_DICE);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_PURCHASE_BOX, Handle_S_PURCHASE_BOX);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_PURCHASE_BATTLEFIELD, Handle_S_PURCHASE_BATTLEFIELD);
@@ -133,6 +136,39 @@ public class FPacketHandler
         }
     }
 
+    static void Handle_S_CHANGE_CARD(in byte[] InBuffer)
+    {
+        S_CHANGE_CARD pkt = new S_CHANGE_CARD(InBuffer);
+
+        FInventoryController inventoryController = FGlobal.localPlayer.FindController<FInventoryController>();
+        if (inventoryController != null)
+        {
+            inventoryController.Handle_S_CHANGE_CARD(pkt);
+        }
+    }
+
+    static void Handle_S_CHANGE_EXP(in byte[] InBuffer)
+    {
+        S_CHANGE_EXP pkt = new S_CHANGE_EXP(InBuffer);
+
+        FLocalPlayerStatController statController = FGlobal.localPlayer.FindController<FLocalPlayerStatController>();
+        if (statController != null)
+        {
+            statController.Handle_S_CHANGE_EXP(pkt);
+        }
+    }
+
+    static void Handle_S_CHANGE_LEVEL(in byte[] InBuffer)
+    {
+        S_CHANGE_LEVEL pkt = new S_CHANGE_LEVEL(InBuffer);
+
+        FLocalPlayerStatController statController = FGlobal.localPlayer.FindController<FLocalPlayerStatController>();
+        if (statController != null)
+        {
+            statController.Handle_S_CHANGE_LEVEL(pkt);
+        }
+    }
+    
     static void Handle_S_PURCHASE_BOX(in byte[] InBuffer)
     {
         S_PURCHASE_BOX pkt = new S_PURCHASE_BOX(InBuffer);

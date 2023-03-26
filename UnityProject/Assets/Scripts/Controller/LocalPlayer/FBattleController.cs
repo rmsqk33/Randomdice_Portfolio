@@ -1,4 +1,5 @@
 using FEnum;
+using Packet;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -240,7 +241,14 @@ public class FBattleController : FControllerBase
     private void EndBattle()
     {
         startedWave = false;
+
         FPopupManager.Instance.OpenBattleResultPopup();
+
+        C_BATTLE_RESULT packet = new C_BATTLE_RESULT();
+        packet.battleId = battleData.id;
+        packet.clearWave = wave - 1;
+
+        FServerManager.Instance.SendMessage(packet);
     }
 
     public void StartNextWaveAlarm()
