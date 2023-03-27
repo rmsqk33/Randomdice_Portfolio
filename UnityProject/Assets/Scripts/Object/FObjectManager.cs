@@ -53,7 +53,7 @@ public class FObjectManager : FSingleton<FObjectManager>
     {
         if (enemyMap.ContainsKey(InID))
         {
-            if (FrontEnemy.ObjectID == InID)
+            if (FrontEnemy != null && FrontEnemy.ObjectID == InID)
                 FrontEnemy = null;
 
             enemyMap[InID].Release();
