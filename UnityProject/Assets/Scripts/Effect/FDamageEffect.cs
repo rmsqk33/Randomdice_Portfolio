@@ -1,4 +1,5 @@
 using UnityEngine;
+using FEnum;
 
 public class FDamageEffect : FEffect
 {
@@ -64,7 +65,8 @@ public class FDamageEffect : FEffect
         if (battleDiceController == null)
             return;
 
-        int damage = (int)(battleDiceController.IsCritical() ? this.damage * battleDiceController.CriticalDamageRate : this.damage);
+        bool critical = battleDiceController.IsCritical();
+        int damage = (int)(critical ? this.damage * battleDiceController.CriticalDamageRate : this.damage);
         if (0 < radius)
         {
             FObjectManager.Instance.ForeachEnemy((FObjectBase InObject) =>
@@ -72,21 +74,24 @@ public class FDamageEffect : FEffect
                 if (radius < Vector2.Distance(InObject.WorldPosition, transform.position))
                     return;
 
-                FStatController statController = InObject.FindController<FStatController>();
-                if (statController != null)
-                {
-                    statController.OnDamage(damage);
-                }
+                DamageToTarget(target, damage, critical);
             });
         }
         else if (target != null)
         {
-            FStatController statController = target.FindController<FStatController>();
-            if (statController != null)
-            {
-                statController.OnDamage(damage);
-            }
+            DamageToTarget(target, damage, critical);
         }
+    }
+
+    private void DamageToTarget(FObjectBase InTarget, int InDamage, bool InCritical)
+    {
+        FStatController statController = InTarget.FindController<FStatController>();
+        if (statController != null)
+        {
+            statController.OnDamage(InDamage);
+        }
+
+        FCombatTextManager.Instance.AddText(InCritical ? CombatTextType.Critical : CombatTextType.Normal, InDamage, InTarget);
     }
 
     private void OnCompleteAnimation()

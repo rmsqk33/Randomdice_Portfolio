@@ -47,6 +47,9 @@ TagManager:
   - name: Object
     uniqueID: 4063600931
     locked: 0
+  - name: CombatText
+    uniqueID: 3423453697
+    locked: 0
   - name: UI
     uniqueID: 1763993975
     locked: 0

@@ -93,4 +93,11 @@ namespace FEnum
         Loading,
     }
 
+    public enum CombatTextType
+    {
+        None,
+        Normal,
+        Critical,
+        Max
+    }
 }

@@ -38,10 +38,7 @@ public class FMoveController : FControllerBase
         if (Owner.WorldPosition == movePath.WorldPosition)
         {
             movePath.OnPass(Owner);
-            if (movePath.NextPath != null)
-            {
-                movePath = movePath.NextPath;
-            }
+            movePath = movePath.NextPath;
         }
     }
 
