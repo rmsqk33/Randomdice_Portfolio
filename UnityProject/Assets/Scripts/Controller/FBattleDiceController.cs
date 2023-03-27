@@ -5,7 +5,7 @@ public class FBattleDiceController : FControllerBase
 {
     int slotIndex;
     int diceLevel;
-    float criticalRate;
+    float criticalChance;
     float criticalDamageRate;
     List<Transform> eyeList;
 
@@ -13,7 +13,7 @@ public class FBattleDiceController : FControllerBase
     public int DiceLevel { get { return diceLevel; } }
     public int SlotIndex { get { return slotIndex; } }
     public int EyeCount { get { return eyeList.Count; } }
-    public float CriticalRate { get { return criticalRate; } }
+    public float CriticalChance { get { return criticalChance; } }
     public float CriticalDamageRate { get { return criticalDamageRate; } }
     
     public FBattleDiceController(FObjectBase InOwner) : base(InOwner)
@@ -24,7 +24,7 @@ public class FBattleDiceController : FControllerBase
     {
         slotIndex = InSlotIndex;
         eyeList = InEyeList;
-        criticalRate = 0.33f;
+        criticalChance = 0.33f;
         
         if(Owner.IsOwnLocalPlayer())
         {
@@ -41,7 +41,7 @@ public class FBattleDiceController : FControllerBase
             FLocalPlayerStatController localPlayerStatController = FGlobal.localPlayer.FindController<FLocalPlayerStatController>();
             if(localPlayerStatController != null)
             {
-                criticalDamageRate = localPlayerStatController.Critical / 100;
+                criticalDamageRate = localPlayerStatController.Critical / 100.0f;
             }
         }
     }
@@ -101,6 +101,6 @@ public class FBattleDiceController : FControllerBase
 
     public bool IsCritical()
     {
-        return criticalRate <= Random.value;
+        return criticalChance <= Random.value;
     }
 }

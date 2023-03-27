@@ -27,6 +27,7 @@ public class FEffectData
 
     public readonly int damage;
     public readonly int damagePerLevel;
+    public readonly int damagePerBattleLevel;
     public readonly int radius;
     public readonly int duration;
 
@@ -38,6 +39,7 @@ public class FEffectData
 
         damage = InNode.GetIntAttr("damage");
         damagePerLevel = InNode.GetIntAttr("damagePerLevel");
+        damagePerBattleLevel = InNode.GetIntAttr("damagePerBattleLevel");
         radius = InNode.GetIntAttr("radius");
         duration = InNode.GetIntAttr("duration");
     }

@@ -5,9 +5,7 @@ public class FDamageEffect : FEffect
 {
     int damage;
     int radius;
-    float interval;
     float duration;
-    float elaplsedTime;
 
     public override void Initialize(int InEffectID, FObjectBase InOwner, FObjectBase InTarget = null)
     {
@@ -18,15 +16,8 @@ public class FDamageEffect : FEffect
         base.Initialize(InEffectID, InOwner, InTarget);
         radius = effectData.radius;
         duration = effectData.duration;
+        damage = CalcDamage(effectData);
         
-        if (InOwner.IsOwnLocalPlayer())
-        {
-            FBattleDiceController battleDiceController = InOwner.FindController<FBattleDiceController>();
-            if (battleDiceController != null)
-            {
-                damage = effectData.damage + effectData.damagePerLevel * battleDiceController.DiceLevel;
-            }
-        }
 
         if (duration == 0)
         {
@@ -38,29 +29,15 @@ public class FDamageEffect : FEffect
                 duration = anim.GetCurrentAnimatorStateInfo(0).length;
             }
         }
-    }
 
-    public override void Tick(float InDeltaTime)
-    {
-        if (0 < interval)
-        {
-            elaplsedTime += InDeltaTime;
-            if (interval <= elaplsedTime)
-            {
-                elaplsedTime = 0;
-                DamageToTarget();
-            }
-        }
-
-        duration -= InDeltaTime;
-        if (duration <= 0)
-        {
-            RemoveEffect();
-        }
+        StartCoroutine(RemoveEffect(duration));
     }
 
     private void DamageToTarget()
     {
+        if (owner.IsOwnLocalPlayer() == false)
+            return;
+
         FBattleDiceController battleDiceController = owner.FindController<FBattleDiceController>();
         if (battleDiceController == null)
             return;
@@ -94,8 +71,23 @@ public class FDamageEffect : FEffect
         FCombatTextManager.Instance.AddText(InCritical ? CombatTextType.Critical : CombatTextType.Normal, InDamage, InTarget);
     }
 
-    private void OnCompleteAnimation()
+    private int CalcDamage(FEffectData InData)
     {
-        RemoveEffect();
+        if (owner.IsOwnLocalPlayer() == false)
+            return 0;
+
+        FBattleDiceController battleDiceController = owner.FindController<FBattleDiceController>();
+        if (battleDiceController == null)
+            return 0;
+
+        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
+        if (battleController == null)
+            return 0;
+
+        FEquipBattleDice battleDice = battleController.FindBattleDicePreset(battleDiceController.DiceID);
+        if (battleDice == null)
+            return 0;
+
+        return InData.damage + InData.damagePerLevel * battleDiceController.DiceLevel + InData.damagePerBattleLevel * battleDice.level;
     }
 }

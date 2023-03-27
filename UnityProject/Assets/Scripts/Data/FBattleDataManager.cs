@@ -57,6 +57,7 @@ public class FBattleData
     public readonly int id;
     public readonly int life;
     public readonly float summonInterval;
+	public readonly int maxWave;
 
 	Dictionary<int, FWaveData> waveDataMap = new Dictionary<int, FWaveData>();
 
@@ -65,14 +66,18 @@ public class FBattleData
 		id = InNode.GetIntAttr("id");
 		life = InNode.GetIntAttr("life");
 		summonInterval = InNode.GetFloatAttr("summonInterval");
-        
-        InNode.ForeachChildNodes("Wave", (in FDataNode InNode) => {
+
+		int max = 0;
+		InNode.ForeachChildNodes("Wave", (in FDataNode InNode) => {
 			FWaveData waveData = new FWaveData(InNode);
 			waveDataMap.Add(waveData.wave, waveData);
-		});
+			max = Math.Max(waveData.wave, max);
+        });
+
+		maxWave = max;
     }
 
-	public FWaveData FindWaveData(int InWave)
+    public FWaveData FindWaveData(int InWave)
 	{
 		int wave = Math.Clamp(InWave, 1, waveDataMap.Count);
 		if (waveDataMap.ContainsKey(wave))
@@ -86,13 +91,11 @@ public class FBattleDiceLevelData
 {
 	public readonly int level;
 	public readonly int cost;
-	public readonly float attackRate;
 
     public FBattleDiceLevelData(FDataNode InNode)
 	{
         level = InNode.GetIntAttr("level");
         cost = InNode.GetIntAttr("cost");
-        attackRate = InNode.GetFloatAttr("attackRate");
     }
 }
 

@@ -11,7 +11,6 @@ public class FEquipBattleDice
     public int level = 1;
     public int eyeCount = 0;
     public int upgradeCost;
-    public double attackRate;
     
     int upgradeDisableFlag;
 
@@ -165,7 +164,6 @@ public class FBattleController : FControllerBase
                 presetController.ForeachDicePreset(presetController.SelectedPresetIndex, (int InDiceID) => {
                     FEquipBattleDice battleDice = new FEquipBattleDice(i, InDiceID);
                     battleDice.upgradeCost = levelData.cost;
-                    battleDice.attackRate = levelData.attackRate;
                     battleDice.SetUpgradeDisableFlag(DiceUpgradeDisableReason.NOT_ENOUGH_SP, battleDice.upgradeCost <= SP);
                     equipDiceList[i] = battleDice;
                     ++i;
@@ -254,10 +252,11 @@ public class FBattleController : FControllerBase
     public void StartNextWaveAlarm()
     {
         startedWave = false;
-        ++Wave;
 
         TotalCard += CardIncrease;
-        waveData = battleData.FindWaveData(Wave);
+        waveData = battleData.FindWaveData(Wave % battleData.maxWave + 1);
+        ++Wave;
+
         CardIncrease = waveData.card;
 
         FBattlePanelUI battleUI = FindBattlePanelUI();
@@ -296,7 +295,6 @@ public class FBattleController : FControllerBase
 
         ++dice.level;
         dice.upgradeCost = levelData.cost;
-        dice.attackRate = levelData.attackRate;
         dice.SetUpgradeDisableFlag(DiceUpgradeDisableReason.MAX_LEVEL, dice.level < FBattleDataManager.Instance.MaxLevel);
 
         SP -= cost;
@@ -452,7 +450,7 @@ public class FBattleController : FControllerBase
         });
     }
 
-    private FEquipBattleDice FindBattleDicePreset(int InDiceID)
+    public FEquipBattleDice FindBattleDicePreset(int InDiceID)
     {
         foreach(FEquipBattleDice info in equipDiceList)
         {

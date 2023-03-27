@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class FEffect : MonoBehaviour
@@ -21,8 +22,10 @@ public class FEffect : MonoBehaviour
 
     }
 
-    protected void RemoveEffect()
+    protected IEnumerator RemoveEffect(float InTime)
     {
+        yield return new WaitForSeconds(InTime);
+
         FEffectManager.Instance.RemoveEffect(InstanceID);
     }
 }
