@@ -38,11 +38,11 @@ public class FAccountMananger : FNonObjectSingleton<FAccountMananger>
         if(InResult)
         {
             CreateLocalPlayer();
-#if DEBUG
-            if (SceneManager.GetActiveScene().name == "BattleScene")
-                return;
-#endif
-        FSceneManager.Instance.ChangeScene(SceneType.Lobby);
+
+            if(FSceneManager.Instance.CurrentSceneType == SceneType.Login)
+            {
+                FSceneManager.Instance.ChangeScene(SceneType.Lobby);
+            }
         }
         else
         {

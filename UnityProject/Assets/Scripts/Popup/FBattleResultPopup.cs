@@ -23,7 +23,7 @@ public class FBattleResultPopup : FPopupBase
 
     public void OnClick()
     {
-        FSceneManager.Instance.ChangeSceneAfterLoading(SceneType.Lobby, FGlobal.FadeTime);
+        FSceneManager.Instance.ChangeSceneAfterLoading(SceneType.Lobby);
     }
 
     private void OnDestroy()

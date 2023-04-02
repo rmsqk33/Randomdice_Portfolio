@@ -10,7 +10,7 @@ public class FDataCenter : FNonObjectSingleton<FDataCenter>
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Initialize() 
     {
-        string dataPath = Application.dataPath + "/Resources/Data/";
+        string dataPath = Application.streamingAssetsPath + "/Data/";
         Instance.ParseXML(dataPath);
 
         FDiceDataManager.Instance.Initialize();

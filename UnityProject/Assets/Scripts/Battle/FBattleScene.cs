@@ -1,17 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class FBattleScene : MonoBehaviour
 {
-    private void Awake()
+    private void Start()
     {
 #if DEBUG
         if (!FServerManager.Instance.IsConnectedServer)
         {
-            FServerManager.Instance.ConnectServer();
+            FServerManager.Instance.ConnectMainServer();
             FAccountMananger.Instance.TryLogin();
         }
+        else
+        {
+            FGlobal.localPlayer.AddController<FBattleController>();
+        }
+#else
+        FGlobal.localPlayer.AddController<FBattleController>();
 #endif
+    }
+
+    private void OnDestroy()
+    {
+        FGlobal.localPlayer.RemoveController<FBattleController>();
     }
 }

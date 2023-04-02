@@ -23,7 +23,7 @@ public class FLoginScene : MonoBehaviour
 
     void Start()
     {
-        AddPreWork("serverConnect", FServerManager.Instance.ConnectServer);
+        AddPreWork("serverConnect", FServerManager.Instance.ConnectMainServer);
         AddPreWork("login", FAccountMananger.Instance.TryLogin);
 
         LoadPreWork();

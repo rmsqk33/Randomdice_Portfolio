@@ -38,9 +38,22 @@ public class FObjectBase : MonoBehaviour
     public void AddController<T>()
     {
         Type type = typeof(T);
+        if (controllers.ContainsKey(type))
+            return;
+
         FControllerBase controller = (FControllerBase)Activator.CreateInstance(type, args: this);
         controllers.Add(type, controller);
         controller.Initialize();
+    }
+
+    public void RemoveController<T>()
+    {
+        Type type = typeof(T);
+        if (controllers.ContainsKey(type))
+        {
+            controllers[type].Release();
+            controllers.Remove(type);
+        }
     }
 
     public T FindController<T>()

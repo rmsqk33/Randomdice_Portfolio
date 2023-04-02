@@ -13,7 +13,8 @@ public class FBattlefieldController : FControllerBase
 
     public void Handle_S_USER_DATA(in S_USER_DATA InPacket)
     {
-        foreach(int id in InPacket.battleFieldIDList)
+        acquiredBattleFielDList.Clear();
+        foreach (int id in InPacket.battleFieldIDList)
         {
             if (id == 0)
                 break;

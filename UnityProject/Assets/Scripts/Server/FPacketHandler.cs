@@ -22,7 +22,7 @@ public class FPacketHandler
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_ADD_DICE, Handle_S_ADD_DICE);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_UPGRADE_DICE, Handle_S_UPGRADE_DICE);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_CHANGE_NAME, Handle_S_CHANGE_NAME);
-
+        FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_S_BATTLE_MATCHING, Handle_S_BATTLE_MATCHING);
     }
 
     static void Handle_S_GUEST_LOGIN(in byte[] InBuffer)
@@ -209,7 +209,21 @@ public class FPacketHandler
         FLocalPlayerStatController statController = FGlobal.localPlayer.FindController<FLocalPlayerStatController>();
         if(statController != null)
         {
-            statController.Handle_S_CAHNGE_NAME(pkt);
+            statController.Handle_S_CHANGE_NAME(pkt);
+        }
+    }
+
+    static void Handle_S_BATTLE_MATCHING(in byte[] InBuffer)
+    {
+        S_BATTLE_MATCHING pkt = new S_BATTLE_MATCHING(InBuffer);
+
+        if (pkt.isHost)
+        {
+            FServerManager.Instance.OpenP2PServer();
+        }
+        else if (FServerManager.Instance.ConnectP2PServer(pkt.hostIP))
+        {
+            FSceneManager.Instance.ChangeSceneAfterLoading(FEnum.SceneType.Battle);
         }
     }
 }

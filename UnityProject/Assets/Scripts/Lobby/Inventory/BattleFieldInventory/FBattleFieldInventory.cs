@@ -36,9 +36,12 @@ public class FBattleFieldInventory : FUIBase
 
     public void InitInventory()
     {
+
+
         FBattlefieldController battlefieldController = FGlobal.localPlayer.FindController<FBattlefieldController>();
         if (battlefieldController != null)
         {
+            ClearInventory();
             FBattleFieldDataManager.Instance.ForeachBattleFieldData((FBattleFieldData InData) =>
             {
                 if (battlefieldController.IsAcquiredBattleField(InData.id))
@@ -170,5 +173,20 @@ public class FBattleFieldInventory : FUIBase
             Destroy(notAcquiredBattleFieldMap[InID].gameObject);
             notAcquiredBattleFieldMap.Remove(InID);
         }
+    }
+
+    void ClearInventory()
+    {
+        foreach (var pair in acquiredBattleFieldMap)
+        {
+            Destroy(pair.Value.gameObject);
+        }
+        acquiredBattleFieldMap.Clear();
+
+        foreach (var pair in notAcquiredBattleFieldMap)
+        {
+            Destroy(pair.Value.gameObject);
+        }
+        notAcquiredBattleFieldMap.Clear();
     }
 }

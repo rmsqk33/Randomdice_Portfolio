@@ -9,7 +9,7 @@ public class FLobbyScene : MonoBehaviour
 #if DEBUG
         if (!FServerManager.Instance.IsConnectedServer)
         {
-            FServerManager.Instance.ConnectServer();
+            FServerManager.Instance.ConnectMainServer();
             FAccountMananger.Instance.TryLogin();
         }
 #endif

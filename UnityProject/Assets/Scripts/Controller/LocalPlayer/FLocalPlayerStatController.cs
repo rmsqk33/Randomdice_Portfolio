@@ -31,7 +31,7 @@ public class FLocalPlayerStatController : FControllerBase
         FLobbyUserInfoUI userInfoUI = FindLobbyUserInfoUI();
         if (userInfoUI != null)
         {
-            userInfoUI.InitUserInfo();
+            userInfoUI.Initialize();
         }
 
         if(Name.Length == 0)
@@ -63,7 +63,7 @@ public class FLocalPlayerStatController : FControllerBase
         }
     }
 
-    public void Handle_S_CAHNGE_NAME(in S_CHANGE_NAME InPacket)
+    public void Handle_S_CHANGE_NAME(in S_CHANGE_NAME InPacket)
     {
         ChangeNameResult result = (ChangeNameResult)InPacket.resultType;
         if (result == ChangeNameResult.CHANGE_NAME_RESULT_SUCCESS)

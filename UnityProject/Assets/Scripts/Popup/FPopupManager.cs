@@ -117,6 +117,16 @@ public class FPopupManager : FNonObjectSingleton<FPopupManager>
         popup.OpenPopup();
     }
 
+    public void OpenBattleMatchingPopup()
+    {
+        FBattleMatchingPopup popup = null;
+        GameObject gameObject = CreatePopup("Prefabs/Popup/BattleMatchingPopup");
+        if (gameObject != null)
+            popup = gameObject.GetComponent<FBattleMatchingPopup>();
+
+        popup.OpenPopup();
+    }
+
     public void ClosePopup()
     {
         if(openedPopup != null)

@@ -1,6 +1,5 @@
 using FEnum;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -17,18 +16,14 @@ public class FSceneManager : FSingleton<FSceneManager>
     public float Progress { get { return progress; } }
 
 
-    [RuntimeInitializeOnLoadMethod]
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Init()
     {
-        Instance.fadeSpriteRenderer = Instance.AddComponent<SpriteRenderer>();
+        Instance.fadeSpriteRenderer = Instance.gameObject.AddComponent<SpriteRenderer>();
         Instance.fadeSpriteRenderer.color = new Color(0, 0, 0, 0);
         Instance.fadeSpriteRenderer.sprite = Resources.Load<Sprite>("Sprite/Loading/Square");
         Instance.fadeSpriteRenderer.sortingLayerID = SortingLayer.layers[SortingLayer.layers.Length - 1].id;
         Instance.fadeSpriteRenderer.enabled = false;
-
-        float worldScreenHeight = (float)(Camera.main.orthographicSize * 2.0);
-        float worldScreenWidth = worldScreenHeight / Screen.height * Screen.width;
-        Instance.transform.localScale = new Vector3(worldScreenWidth, worldScreenHeight, 1);
 
         SceneManager.sceneLoaded += Instance.OnSceneLoaded;
     }
@@ -37,7 +32,7 @@ public class FSceneManager : FSingleton<FSceneManager>
     {
     }
 
-    public void ChangeSceneAfterLoading(SceneType InType, float InFadeTime = 0.0f)
+    public void ChangeSceneAfterLoading(SceneType InType, float InFadeTime = 1)
     {
         progress = 0.0f;
         nextSceneType = InType;
@@ -72,6 +67,10 @@ public class FSceneManager : FSingleton<FSceneManager>
     private void OnSceneLoaded(Scene InScene, LoadSceneMode InMode)
     {
         currentSceneType = ConvertStringToSceneType(InScene.name);
+
+        float worldScreenHeight = (float)(Camera.main.orthographicSize * 2.0);
+        float worldScreenWidth = worldScreenHeight / Screen.height * Screen.width;
+        Instance.transform.localScale = new Vector3(worldScreenWidth, worldScreenHeight, 1);
 
         if (0 < fadeTime)
         {
@@ -138,12 +137,13 @@ public class FSceneManager : FSingleton<FSceneManager>
     private IEnumerator FadeOutCoroutine()
     {
         fadeSpriteRenderer.enabled = true;
+        SetFade(0);
 
         float deltaTime = 0;
         while (fadeSpriteRenderer.color.a < 1)
         {
             deltaTime += Time.unscaledDeltaTime;
-            fadeSpriteRenderer.color = fadeSpriteRenderer.color.WithAlpha(Mathf.Lerp(0, 1, deltaTime / fadeTime));
+            SetFade(Mathf.Lerp(0, 1, deltaTime / fadeTime));
 
             yield return null;
         }
@@ -151,11 +151,13 @@ public class FSceneManager : FSingleton<FSceneManager>
 
     private IEnumerator FadeInCoroutine()
     {
+        SetFade(1);
+
         float deltaTime = 0;
         while (0 < fadeSpriteRenderer.color.a)
         {
             deltaTime += Time.unscaledDeltaTime;
-            fadeSpriteRenderer.color = fadeSpriteRenderer.color.WithAlpha(Mathf.Lerp(0, 1, 1 - deltaTime / fadeTime));
+            SetFade(Mathf.Lerp(0, 1, 1 - deltaTime / fadeTime));
 
             yield return null;
         }
@@ -166,6 +168,13 @@ public class FSceneManager : FSingleton<FSceneManager>
         {
             fadeTime = 0;
         }
+    }
+
+    private void SetFade(float InAlpha)
+    {
+        Color color = fadeSpriteRenderer.color;
+        color.a = InAlpha;
+        fadeSpriteRenderer.color = color;
     }
 
     private string ConvertSceneTypeToString(SceneType InType)

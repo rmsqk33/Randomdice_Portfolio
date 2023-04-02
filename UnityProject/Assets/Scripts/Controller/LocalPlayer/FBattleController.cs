@@ -177,16 +177,13 @@ public class FBattleController : FControllerBase
             }
         }
 
-
         FBattlePanelUI battleUI = FindBattlePanelUI();
         if(battleUI != null)
         {
             battleUI.Init();
         }
 
-#if DEBUG
-        StartBattle(1);
-#endif
+        StartBattle(FBattleDataManager.Instance.CoopBattleID);
     }
 
     public override void Tick(float InDeltaTime)
@@ -200,14 +197,17 @@ public class FBattleController : FControllerBase
 
     private void CreateEnemyProcess(float InDeltaTime)
     {
-        if (waveData.SummonCount <= summonCount)
+        enemySummonTimer.Tick(InDeltaTime);
+        if (enemySummonTimer.IsElapsedCheckTime() == false)
             return;
 
-        if (enemySummonTimer.IsElapsedCheckTime(InDeltaTime))
+        int enemyID = waveData.GetEnemyID(summonCount);
+        FObjectManager.Instance.CreateEnemy(enemyID);
+        ++summonCount;
+
+        if (waveData.SummonCount <= summonCount)
         {
-            int enemyID = waveData.GetEnemyID(summonCount);
-            FObjectManager.Instance.CreateEnemy(enemyID);
-            ++summonCount;
+            enemySummonTimer.Stop();
         }
     }
 
@@ -219,8 +219,10 @@ public class FBattleController : FControllerBase
         if (0 < FObjectManager.Instance.EnemyCount)
             return;
 
-        if (waveEndCheckTimer.IsElapsedCheckTime(InDeltaTime))
+        waveEndCheckTimer.Tick(InDeltaTime);
+        if (waveEndCheckTimer.IsElapsedCheckTime())
         {
+            waveEndCheckTimer.Stop();
             StartNextWaveAlarm();
         }
     }
@@ -239,6 +241,10 @@ public class FBattleController : FControllerBase
     private void EndBattle()
     {
         startedWave = false;
+
+        FServerManager.Instance.StopP2PServer();
+        FServerManager.Instance.ConnectMainServer();
+        FAccountMananger.Instance.TryLogin();
 
         FPopupManager.Instance.OpenBattleResultPopup();
 
@@ -270,8 +276,8 @@ public class FBattleController : FControllerBase
     {
         summonCount = 0;
 
-        enemySummonTimer.ResetElapsedTime();
-        waveEndCheckTimer.ResetElapsedTime();
+        enemySummonTimer.Start();
+        waveEndCheckTimer.Start();
 
         startedWave = true;
     }

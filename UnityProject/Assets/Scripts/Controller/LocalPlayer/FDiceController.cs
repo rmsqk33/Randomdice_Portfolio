@@ -20,6 +20,7 @@ public class FDiceController : FControllerBase
 
     public void Handle_S_USER_DATA(in S_USER_DATA InPacket)
     {
+        acquiredDiceMap.Clear();
         foreach (S_USER_DATA.DICE_DATA diceData in InPacket.diceDataList)
         {
             if (diceData.id == 0)

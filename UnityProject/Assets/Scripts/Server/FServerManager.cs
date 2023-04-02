@@ -5,12 +5,16 @@ using System;
 using UnityEngine;
 using Packet;
 using System.Linq;
+using System.Net;
 
 public class FServerManager : FSingleton<FServerManager>
 {
     const string SERVER_IP = "127.0.0.1";
     const int SERVER_PORT = 7777;
+    const int P2P_SERVER_PORT = 7778;
     const int PACKET_MAX = 10240;
+
+    private TcpListener tcpListener = null;
 
     private TcpClient tcpClient = null;
     private NetworkStream netStream = null;
@@ -54,43 +58,91 @@ public class FServerManager : FSingleton<FServerManager>
 
     void DisconnectServer()
     {
-        if(IsConnectedServer)
+        if (IsConnectedServer)
         {
             IsConnectedServer = false;
 
-            if(receiveMessageThread != null)
+            if (receiveMessageThread != null)
                 receiveMessageThread.Join();
 
-            if(netStream != null)
+            if (netStream != null)
                 netStream.Close();
 
-            if(tcpClient != null)
+            if (tcpClient != null)
                 tcpClient.Close();
         }
     }
 
-    public bool ConnectServer()
+    public async void OpenP2PServer()
     {
-        if (IsConnectedServer)
-            return false;
-
         try
         {
-            tcpClient = new TcpClient(SERVER_IP, SERVER_PORT);
-            netStream = tcpClient.GetStream();
+            tcpListener = new TcpListener(IPAddress.Any, P2P_SERVER_PORT);
+            tcpListener.Start();
 
-            receiveMessageThread = new Thread(ReceiveMessage);
-            receiveMessageThread.Start();
+            TcpClient client = await tcpListener.AcceptTcpClientAsync();
+            if (client != null)
+            {
+                DisconnectServer();
+                OnConnectedServer(client);
 
-            IsConnectedServer = true;
+                FSceneManager.Instance.ChangeSceneAfterLoading(FEnum.SceneType.Battle);
+            }
         }
         catch (Exception e)
         {
             Debug.Log("Server Connect Fail: " + e);
-            return false;
+        }
+    }
+
+    public void StopP2PServer()
+    {
+        if(tcpListener != null)
+        {
+            tcpListener.Stop();
+            tcpListener = null;
+        }
+    }
+
+    public bool ConnectMainServer()
+    {
+        return ConnectServer(SERVER_IP, SERVER_PORT);
+    }
+
+    public bool ConnectP2PServer(string InIP)
+    {
+        return ConnectServer(InIP, P2P_SERVER_PORT);
+    }
+
+    private bool ConnectServer(string InIP, int InPort)
+    {
+        try
+        {
+            TcpClient client = new TcpClient(InIP, InPort);
+            if (client != null)
+            {
+                DisconnectServer();
+                OnConnectedServer(client);
+                return true;
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Server Connect Fail: " + e);
         }
 
-        return true;
+        return false;
+    }
+
+    private void OnConnectedServer(TcpClient InClient)
+    {
+        tcpClient = InClient;
+        netStream = InClient.GetStream();
+
+        receiveMessageThread = new Thread(ReceiveMessage);
+        receiveMessageThread.Start();
+
+        IsConnectedServer = true;
     }
 
     async void ReceiveMessage()

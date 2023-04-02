@@ -34,6 +34,9 @@ namespace Packet
 		PACKET_TYPE_C_BATTLE_RESULT,
 		PACKET_TYPE_S_CHANGE_EXP,
 		PACKET_TYPE_S_CHANGE_LEVEL,
+		PACKET_TYPE_C_BATTLE_MATCHING,
+		PACKET_TYPE_C_BATTLE_MATCHING_CANCEL,
+		PACKET_TYPE_S_BATTLE_MATCHING,
 		PACKET_TYPE_MAX,
 	}
 
@@ -1454,6 +1457,127 @@ namespace Packet
 		{
 			level = BitConverter.ToInt32(InBuffer, offset);
 			offset += sizeof(int);
+			return offset;
+		}
+
+	}
+
+	public class C_BATTLE_MATCHING : PacketBase
+	{
+		public C_BATTLE_MATCHING()
+		{
+		}
+
+		public C_BATTLE_MATCHING(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_C_BATTLE_MATCHING;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			return offset;
+		}
+
+	}
+
+	public class C_BATTLE_MATCHING_CANCEL : PacketBase
+	{
+		public C_BATTLE_MATCHING_CANCEL()
+		{
+		}
+
+		public C_BATTLE_MATCHING_CANCEL(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_C_BATTLE_MATCHING_CANCEL;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			return offset;
+		}
+
+	}
+
+	public class S_BATTLE_MATCHING : PacketBase
+	{
+		public bool isHost;
+
+		public string hostIP = new string("");
+
+		public S_BATTLE_MATCHING()
+		{
+		}
+
+		public S_BATTLE_MATCHING(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			size += sizeof(bool);
+			size += sizeof(int);
+			size += sizeof(char) * hostIP.Length; 
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_S_BATTLE_MATCHING;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+			InBuffer.AddRange(BitConverter.GetBytes(isHost));
+			InBuffer.AddRange(BitConverter.GetBytes(hostIP.Length));
+			InBuffer.AddRange(Encoding.Unicode.GetBytes(hostIP));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			isHost = BitConverter.ToBoolean(InBuffer, offset);
+			offset += sizeof(bool);
+			int hostIP_length = BitConverter.ToInt32(InBuffer, offset) * sizeof(char);
+			offset += sizeof(int);
+			hostIP = Encoding.Unicode.GetString(InBuffer, offset, hostIP_length);
+			offset += hostIP_length;
 			return offset;
 		}
 

@@ -23,6 +23,18 @@ public class FInventoryController : FControllerBase
         gold = InPacket.gold;
         dia = InPacket.dia;
         card = InPacket.card;
+
+        FLobbyUserInfoUI userInfoUI = FindLobbyUserInfoUI();
+        if (userInfoUI != null)
+        {
+            userInfoUI.Initialize();
+        }
+
+        FBattleMenu battleMenu = FindBattleMenu();
+        if (battleMenu != null)
+        {
+            battleMenu.Initialize();
+        }
     }
 
     public void Handle_S_CHANGE_GOLD(in S_CHANGE_GOLD InPacket)
@@ -51,7 +63,7 @@ public class FInventoryController : FControllerBase
     {
         card = InPacket.card;
 
-        FLobbyUserInfoUI ui = FindLobbyUserInfoUI();
+        FBattleMenu ui = FindBattleMenu();
         if (ui != null)
         {
             ui.Card = card;
@@ -62,4 +74,10 @@ public class FInventoryController : FControllerBase
     {
         return FUIManager.Instance.FindUI<FLobbyUserInfoUI>();
     }
+
+    FBattleMenu FindBattleMenu()
+    {
+        return FUIManager.Instance.FindUI<FBattleMenu>();
+    }
+    
 }
