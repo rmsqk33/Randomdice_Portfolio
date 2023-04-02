@@ -62,7 +62,6 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
-
 # Packed Addressables
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 
@@ -75,3 +74,5 @@ crashlytics-build.properties
 UnityProject/Assetsaccount_data.json
 UnityProject/Assets/Resources/Font/*.asset
 UnityProject/Assets/Resources/Font/*.asset.meta
+
+UnityProject/TestBuild/
