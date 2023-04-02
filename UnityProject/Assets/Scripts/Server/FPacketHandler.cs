@@ -76,7 +76,9 @@ public class FPacketHandler
 #if DEBUG
         if (SceneManager.GetActiveScene().name == "BattleScene")
         {
-            FGlobal.localPlayer.AddController<FBattleController>();
+            FGlobal.localPlayer.AddController<FBattleDiceController>();
+            FGlobal.localPlayer.AddController<FBattleWaveController>();
+            FGlobal.localPlayer.FindController<FBattleWaveController>().StartBattle(FBattleDataManager.Instance.CoopBattleID);
         }
 #endif
     }

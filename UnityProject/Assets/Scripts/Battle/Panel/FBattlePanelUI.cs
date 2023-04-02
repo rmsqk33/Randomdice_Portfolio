@@ -36,20 +36,20 @@ public class FBattlePanelUI : FUIBase
 
     private void Start()
     {
-        Init();
+        Initialize();
     }
 
-    public void Init()
+    public void Initialize()
     {
-        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
-        if (battleController != null)
+        FBattleDiceController diceController = FGlobal.localPlayer.FindController<FBattleDiceController>();
+        if (diceController != null)
         {
-            SetSP(battleController.SP);
-            SetDiceSummonCost(battleController.DiceSummonCost);
-            SetDiceSummonBtnEnable(battleController.IsDiceSummonable);
+            SetSP(diceController.SP);
+            SetDiceSummonCost(diceController.DiceSummonCost);
+            SetDiceSummonBtnEnable(diceController.IsDiceSummonable);
 
             int i = 0;
-            battleController.ForeachBattleDicePreset((FEquipBattleDice InDice) =>
+            diceController.ForeachEquipBattleDice((FEquipBattleDice InDice) =>
             {
                 if (localPlayerDiceSlotList.Count <= i)
                     return;
@@ -62,9 +62,13 @@ public class FBattlePanelUI : FUIBase
                 diceSlot.SetUpgradable(InDice.IsUpgradable);
                 ++i;
             });
-
-            SetTotalCard(0);
-            SetCardIncrease(battleController.CardIncrease);
+        }
+        
+        FBattleWaveController waveController = FGlobal.localPlayer.FindController<FBattleWaveController>();
+        if (waveController != null)
+        {
+            SetTotalCard(waveController.TotalCard);
+            SetCardIncrease(waveController.CardIncrease);
         }
 
         FLocalPlayerStatController statController = FGlobal.localPlayer.FindController<FLocalPlayerStatController>();
@@ -77,7 +81,7 @@ public class FBattlePanelUI : FUIBase
 
     public void OnClickSummonDice()
     {
-        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
+        FBattleDiceController battleController = FGlobal.localPlayer.FindController<FBattleDiceController>();
         if (battleController != null)
         {
             battleController.SummonDiceRandomSlot();
@@ -86,7 +90,7 @@ public class FBattlePanelUI : FUIBase
 
     public void OnClickUpgradeDice(int InIndex)
     {
-        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
+        FBattleDiceController battleController = FGlobal.localPlayer.FindController<FBattleDiceController>();
         if (battleController != null)
         {
             battleController.DiceLevelUp(InIndex);

@@ -10,10 +10,10 @@ public class FWaveAlarm : MonoBehaviour
 
     public void OnCompleteAnim()
     {
-        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
-        if (battleController != null)
+        FBattleWaveController waveController = FGlobal.localPlayer.FindController<FBattleWaveController>();
+        if (waveController != null)
         {
-            battleController.StartWave();
+            waveController.StartWave();
         }
 
         gameObject.SetActive(false);

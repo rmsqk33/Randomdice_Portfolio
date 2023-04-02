@@ -38,7 +38,7 @@ public class FDamageEffect : FEffect
         if (owner.IsOwnLocalPlayer() == false)
             return;
 
-        FBattleDiceController battleDiceController = owner.FindController<FBattleDiceController>();
+        FDiceStatController battleDiceController = owner.FindController<FDiceStatController>();
         if (battleDiceController == null)
             return;
 
@@ -62,7 +62,7 @@ public class FDamageEffect : FEffect
 
     private void DamageToTarget(FObjectBase InTarget, int InDamage, bool InCritical)
     {
-        FStatController statController = InTarget.FindController<FStatController>();
+        FEnemyStatController statController = InTarget.FindController<FEnemyStatController>();
         if (statController != null)
         {
             statController.OnDamage(InDamage);
@@ -76,15 +76,15 @@ public class FDamageEffect : FEffect
         if (owner.IsOwnLocalPlayer() == false)
             return 0;
 
-        FBattleDiceController battleDiceController = owner.FindController<FBattleDiceController>();
+        FDiceStatController battleDiceController = owner.FindController<FDiceStatController>();
         if (battleDiceController == null)
             return 0;
 
-        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
+        FBattleDiceController battleController = FGlobal.localPlayer.FindController<FBattleDiceController>();
         if (battleController == null)
             return 0;
 
-        FEquipBattleDice battleDice = battleController.FindBattleDicePreset(battleDiceController.DiceID);
+        FEquipBattleDice battleDice = battleController.FindEquipBattleDice(battleDiceController.DiceID);
         if (battleDice == null)
             return 0;
 

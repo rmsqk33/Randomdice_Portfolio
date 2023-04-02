@@ -9,6 +9,6 @@ public class FEnemy : FObjectBase
 
         AddController<FIFFController>();
         AddController<FMoveController>();
-        AddController<FStatController>();
+        AddController<FEnemyStatController>();
     }
 }

@@ -36,7 +36,7 @@ public class FObjectManager : FSingleton<FObjectManager>
                 moveController.Speed = enemyData.moveSpeed;
             }
 
-            FStatController statController = newEnemy.FindController<FStatController>();
+            FEnemyStatController statController = newEnemy.FindController<FEnemyStatController>();
             if (statController != null)
             {
                 statController.HP = enemyData.hp + enemyData.hpIncreaseBySpawnCount * (enemySpawnCount / 2);

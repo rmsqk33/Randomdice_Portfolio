@@ -1,6 +1,6 @@
 using TMPro;
 
-public class FStatController : FControllerBase
+public class FEnemyStatController : FControllerBase
 {
     int hp;
     TextMeshPro hpText;
@@ -17,7 +17,7 @@ public class FStatController : FControllerBase
 
     public int SP { get; set; }
 
-    public FStatController(FObjectBase InOwner) : base(InOwner)
+    public FEnemyStatController(FObjectBase InOwner) : base(InOwner)
     {
     }
 
@@ -34,7 +34,7 @@ public class FStatController : FControllerBase
 
         if(HP <= 0)
         {
-            FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
+            FBattleDiceController battleController = FGlobal.localPlayer.FindController<FBattleDiceController>();
             if(battleController != null)
             {
                 battleController.SP += SP;

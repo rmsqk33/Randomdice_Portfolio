@@ -8,14 +8,25 @@ public class FBattleDiceCreator : FSingleton<FBattleDiceCreator>
     [SerializeField]
     List<Transform> localPlayerDiceSlotList;
     [SerializeField]
-    FLocalPlayerBattleDice dicePrefab;
+    FBattleDice dicePrefab;
 
-    public FLocalPlayerBattleDice CreateLocalPlayerDice(int InDiceID, int InEyeCount, int InSlotIndex)
+    public FBattleDice CreateLocalPlayerDice(int InDiceID, int InEyeCount, int InSlotIndex)
     {
         if (InSlotIndex < 0 || localPlayerDiceSlotList.Count <= InSlotIndex)
             return null;
 
-        FLocalPlayerBattleDice dice = GameObject.Instantiate<FLocalPlayerBattleDice>(dicePrefab, localPlayerDiceSlotList[InSlotIndex]);
+        FBattleDice dice = GameObject.Instantiate<FBattleDice>(dicePrefab, localPlayerDiceSlotList[InSlotIndex]);
+        dice.Initialize(InDiceID, InEyeCount, InSlotIndex);
+
+        return dice;
+    }
+
+    public FBattleDice CreateRemotePlayerDice(int InDiceID, int InEyeCount, int InSlotIndex)
+    {
+        if (InSlotIndex < 0 || localPlayerDiceSlotList.Count <= InSlotIndex)
+            return null;
+
+        FBattleDice dice = GameObject.Instantiate<FBattleDice>(dicePrefab, localPlayerDiceSlotList[InSlotIndex]);
         dice.Initialize(InDiceID, InEyeCount, InSlotIndex);
 
         return dice;

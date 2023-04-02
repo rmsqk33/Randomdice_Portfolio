@@ -4,10 +4,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 
-public class FLocalPlayerBattleDice : FObjectBase, IBeginDragHandler, IDragHandler, IDropHandler, IEndDragHandler
+public class FBattleDice : FObjectBase, IBeginDragHandler, IDragHandler, IDropHandler, IEndDragHandler
 {
-    static FLocalPlayerBattleDice dragObject;
-
     [SerializeField]
     SpriteRenderer diceImage;
     [SerializeField]
@@ -18,35 +16,35 @@ public class FLocalPlayerBattleDice : FObjectBase, IBeginDragHandler, IDragHandl
     List<Transform> eyeList;
 
     FAllColorChanger colorChanger;
+    int slotIndex;
 
-    public int SlotIndex { get; set; }
+    public int SlotIndex { get { return slotIndex; } }
     
     public void Initialize(int InDiceID, int InEyeCount, int InSlotIndex)
     {
         ContentID = InDiceID;
-        SlotIndex = InSlotIndex;
+        slotIndex = InSlotIndex;
 
         InitUI(InEyeCount);
 
         AddController<FIFFController>();
         FindController<FIFFController>().IFFType = IFFType.LocalPlayer;
 
-        AddController<FBattleDiceController>();
-        FindController<FBattleDiceController>().Initialize(InSlotIndex, eyeList.GetRange(0, InEyeCount));
+        AddController<FDiceStatController>();
+        FindController<FDiceStatController>().Initialize(InEyeCount);
 
         AddController<FSkillController>();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        dragObject = this;
         SetEnableCollider(false);
         SetSortingOrder(9999);
 
-        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
+        FBattleDiceController battleController = FGlobal.localPlayer.FindController<FBattleDiceController>();
         if (battleController != null)
         {
-            battleController.ActiveDiceCombinable(SlotIndex);
+            battleController.OnBegieDragDice(slotIndex);
         }
     }
 
@@ -57,22 +55,10 @@ public class FLocalPlayerBattleDice : FObjectBase, IBeginDragHandler, IDragHandl
 
     public void OnDrop(PointerEventData eventData)
     {
-        if (SlotIndex == dragObject.SlotIndex)
-            return;
-
-        FBattleDiceController diceController = dragObject.FindController<FBattleDiceController>();
-        if(diceController != null)
-        {
-            if(diceController.IsCombinable(this))
-            {
-                diceController.CombineDice(this);
-            }
-        }
-
-        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
+        FBattleDiceController battleController = FGlobal.localPlayer.FindController<FBattleDiceController>();
         if (battleController != null)
         {
-            battleController.DeactiveDiceCombinable();
+            battleController.OnDropDice(slotIndex);
         }
     }
 
@@ -82,15 +68,16 @@ public class FLocalPlayerBattleDice : FObjectBase, IBeginDragHandler, IDragHandl
         SetEnableCollider(true);
         SetSortingOrder(0);
 
-        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
+        FBattleDiceController battleController = FGlobal.localPlayer.FindController<FBattleDiceController>();
         if (battleController != null)
         {
-            battleController.DeactiveDiceCombinable();
+            battleController.OnEndDragDice();
         }
     }
 
     public void SetEnable(bool InEnabled)
     {
+        SetEnableCollider(InEnabled);
         colorChanger.SetEnable(InEnabled);
     }
 

@@ -5,10 +5,10 @@ public class FEndPont : FPathBase
     {
         FObjectManager.Instance.RemoveEnemey(InObject.ObjectID);
 
-        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
-        if(battleController != null)
+        FBattleWaveController waveController = FGlobal.localPlayer.FindController<FBattleWaveController>();
+        if(waveController != null)
         {
-            --battleController.Life;
+            --waveController.Life;
         }
     }
 }

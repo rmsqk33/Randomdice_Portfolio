@@ -10,17 +10,15 @@ public class FBattleScene : MonoBehaviour
             FServerManager.Instance.ConnectMainServer();
             FAccountMananger.Instance.TryLogin();
         }
-        else
-        {
-            FGlobal.localPlayer.AddController<FBattleController>();
-        }
 #else
-        FGlobal.localPlayer.AddController<FBattleController>();
+        FGlobal.localPlayer.AddController<FBattleDiceController>();
+        FGlobal.localPlayer.AddController<FBattleWaveController>();
+        FGlobal.localPlayer.FindController<FBattleWaveController>().StartBattle(FBattleDataManager.Instance.CoopBattleID);
 #endif
     }
 
     private void OnDestroy()
     {
-        FGlobal.localPlayer.RemoveController<FBattleController>();
+        FGlobal.localPlayer.RemoveController<FBattleDiceController>();
     }
 }

@@ -1,8 +1,9 @@
 using FEnum;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class FBasicSkill : FSkillBase
 {
-    int damage;
     int eyeCount;
     int attackEyeIndex;
 
@@ -11,17 +12,28 @@ public class FBasicSkill : FSkillBase
     float attackInterval;
     float elapsedTime;
 
+    List<Transform> eyeList = new List<Transform>();
+
     public FBasicSkill(FObjectBase InOwner, FSkillData InSkillData) : base(InOwner, InSkillData)
     {
     }
 
     protected override void Initialize(FSkillData InSkillData) 
     {
-        FBattleDiceController battleDiceController = owner.FindController<FBattleDiceController>();
-        if (battleDiceController == null)
+        FDiceStatController diceStatController = owner.FindController<FDiceStatController>();
+        if (diceStatController == null)
             return;
 
-        eyeCount = battleDiceController.EyeCount;
+        Transform eyeParent = diceStatController.FindChildComponent<Transform>("Eye");
+        if (eyeParent == null)
+            return;
+
+        foreach(Transform eye in eyeParent)
+        {
+            eyeList.Add(eye);
+        }
+
+        eyeCount = diceStatController.EyeCount;
 
         projectileID = InSkillData.projectileID;
         targetType = InSkillData.targetType;
@@ -42,17 +54,16 @@ public class FBasicSkill : FSkillBase
 
     void UseSkill()
     {
-        FBattleDiceController battleDiceController = owner.FindController<FBattleDiceController>();
-        if (battleDiceController == null)
+        FDiceStatController diceStatController = owner.FindController<FDiceStatController>();
+        if (diceStatController == null)
             return;
 
         FObjectBase target = GetTarget();
         if (target == null)
             return;
 
-        battleDiceController.PlayEyeAttackAnim(attackEyeIndex);
-
-        FEffectManager.Instance.AddProjectile(projectileID, owner, battleDiceController.GetEyePosition(attackEyeIndex), target);
+        PlayAttackAnim(attackEyeIndex);
+        FEffectManager.Instance.AddProjectile(projectileID, owner, GetEyePosition(attackEyeIndex), target);
         attackEyeIndex = (attackEyeIndex + 1) % eyeCount;
     }
 
@@ -64,5 +75,25 @@ public class FBasicSkill : FSkillBase
         }
 
         return null;
+    }
+
+    private Vector2 GetEyePosition(int InEyeIndex)
+    {
+        if (InEyeIndex < 0 || eyeList.Count <= InEyeIndex)
+            return Vector2.zero;
+
+        return eyeList[InEyeIndex].position;
+    }
+
+    private void PlayAttackAnim(int InEyeIndex)
+    {
+        if (InEyeIndex < 0 || eyeList.Count <= InEyeIndex)
+            return;
+
+        Animator anim = eyeList[InEyeIndex].GetComponent<Animator>();
+        if (anim != null)
+        {
+            anim.SetTrigger("attack");
+        }
     }
 }

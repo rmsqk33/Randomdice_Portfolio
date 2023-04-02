@@ -28,29 +28,18 @@ public class FEquipBattleDice
     }
 }
 
-public class FBattleController : FControllerBase
+public class FBattleDiceController : FControllerBase
 {
     private FEquipBattleDice[] equipDiceList = new FEquipBattleDice[FGlobal.MAX_PRESET];
-    private Dictionary<int, FLocalPlayerBattleDice> summonDiceMap = new Dictionary<int, FLocalPlayerBattleDice>();
+    private Dictionary<int, FBattleDice> summonDiceMap = new Dictionary<int, FBattleDice>();
     private List<int> emptyDiceSlotIndexList = Enumerable.Range(0, FGlobal.MAX_SUMMON_DICE).ToList();
 
     int sp;
     int diceSummonCost;
     int diceSummonDisableFlag;
-    int life;
-    int totalCard;
-    int cardIncrease;
-    int wave;
-    int summonCount;
-    bool startedWave;
+    int dragDiceIndex = -1;
 
-    FTimer enemySummonTimer = new FTimer();
-    FTimer waveEndCheckTimer = new FTimer(FBattleDataManager.Instance.WaveEndInterval);
-    
-    FBattleData battleData;
-    FWaveData waveData;
-
-    public FBattleController(FLocalPlayer InOwner) : base(InOwner)
+    public FBattleDiceController(FLocalPlayer InOwner) : base(InOwner)
     {
 
     }
@@ -91,63 +80,6 @@ public class FBattleController : FControllerBase
     }
 
     public bool IsDiceSummonable { get { return diceSummonDisableFlag == 0; } }
-    public int Wave 
-    { 
-        get { return wave; }
-        set
-        {
-            wave = value;
-
-            FBattlePanelUI ui = FindBattlePanelUI();
-            if (ui != null)
-            {
-                ui.SetWave(wave);
-            }
-        }
-    }
-
-    public int Life
-    {
-        get { return life; }
-        set 
-        {
-            life = value;
-            if(life <= 0)
-            {
-                EndBattle();
-            }
-        }
-    }
-
-    public int TotalCard
-    {
-        get { return totalCard; }
-        set
-        {
-            totalCard = value;
-
-            FBattlePanelUI ui = FindBattlePanelUI();
-            if(ui != null)
-            {
-                ui.SetTotalCard(totalCard);
-            }
-        }
-    }
-
-    public int CardIncrease 
-    {
-        get { return cardIncrease; }
-        set 
-        {
-            cardIncrease = value;
-
-            FBattlePanelUI ui = FindBattlePanelUI();
-            if (ui != null)
-            {
-                ui.SetCardIncrease(cardIncrease);
-            }
-        }
-    }
 
     public override void Initialize() 
     {
@@ -180,106 +112,8 @@ public class FBattleController : FControllerBase
         FBattlePanelUI battleUI = FindBattlePanelUI();
         if(battleUI != null)
         {
-            battleUI.Init();
+            battleUI.Initialize();
         }
-
-        StartBattle(FBattleDataManager.Instance.CoopBattleID);
-    }
-
-    public override void Tick(float InDeltaTime)
-    {
-        if (startedWave == false)
-            return;
-
-        CreateEnemyProcess(InDeltaTime);
-        CheckEndWaveProcess(InDeltaTime);
-    }
-
-    private void CreateEnemyProcess(float InDeltaTime)
-    {
-        enemySummonTimer.Tick(InDeltaTime);
-        if (enemySummonTimer.IsElapsedCheckTime() == false)
-            return;
-
-        int enemyID = waveData.GetEnemyID(summonCount);
-        FObjectManager.Instance.CreateEnemy(enemyID);
-        ++summonCount;
-
-        if (waveData.SummonCount <= summonCount)
-        {
-            enemySummonTimer.Stop();
-        }
-    }
-
-    private void CheckEndWaveProcess(float InDeltaTime)
-    {
-        if (summonCount < waveData.SummonCount)
-            return;
-
-        if (0 < FObjectManager.Instance.EnemyCount)
-            return;
-
-        waveEndCheckTimer.Tick(InDeltaTime);
-        if (waveEndCheckTimer.IsElapsedCheckTime())
-        {
-            waveEndCheckTimer.Stop();
-            StartNextWaveAlarm();
-        }
-    }
-
-    public void StartBattle(int InID)
-    {
-        battleData = FBattleDataManager.Instance.FindBattleData(InID);
-        if (battleData == null)
-            return;
-
-        enemySummonTimer.Interval = battleData.summonInterval;
-
-        StartNextWaveAlarm();
-    }
-
-    private void EndBattle()
-    {
-        startedWave = false;
-
-        FServerManager.Instance.StopP2PServer();
-        FServerManager.Instance.ConnectMainServer();
-        FAccountMananger.Instance.TryLogin();
-
-        FPopupManager.Instance.OpenBattleResultPopup();
-
-        C_BATTLE_RESULT packet = new C_BATTLE_RESULT();
-        packet.battleId = battleData.id;
-        packet.clearWave = wave - 1;
-
-        FServerManager.Instance.SendMessage(packet);
-    }
-
-    public void StartNextWaveAlarm()
-    {
-        startedWave = false;
-
-        TotalCard += CardIncrease;
-        waveData = battleData.FindWaveData(Wave % battleData.maxWave + 1);
-        ++Wave;
-
-        CardIncrease = waveData.card;
-
-        FBattlePanelUI battleUI = FindBattlePanelUI();
-        if (battleUI != null)
-        {
-            battleUI.StartWaveAlarm(Wave);
-        }
-    }
-
-    public void StartWave()
-    {
-        summonCount = 0;
-
-        enemySummonTimer.Start();
-        waveEndCheckTimer.Start();
-
-        startedWave = true;
     }
 
     public void DiceLevelUp(int InIndex)
@@ -331,19 +165,78 @@ public class FBattleController : FControllerBase
         CreateSummonDice(emptyDiceSlotIndexList[summonSlotIndex], summonDiceID, InEyeCount);
     }
 
-    public void SummonDiceRandomDice(int InSlotIndex, int InEyeCount)
+    public void OnBegieDragDice(int InSlotIndex)
+    {
+        dragDiceIndex = InSlotIndex;
+        ActiveDiceCombinable(InSlotIndex);
+    }
+
+    public void OnDropDice(int InSlotIndex)
+    {
+        if (dragDiceIndex == InSlotIndex)
+            return;
+
+        if (summonDiceMap.ContainsKey(dragDiceIndex) == false)
+            return;
+
+        if (summonDiceMap.ContainsKey(InSlotIndex) == false)
+            return;
+
+        FBattleDice dragDice = summonDiceMap[dragDiceIndex];
+        FBattleDice dropDice = summonDiceMap[InSlotIndex];
+        if (IsCombinableDice(dragDice, dropDice) == false)
+            return;
+
+        CombineDice(dragDice, dropDice);
+        DeactiveDiceCombinable();
+    }
+
+    public void OnEndDragDice()
+    {
+        DeactiveDiceCombinable();
+    }
+
+    public delegate void ForeachBattleDicePresetDelegate(FEquipBattleDice InDice);
+    public void ForeachEquipBattleDice(ForeachBattleDicePresetDelegate InFunc)
+    {
+        foreach (FEquipBattleDice dice in equipDiceList)
+        {
+            InFunc(dice);
+        }
+    }
+
+    public delegate void ForeachSummonDiceDelegate(FBattleDice InDice);
+    public void ForeachSummonDice(ForeachSummonDiceDelegate InFunc)
+    {
+        foreach (var pair in summonDiceMap)
+        {
+            InFunc(pair.Value);
+        }
+    }
+
+    public FEquipBattleDice FindEquipBattleDice(int InDiceID)
+    {
+        foreach (FEquipBattleDice info in equipDiceList)
+        {
+            if (info.diceID == InDiceID)
+                return info;
+        }
+        return null;
+    }
+
+    private void SummonDiceRandomDice(int InSlotIndex, int InEyeCount)
     {
         int summonDiceID = equipDiceList[Random.Range(0, equipDiceList.Count())].diceID;
 
         CreateSummonDice(InSlotIndex, summonDiceID, InEyeCount);
     }
 
-    public void CreateSummonDice(int InIndex, int InDiceID, int InEyeCount)
+    private void CreateSummonDice(int InIndex, int InDiceID, int InEyeCount)
     {
         if (summonDiceMap.ContainsKey(InIndex))
             return;
 
-        FLocalPlayerBattleDice dice = FBattleDiceCreator.Instance.CreateLocalPlayerDice(InDiceID, InEyeCount, InIndex);
+        FBattleDice dice = FBattleDiceCreator.Instance.CreateLocalPlayerDice(InDiceID, InEyeCount, InIndex);
         summonDiceMap.Add(InIndex, dice);
         emptyDiceSlotIndexList.Remove(InIndex);
 
@@ -351,64 +244,112 @@ public class FBattleController : FControllerBase
         SetDiceSummonDisableReason(DiceSummonDisableReason.NOT_EMPTY_SLOT, 0 < emptyDiceSlotIndexList.Count);
     }
 
-    public void RemoveSummonDice(int InIndex)
+    private void RemoveSummonDice(int InIndex)
     {
         if (summonDiceMap.ContainsKey(InIndex) == false)
             return;
 
-        FBattleDiceController diceController = summonDiceMap[InIndex].FindController<FBattleDiceController>();
-        SetDiceEyeTotalCount(diceController.DiceID, -diceController.EyeCount);
+        FBattleDice dice = summonDiceMap[InIndex];
+        FDiceStatController diceStatController = dice.FindController<FDiceStatController>();
+        if (diceStatController == null)
+            return;
 
-        GameObject.Destroy(summonDiceMap[InIndex].gameObject);
+        SetDiceEyeTotalCount(diceStatController.DiceID, -diceStatController.EyeCount);
+
+        GameObject.Destroy(dice.gameObject);
         summonDiceMap.Remove(InIndex);
         emptyDiceSlotIndexList.Add(InIndex);
 
         SetDiceSummonDisableReason(DiceSummonDisableReason.NOT_EMPTY_SLOT, 0 < emptyDiceSlotIndexList.Count);
     }
 
-    public delegate void ForeachBattleDicePresetDelegate(FEquipBattleDice InDice);
-    public void ForeachBattleDicePreset(ForeachBattleDicePresetDelegate InFunc)
+    private void ActiveDiceCombinable(int InSlotIndex)
     {
-        foreach(FEquipBattleDice dice in equipDiceList)
-        {
-            InFunc(dice);
-        }
-    }
-
-    public delegate void ForeachSummonDiceDelegate(FLocalPlayerBattleDice InDice);
-    public void ForeachSummonDice(ForeachSummonDiceDelegate InFunc)
-    {
-        foreach(var pair in summonDiceMap)
-        {
-            InFunc(pair.Value);
-        }
-    }
-
-    public void ActiveDiceCombinable(int InSlotIndex)
-    {
-        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
+        FBattleDiceController battleController = FGlobal.localPlayer.FindController<FBattleDiceController>();
         if (battleController == null)
             return;
 
         if (summonDiceMap.ContainsKey(InSlotIndex) == false)
             return;
 
-        ForeachSummonDice((FLocalPlayerBattleDice InDice) => {
+        FBattleDice dragDice = summonDiceMap[InSlotIndex];
+        ForeachSummonDice((FBattleDice InDice) => {
             if (InSlotIndex == InDice.SlotIndex)
                 return;
 
-            FBattleDiceController diceController = summonDiceMap[InSlotIndex].FindController<FBattleDiceController>();
-            if (diceController.IsCombinable(InDice) == false)
+            if (IsCombinableDice(dragDice, InDice) == false)
             {
-                summonDiceMap[InDice.SlotIndex].SetEnable(false);
+                InDice.SetEnable(false);
             }
         });
     }
 
-    public void DeactiveDiceCombinable()
+    private void DeactiveDiceCombinable()
     {
-        ForeachSummonDice((FLocalPlayerBattleDice InDice) => {
+        ForeachSummonDice((FBattleDice InDice) => {
             InDice.SetEnable(true);
+        });
+    }
+
+    private bool IsCombinableDice(FBattleDice InDragDice, FBattleDice InDropDice)
+    {
+        FDiceStatController dragDiceController = InDragDice.FindController<FDiceStatController>();
+        if (dragDiceController == null)
+            return false;
+
+        FDiceStatController dropDiceController = InDropDice.FindController<FDiceStatController>();
+        if (dropDiceController == null)
+            return false;
+
+        if (dragDiceController.DiceID != dropDiceController.DiceID)
+            return false;
+
+        if (dragDiceController.EyeCount != dropDiceController.EyeCount)
+            return false;
+
+        if (FBattleDataManager.Instance.MaxEyeCount == dragDiceController.EyeCount)
+            return false;
+
+        return true;
+    }
+
+    private void CombineDice(FBattleDice InDragDice, FBattleDice InDropDice)
+    {
+        FDiceStatController dropDiceController = InDropDice.FindController<FDiceStatController>();
+        if (dropDiceController == null)
+            return;
+
+        RemoveSummonDice(InDragDice.SlotIndex);
+        RemoveSummonDice(InDropDice.SlotIndex);
+        SummonDiceRandomDice(InDropDice.SlotIndex, dropDiceController.EyeCount + 1);
+    }
+
+    private void SetDiceEyeTotalCount(int InDiceID, int InDelta)
+    {
+        FEquipBattleDice preset = FindEquipBattleDice(InDiceID);
+        if (preset != null)
+        {
+            preset.eyeCount += InDelta;
+
+            FBattlePanelUI battleUI = FindBattlePanelUI();
+            if (battleUI != null)
+            {
+                battleUI.SetDiceEyeCount(preset.index, preset.eyeCount);
+            }
+        }
+    }
+
+    private void UpdateDiceUpgradableBySP()
+    {
+        FBattlePanelUI ui = FindBattlePanelUI();
+        ForeachEquipBattleDice((FEquipBattleDice InDice) =>
+        {
+            bool prevState = InDice.IsUpgradable;
+            InDice.SetUpgradeDisableFlag(DiceUpgradeDisableReason.NOT_ENOUGH_SP, InDice.upgradeCost <= sp);
+            if (prevState != InDice.IsUpgradable)
+            {
+                ui.SetDiceUpgradable(InDice.index, InDice.IsUpgradable);
+            }
         });
     }
 
@@ -425,45 +366,6 @@ public class FBattleController : FControllerBase
         {
             ui.SetDiceSummonBtnEnable(IsDiceSummonable);
         }
-    }
-
-    private void SetDiceEyeTotalCount(int InDiceID, int InDelta)
-    {
-        FEquipBattleDice preset = FindBattleDicePreset(InDiceID);
-        if(preset != null)
-        {
-            preset.eyeCount += InDelta;
-
-            FBattlePanelUI battleUI = FindBattlePanelUI();
-            if (battleUI != null)
-            {
-                battleUI.SetDiceEyeCount(preset.index, preset.eyeCount);
-            }
-        }
-    }
-
-    private void UpdateDiceUpgradableBySP()
-    {
-        FBattlePanelUI ui = FindBattlePanelUI();
-        ForeachBattleDicePreset((FEquipBattleDice InDice) =>
-        {
-            bool prevState = InDice.IsUpgradable;
-            InDice.SetUpgradeDisableFlag(DiceUpgradeDisableReason.NOT_ENOUGH_SP, InDice.upgradeCost <= sp);
-            if (prevState != InDice.IsUpgradable)
-            {
-                ui.SetDiceUpgradable(InDice.index, InDice.IsUpgradable);
-            }
-        });
-    }
-
-    public FEquipBattleDice FindBattleDicePreset(int InDiceID)
-    {
-        foreach(FEquipBattleDice info in equipDiceList)
-        {
-            if (info.diceID == InDiceID)
-                return info;
-        }
-        return null;
     }
 
     private FBattlePanelUI FindBattlePanelUI()

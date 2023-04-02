@@ -11,12 +11,12 @@ public class FBattleResultPopup : FPopupBase
 
     public void OpenPopup()
     {
-        FBattleController battleController = FGlobal.localPlayer.FindController<FBattleController>();
-        if (battleController == null)
+        FBattleWaveController waveController = FGlobal.localPlayer.FindController<FBattleWaveController>();
+        if (waveController == null)
             return;
 
-        wave.text = "웨이브 " + battleController.Wave;
-        card.text = "+ " + battleController.TotalCard;
+        wave.text = "웨이브 " + waveController.Wave;
+        card.text = "+ " + waveController.TotalCard;
 
         Time.timeScale = 0;
     }
