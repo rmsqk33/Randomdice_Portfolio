@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class FRemotePlayerBattleDicePresetSlot : MonoBehaviour
+public class FRemotePlayerEquipBattleDiceSlot : MonoBehaviour
 {
     [SerializeField]
     FDiceImage diceImage;

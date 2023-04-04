@@ -1,33 +1,35 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FBattleDiceCreator : FSingleton<FBattleDiceCreator>
+public class FBattleDiceCreator : FSceneLoadedSingleton<FBattleDiceCreator>
 {
-    [SerializeField]
-    List<Transform> remotePlayerDiceSlotList;
     [SerializeField]
     List<Transform> localPlayerDiceSlotList;
     [SerializeField]
-    FBattleDice dicePrefab;
+    FBattleDice localPlayerDicePrefab;
+    [SerializeField]
+    List<Transform> remotePlayerDiceSlotList;
+    [SerializeField]
+    FRemotePlayerBattleDice remotePlayerDicePrefab;
 
     public FBattleDice CreateLocalPlayerDice(int InDiceID, int InEyeCount, int InSlotIndex)
     {
         if (InSlotIndex < 0 || localPlayerDiceSlotList.Count <= InSlotIndex)
             return null;
 
-        FBattleDice dice = GameObject.Instantiate<FBattleDice>(dicePrefab, localPlayerDiceSlotList[InSlotIndex]);
+        FBattleDice dice = GameObject.Instantiate<FBattleDice>(localPlayerDicePrefab, localPlayerDiceSlotList[InSlotIndex]);
         dice.Initialize(InDiceID, InEyeCount, InSlotIndex);
 
         return dice;
     }
 
-    public FBattleDice CreateRemotePlayerDice(int InDiceID, int InEyeCount, int InSlotIndex)
+    public FRemotePlayerBattleDice CreateRemotePlayerDice(int InDiceID, int InEyeCount, int InSlotIndex)
     {
-        if (InSlotIndex < 0 || localPlayerDiceSlotList.Count <= InSlotIndex)
+        if (InSlotIndex < 0 || remotePlayerDiceSlotList.Count <= InSlotIndex)
             return null;
 
-        FBattleDice dice = GameObject.Instantiate<FBattleDice>(dicePrefab, localPlayerDiceSlotList[InSlotIndex]);
-        dice.Initialize(InDiceID, InEyeCount, InSlotIndex);
+        FRemotePlayerBattleDice dice = GameObject.Instantiate<FRemotePlayerBattleDice>(remotePlayerDicePrefab, remotePlayerDiceSlotList[InSlotIndex]);
+        dice.Initialize(InDiceID, InEyeCount);
 
         return dice;
     }

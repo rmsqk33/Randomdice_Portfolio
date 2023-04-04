@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FLocalPlayerBattleDicePresetSlot : MonoBehaviour
+public class FEquipBattleDiceSlot : MonoBehaviour
 {
     [SerializeField]
     FDiceImage diceImage;

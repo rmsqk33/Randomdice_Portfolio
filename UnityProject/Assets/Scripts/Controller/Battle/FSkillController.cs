@@ -1,4 +1,5 @@
 using FEnum;
+using Packet;
 using System.Collections.Generic;
 
 public class FSkillController : FControllerBase
@@ -28,7 +29,12 @@ public class FSkillController : FControllerBase
         }
     }
 
-    public FSkillBase CreateSkill(int InID)
+    public void Handle_P2P_USE_SKILL(P2P_USE_SKILL InPacket)
+    {
+
+    }
+
+    private FSkillBase CreateSkill(int InID)
     {
         FSkillData skillData = FSkillDataManager.Instance.FindSkillData(InID);
         if (skillData == null)
@@ -37,7 +43,7 @@ public class FSkillController : FControllerBase
         FSkillBase skill = null;
         switch (skillData.skillType)
         {
-            case SkillType.Basic: skill = new FBasicSkill(Owner, skillData); break;
+            case SkillType.Basic: skill = new FBasicAttackSkill(Owner, skillData); break;
         }
 
         return skill;

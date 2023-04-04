@@ -2,7 +2,7 @@ using FEnum;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FBasicSkill : FSkillBase
+public class FBasicAttackSkill : FSkillBase
 {
     int eyeCount;
     int attackEyeIndex;
@@ -14,11 +14,11 @@ public class FBasicSkill : FSkillBase
 
     List<Transform> eyeList = new List<Transform>();
 
-    public FBasicSkill(FObjectBase InOwner, FSkillData InSkillData) : base(InOwner, InSkillData)
+    public FBasicAttackSkill(FObjectBase InOwner, FSkillData InSkillData) : base(InOwner, InSkillData)
     {
     }
 
-    protected override void Initialize(FSkillData InSkillData) 
+    protected override void Initialize(FSkillData InSkillData)
     {
         FDiceStatController diceStatController = owner.FindController<FDiceStatController>();
         if (diceStatController == null)
@@ -28,7 +28,7 @@ public class FBasicSkill : FSkillBase
         if (eyeParent == null)
             return;
 
-        foreach(Transform eye in eyeParent)
+        foreach (Transform eye in eyeParent)
         {
             eyeList.Add(eye);
         }
@@ -43,8 +43,8 @@ public class FBasicSkill : FSkillBase
     public override void Tick(float InDelta)
     {
         elapsedTime += InDelta;
-        
-        if(attackInterval <= elapsedTime)
+
+        if (attackInterval <= elapsedTime)
         {
             UseSkill();
 
@@ -54,11 +54,16 @@ public class FBasicSkill : FSkillBase
 
     void UseSkill()
     {
-        FDiceStatController diceStatController = owner.FindController<FDiceStatController>();
-        if (diceStatController == null)
-            return;
+        if(owner.IsOwnLocalPlayer())
+        {
+            FObjectBase newTarget = GetTarget();
+            if(target != newTarget)
+            {
+                target = newTarget;
 
-        FObjectBase target = GetTarget();
+            }
+        }
+
         if (target == null)
             return;
 
@@ -69,7 +74,7 @@ public class FBasicSkill : FSkillBase
 
     FObjectBase GetTarget()
     {
-        switch(targetType)
+        switch (targetType)
         {
             case SkillTargetType.Front: return FObjectManager.Instance.FrontEnemy;
         }

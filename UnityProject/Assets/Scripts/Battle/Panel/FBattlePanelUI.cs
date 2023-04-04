@@ -21,18 +21,11 @@ public class FBattlePanelUI : FUIBase
     FWaveAlarm waveAlarm;
 
     [SerializeField]
-    TextMeshProUGUI localPlayerNickname;
+    TextMeshProUGUI nickname;
     [SerializeField]
-    Image localPlayerClassIcon;
+    Image classIcon;
     [SerializeField]
-    List<FLocalPlayerBattleDicePresetSlot> localPlayerDiceSlotList;
-
-    [SerializeField]
-    TextMeshProUGUI remotePlayerNickname;
-    [SerializeField]
-    Image remotePlayerClassIcon;
-    [SerializeField]
-    List<FRemotePlayerBattleDicePresetSlot> remotePlayerDiceSlotList;
+    List<FEquipBattleDiceSlot> diceSlotList;
 
     private void Start()
     {
@@ -51,10 +44,7 @@ public class FBattlePanelUI : FUIBase
             int i = 0;
             diceController.ForeachEquipBattleDice((FEquipBattleDice InDice) =>
             {
-                if (localPlayerDiceSlotList.Count <= i)
-                    return;
-
-                FLocalPlayerBattleDicePresetSlot diceSlot = localPlayerDiceSlotList[i];
+                FEquipBattleDiceSlot diceSlot = diceSlotList[i];
                 diceSlot.SetDiceImage(InDice.diceID);
                 diceSlot.SetLevel(InDice.level);
                 diceSlot.SetEyeCount(InDice.eyeCount);
@@ -74,8 +64,8 @@ public class FBattlePanelUI : FUIBase
         FLocalPlayerStatController statController = FGlobal.localPlayer.FindController<FLocalPlayerStatController>();
         if(statController != null)
         {
-            localPlayerNickname.text = statController.Name;
-            localPlayerClassIcon.sprite = Resources.Load<Sprite>(FDataCenter.Instance.GetStringAttribute("UserClass.Class[@class=" + statController.Level + "]@icon"));
+            nickname.text = statController.Name;
+            classIcon.sprite = Resources.Load<Sprite>(FDataCenter.Instance.GetStringAttribute("UserClass.Class[@class=" + statController.Level + "]@icon"));
         }
     }
 
@@ -114,34 +104,34 @@ public class FBattlePanelUI : FUIBase
 
     public void SetDiceLevel(int InIndex, int InLevel)
     {
-        if (localPlayerDiceSlotList.Count <= InIndex)
+        if (InIndex < 0 || diceSlotList.Count <= InIndex)
             return;
 
-        localPlayerDiceSlotList[InIndex].SetLevel(InLevel);
+        diceSlotList[InIndex].SetLevel(InLevel);
     }
 
     public void SetDiceUpgradeCost(int InIndex, int InUpgradeCost)
     {
-        if (localPlayerDiceSlotList.Count <= InIndex)
+        if (InIndex < 0 || diceSlotList.Count <= InIndex)
             return;
 
-        localPlayerDiceSlotList[InIndex].SetUpgradeCost(InUpgradeCost);
+        diceSlotList[InIndex].SetUpgradeCost(InUpgradeCost);
     }
 
     public void SetDiceEyeCount(int InIndex, int InCount)
     {
-        if (localPlayerDiceSlotList.Count <= InIndex)
+        if (InIndex < 0 || diceSlotList.Count <= InIndex)
             return;
 
-        localPlayerDiceSlotList[InIndex].SetEyeCount(InCount);
+        diceSlotList[InIndex].SetEyeCount(InCount);
     }
 
     public void SetDiceUpgradable(int InIndex, bool InUpgradable)
     {
-        if (localPlayerDiceSlotList.Count <= InIndex)
+        if (InIndex < 0 || diceSlotList.Count <= InIndex)
             return;
 
-        localPlayerDiceSlotList[InIndex].SetUpgradable(InUpgradable);
+        diceSlotList[InIndex].SetUpgradable(InUpgradable);
     }
 
     public void SetTotalCard(int InCard)

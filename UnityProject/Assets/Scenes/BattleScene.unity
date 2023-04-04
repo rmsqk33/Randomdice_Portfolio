@@ -946,6 +946,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 250947777}
+  - component: {fileID: 250947778}
   m_Layer: 5
   m_Name: RemotePlayerUI
   m_TagString: Untagged
@@ -972,9 +973,29 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 688.2}
+  m_AnchoredPosition: {x: 0, y: 720.27}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &250947778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 250947776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e762b713413730642905d98a918996ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nickname: {fileID: 740216623}
+  classIcon: {fileID: 498058353}
+  diceSlotList:
+  - {fileID: 1630894465819405983}
+  - {fileID: 1520924850}
+  - {fileID: 659254823}
+  - {fileID: 216217645}
+  - {fileID: 755170620}
 --- !u!1001 &426822144
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1718,7 +1739,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 740216621}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1728,7 +1749,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -67.6}
+  m_AnchoredPosition: {x: 0.000015258789, y: -67.6001}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &740216623
@@ -3954,22 +3975,14 @@ MonoBehaviour:
   totalCard: {fileID: 1975647160}
   summonDiceBtn: {fileID: 1169827543}
   waveAlarm: {fileID: 741754200}
-  localPlayerNickname: {fileID: 1765272540}
-  localPlayerClassIcon: {fileID: 880340091}
-  localPlayerDiceSlotList:
+  nickname: {fileID: 1765272540}
+  classIcon: {fileID: 880340091}
+  diceSlotList:
   - {fileID: 1427394766}
   - {fileID: 508618}
   - {fileID: 426822146}
   - {fileID: 1461357906}
   - {fileID: 2011448386}
-  remotePlayerNickname: {fileID: 740216623}
-  remotePlayerClassIcon: {fileID: 498058353}
-  remotePlayerDiceSlotList:
-  - {fileID: 1630894465819405983}
-  - {fileID: 1520924850}
-  - {fileID: 659254823}
-  - {fileID: 216217645}
-  - {fileID: 755170620}
 --- !u!1 &1924054383
 GameObject:
   m_ObjectHideFlags: 0

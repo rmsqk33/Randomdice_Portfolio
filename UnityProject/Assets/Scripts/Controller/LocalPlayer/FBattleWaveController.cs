@@ -1,17 +1,13 @@
-using FEnum;
 using Packet;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
-public class FBattleWaveController : FControllerBase
+public class FBattleWaveController : FControllerBase, FServerStateObserver
 {
-    int life;
-    int totalCard;
-    int cardIncrease;
-    int wave;
-    int summonCount;
-    bool startedWave;
+    int life = 0;
+    int totalCard = 0;
+    int cardIncrease = 0;
+    int wave = 0;
+    int summonCount = 0;
+    bool startedWave = false;
 
     FTimer enemySummonTimer = new FTimer();
     FTimer waveEndCheckTimer = new FTimer(FBattleDataManager.Instance.WaveEndInterval);
@@ -21,7 +17,6 @@ public class FBattleWaveController : FControllerBase
 
     public FBattleWaveController(FLocalPlayer InOwner) : base(InOwner)
     {
-
     }
 
     public int Wave
@@ -36,6 +31,13 @@ public class FBattleWaveController : FControllerBase
             {
                 ui.SetWave(wave);
             }
+
+            if (FGlobal.localPlayer.IsHost)
+            {
+                P2P_CHANGE_WAVE pkt = new P2P_CHANGE_WAVE();
+                pkt.wave = value;
+                FServerManager.Instance.SendMessage(pkt);
+            }
         }
     }
 
@@ -45,6 +47,14 @@ public class FBattleWaveController : FControllerBase
         set
         {
             life = value;
+
+            if (FGlobal.localPlayer.IsHost)
+            {
+                P2P_CHANGE_LIFE pkt = new P2P_CHANGE_LIFE();
+                pkt.life = value;
+                FServerManager.Instance.SendMessage(pkt);
+            }
+
             if (life <= 0)
             {
                 EndBattle();
@@ -82,6 +92,28 @@ public class FBattleWaveController : FControllerBase
         }
     }
 
+    public override void Initialize() 
+    {
+        if (FServerManager.Instance.IsConnected)
+        {
+            FServerManager.Instance.AddObserver(this);
+        }
+        else
+        {
+            FGlobal.localPlayer.IsHost = true;
+        }
+    }
+
+    public override void Release() 
+    {
+        FServerManager.Instance.RemoveObserver(this);
+    }
+
+    public void OnDisconnectServer()
+    {
+        FGlobal.localPlayer.IsHost = true;
+    }
+
     public void StartBattle(int InID)
     {
         battleData = FBattleDataManager.Instance.FindBattleData(InID);
@@ -90,7 +122,7 @@ public class FBattleWaveController : FControllerBase
 
         enemySummonTimer.Interval = battleData.summonInterval;
 
-        StartNextWaveAlarm();
+        SetNextWave(1);
     }
 
     public void StartWave()
@@ -105,6 +137,9 @@ public class FBattleWaveController : FControllerBase
 
     public override void Tick(float InDeltaTime)
     {
+        if (FGlobal.localPlayer.IsHost == false)
+            return;
+
         if (startedWave == false)
             return;
 
@@ -140,41 +175,45 @@ public class FBattleWaveController : FControllerBase
         if (waveEndCheckTimer.IsElapsedCheckTime())
         {
             waveEndCheckTimer.Stop();
-            StartNextWaveAlarm();
+            SetNextWave(Wave + 1);
         }
     }
 
     private void EndBattle()
     {
         startedWave = false;
-
-        FServerManager.Instance.StopP2PServer();
+        
+        FServerManager.Instance.CloseP2PServer();
+        FServerManager.Instance.DisconnectServer();
         FServerManager.Instance.ConnectMainServer();
         FAccountMananger.Instance.TryLogin();
-
-        FPopupManager.Instance.OpenBattleResultPopup();
 
         C_BATTLE_RESULT packet = new C_BATTLE_RESULT();
         packet.battleId = battleData.id;
         packet.clearWave = wave - 1;
 
         FServerManager.Instance.SendMessage(packet);
+
+        FPopupManager.Instance.OpenBattleResultPopup();
     }
 
-    private void StartNextWaveAlarm()
+    public void SetNextWave(int InWave)
     {
+        if (Wave == InWave)
+            return;
+
         startedWave = false;
 
-        TotalCard += CardIncrease;
-        waveData = battleData.FindWaveData(Wave % battleData.maxWave + 1);
-        ++Wave;
+        TotalCard += cardIncrease;
+        waveData = battleData.FindWaveData(wave % battleData.maxWave + 1);
+        Wave = InWave;
 
         CardIncrease = waveData.card;
 
         FBattlePanelUI battleUI = FindBattlePanelUI();
         if (battleUI != null)
         {
-            battleUI.StartWaveAlarm(Wave);
+            battleUI.StartWaveAlarm(wave);
         }
     }
 

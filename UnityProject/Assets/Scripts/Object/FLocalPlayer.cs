@@ -1,7 +1,7 @@
 
 public class FLocalPlayer : FObjectBase
 {
-    public bool Host { get; set; }
+    public bool IsHost { get; set; }
 
     protected override void Awake()
     {
@@ -13,8 +13,5 @@ public class FLocalPlayer : FObjectBase
         AddController<FPresetController>();
         AddController<FLocalPlayerStatController>();
         AddController<FStoreController>();
-        AddController<FIFFController>();
-
-        FindController<FIFFController>().IFFType = FEnum.IFFType.LocalPlayer;
     }
 }

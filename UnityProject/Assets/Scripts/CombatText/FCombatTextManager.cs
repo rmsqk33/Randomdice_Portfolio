@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using FEnum;
 using UnityEngine;
 
-public class FCombatTextManager : FSingleton<FCombatTextManager>
+public class FCombatTextManager : FSceneLoadedSingleton<FCombatTextManager>
 {
     [SerializeField]
     FDictionary<CombatTextType, FCombatText> combatTextPrefabs;

@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using UnityEngine;
 using Packet;
-using UnityEngine.SceneManagement;
 
 public class FAccountMananger : FNonObjectSingleton<FAccountMananger>
 {
@@ -17,9 +16,9 @@ public class FAccountMananger : FNonObjectSingleton<FAccountMananger>
 
 #if DEBUG
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    static void Test()
+    private static void Test()
     {
-        FAccountMananger.Instance.CreateLocalPlayer();
+        Instance.CreateLocalPlayer();
     }
 #endif
 
@@ -37,7 +36,7 @@ public class FAccountMananger : FNonObjectSingleton<FAccountMananger>
     {
         if(InResult)
         {
-            CreateLocalPlayer();
+            Instance.CreateLocalPlayer();
 
             if(FSceneManager.Instance.CurrentSceneType == SceneType.Login)
             {
@@ -47,11 +46,6 @@ public class FAccountMananger : FNonObjectSingleton<FAccountMananger>
         else
         {
             CreateAccount();
-
-            //FPopupManager.Instance.OpenMsgPopup("로그인 실패", "로그인 정보가 잘못되었습니다.", () =>
-            //{
-            //    Application.Quit();
-            //});
         }
     }
 
@@ -90,7 +84,7 @@ public class FAccountMananger : FNonObjectSingleton<FAccountMananger>
         FServerManager.Instance.SendMessage(pkt);
     }
 
-    private void CreateLocalPlayer()
+    public void CreateLocalPlayer()
     {
         if (FGlobal.localPlayer == null)
         {

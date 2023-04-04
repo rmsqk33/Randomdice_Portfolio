@@ -30,9 +30,6 @@ public class FBattleMenu : FLobbyScrollMenuBase
 
     public void OnClickCoopBattleMatching()
     {
-        FPopupManager.Instance.OpenBattleMatchingPopup();
-
-        C_BATTLE_MATCHING packet = new C_BATTLE_MATCHING();
-        FServerManager.Instance.SendMessage(packet);
+        FMatchingMananger.Instance.RequestMatching();
     }
 }

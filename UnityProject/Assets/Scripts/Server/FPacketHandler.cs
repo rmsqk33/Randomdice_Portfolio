@@ -1,4 +1,6 @@
+using FEnum;
 using Packet;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -72,15 +74,6 @@ public class FPacketHandler
         {
             statController.Handle_S_USER_DATA(pkt);
         }
-
-#if DEBUG
-        if (SceneManager.GetActiveScene().name == "BattleScene")
-        {
-            FGlobal.localPlayer.AddController<FBattleDiceController>();
-            FGlobal.localPlayer.AddController<FBattleWaveController>();
-            FGlobal.localPlayer.FindController<FBattleWaveController>().StartBattle(FBattleDataManager.Instance.CoopBattleID);
-        }
-#endif
     }
 
     static void Handle_S_STORE_DICE_LIST(in byte[] InBuffer)
@@ -217,15 +210,15 @@ public class FPacketHandler
 
     static void Handle_S_BATTLE_MATCHING(in byte[] InBuffer)
     {
-        S_BATTLE_MATCHING pkt = new S_BATTLE_MATCHING(InBuffer);
+        S_BATTLE_MATCHING matchingPkt = new S_BATTLE_MATCHING(InBuffer);
 
-        if (pkt.isHost)
+        if(matchingPkt.isHost)
         {
-            FServerManager.Instance.OpenP2PServer();
+            FMatchingMananger.Instance.MatchingCompleteHost();
         }
-        else if (FServerManager.Instance.ConnectP2PServer(pkt.hostIP))
+        else
         {
-            FSceneManager.Instance.ChangeSceneAfterLoading(FEnum.SceneType.Battle);
+            FMatchingMananger.Instance.MatchingCompleteClient(matchingPkt.hostIP);
         }
     }
 }

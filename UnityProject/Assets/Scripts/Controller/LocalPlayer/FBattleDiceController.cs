@@ -31,7 +31,7 @@ public class FEquipBattleDice
 public class FBattleDiceController : FControllerBase
 {
     private FEquipBattleDice[] equipDiceList = new FEquipBattleDice[FGlobal.MAX_PRESET];
-    private Dictionary<int, FBattleDice> summonDiceMap = new Dictionary<int, FBattleDice>();
+    private Dictionary<int, int> summonDiceIDMap = new Dictionary<int, int>();
     private List<int> emptyDiceSlotIndexList = Enumerable.Range(0, FGlobal.MAX_SUMMON_DICE).ToList();
 
     int sp;
@@ -146,6 +146,11 @@ public class FBattleDiceController : FControllerBase
             battleUI.SetDiceUpgradeCost(InIndex, dice.upgradeCost);
             battleUI.SetDiceUpgradable(InIndex, dice.IsUpgradable);
         }
+
+        P2P_CHANGE_DICE_LEVEL pkt = new P2P_CHANGE_DICE_LEVEL();
+        pkt.index = InIndex;
+        pkt.level = dice.level;
+        FServerManager.Instance.SendMessage(pkt);
     }
 
     public void SummonDiceRandomSlot(int InEyeCount = 1)
@@ -176,18 +181,22 @@ public class FBattleDiceController : FControllerBase
         if (dragDiceIndex == InSlotIndex)
             return;
 
-        if (summonDiceMap.ContainsKey(dragDiceIndex) == false)
+        if (summonDiceIDMap.ContainsKey(dragDiceIndex) == false)
             return;
 
-        if (summonDiceMap.ContainsKey(InSlotIndex) == false)
+        if (summonDiceIDMap.ContainsKey(InSlotIndex) == false)
             return;
 
-        FBattleDice dragDice = summonDiceMap[dragDiceIndex];
-        FBattleDice dropDice = summonDiceMap[InSlotIndex];
+        FObjectBase dragDice = FObjectManager.Instance.FindObject(summonDiceIDMap[dragDiceIndex]);
+        FObjectBase dropDice = FObjectManager.Instance.FindObject(summonDiceIDMap[InSlotIndex]);
         if (IsCombinableDice(dragDice, dropDice) == false)
             return;
 
-        CombineDice(dragDice, dropDice);
+        FDiceStatController diceStatController = dropDice.FindController<FDiceStatController>();
+        if (diceStatController == null)
+            return;
+
+        CombineDice(dragDiceIndex, InSlotIndex, diceStatController.EyeCount + 1);
         DeactiveDiceCombinable();
     }
 
@@ -202,15 +211,6 @@ public class FBattleDiceController : FControllerBase
         foreach (FEquipBattleDice dice in equipDiceList)
         {
             InFunc(dice);
-        }
-    }
-
-    public delegate void ForeachSummonDiceDelegate(FBattleDice InDice);
-    public void ForeachSummonDice(ForeachSummonDiceDelegate InFunc)
-    {
-        foreach (var pair in summonDiceMap)
-        {
-            InFunc(pair.Value);
         }
     }
 
@@ -233,11 +233,9 @@ public class FBattleDiceController : FControllerBase
 
     private void CreateSummonDice(int InIndex, int InDiceID, int InEyeCount)
     {
-        if (summonDiceMap.ContainsKey(InIndex))
-            return;
+        int objectID = FObjectManager.Instance.CreateLocalPlayerBattleDice(InDiceID, InEyeCount, InIndex);
 
-        FBattleDice dice = FBattleDiceCreator.Instance.CreateLocalPlayerDice(InDiceID, InEyeCount, InIndex);
-        summonDiceMap.Add(InIndex, dice);
+        summonDiceIDMap.Add(InIndex, objectID);
         emptyDiceSlotIndexList.Remove(InIndex);
 
         SetDiceEyeTotalCount(InDiceID, InEyeCount);
@@ -246,18 +244,22 @@ public class FBattleDiceController : FControllerBase
 
     private void RemoveSummonDice(int InIndex)
     {
-        if (summonDiceMap.ContainsKey(InIndex) == false)
+        if (summonDiceIDMap.ContainsKey(InIndex) == false)
             return;
 
-        FBattleDice dice = summonDiceMap[InIndex];
+        int objectID = summonDiceIDMap[InIndex];
+        FObjectBase dice = FObjectManager.Instance.FindObject(objectID);
+        if (dice == null)
+            return;
+
         FDiceStatController diceStatController = dice.FindController<FDiceStatController>();
         if (diceStatController == null)
             return;
 
         SetDiceEyeTotalCount(diceStatController.DiceID, -diceStatController.EyeCount);
 
-        GameObject.Destroy(dice.gameObject);
-        summonDiceMap.Remove(InIndex);
+        FObjectManager.Instance.RemoveObjectAndSendP2P(objectID);
+        summonDiceIDMap.Remove(InIndex);
         emptyDiceSlotIndexList.Add(InIndex);
 
         SetDiceSummonDisableReason(DiceSummonDisableReason.NOT_EMPTY_SLOT, 0 < emptyDiceSlotIndexList.Count);
@@ -269,29 +271,39 @@ public class FBattleDiceController : FControllerBase
         if (battleController == null)
             return;
 
-        if (summonDiceMap.ContainsKey(InSlotIndex) == false)
+        if (summonDiceIDMap.ContainsKey(InSlotIndex) == false)
             return;
 
-        FBattleDice dragDice = summonDiceMap[InSlotIndex];
-        ForeachSummonDice((FBattleDice InDice) => {
-            if (InSlotIndex == InDice.SlotIndex)
-                return;
+        FObjectBase dragDice = FObjectManager.Instance.FindObject(summonDiceIDMap[InSlotIndex]);
+        foreach (var pair in summonDiceIDMap)
+        {
+            if (InSlotIndex == pair.Key)
+                continue;
 
-            if (IsCombinableDice(dragDice, InDice) == false)
+            FObjectBase dropDice = FObjectManager.Instance.FindObject(pair.Value);
+            if (dropDice == null)
+                continue;
+
+            if (IsCombinableDice(dragDice, dropDice) == false)
             {
-                InDice.SetEnable(false);
+                dropDice.SetEnable(false);
             }
-        });
+        }
     }
 
     private void DeactiveDiceCombinable()
     {
-        ForeachSummonDice((FBattleDice InDice) => {
-            InDice.SetEnable(true);
-        });
+        foreach(var pair in summonDiceIDMap)
+        {
+            FObjectBase dice = FObjectManager.Instance.FindObject(pair.Value);
+            if(dice != null)
+            {
+                dice.SetEnable(true);
+            }
+        }
     }
 
-    private bool IsCombinableDice(FBattleDice InDragDice, FBattleDice InDropDice)
+    private bool IsCombinableDice(FObjectBase InDragDice, FObjectBase InDropDice)
     {
         FDiceStatController dragDiceController = InDragDice.FindController<FDiceStatController>();
         if (dragDiceController == null)
@@ -313,15 +325,11 @@ public class FBattleDiceController : FControllerBase
         return true;
     }
 
-    private void CombineDice(FBattleDice InDragDice, FBattleDice InDropDice)
+    private void CombineDice(int InDragIndex, int InDropIndex, int InEyeCount)
     {
-        FDiceStatController dropDiceController = InDropDice.FindController<FDiceStatController>();
-        if (dropDiceController == null)
-            return;
-
-        RemoveSummonDice(InDragDice.SlotIndex);
-        RemoveSummonDice(InDropDice.SlotIndex);
-        SummonDiceRandomDice(InDropDice.SlotIndex, dropDiceController.EyeCount + 1);
+        RemoveSummonDice(InDragIndex);
+        RemoveSummonDice(InDropIndex);
+        SummonDiceRandomDice(InDropIndex, InEyeCount);
     }
 
     private void SetDiceEyeTotalCount(int InDiceID, int InDelta)

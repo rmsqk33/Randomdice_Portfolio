@@ -46,8 +46,15 @@ public class FDamageEffect : FEffect
         int damage = (int)(critical ? this.damage * battleDiceController.CriticalDamageRate : this.damage);
         if (0 < radius)
         {
-            FObjectManager.Instance.ForeachEnemy((FObjectBase InObject) =>
+            FObjectManager.Instance.ForeachObject((FObjectBase InObject) =>
             {
+                FIFFController iffController = InObject.FindController<FIFFController>();
+                if (iffController == null)
+                    return;
+
+                if (iffController.IsEnumy(IFFType.LocalPlayer) == false)
+                    return;
+
                 if (radius < Vector2.Distance(InObject.WorldPosition, transform.position))
                     return;
 
@@ -58,17 +65,6 @@ public class FDamageEffect : FEffect
         {
             DamageToTarget(target, damage, critical);
         }
-    }
-
-    private void DamageToTarget(FObjectBase InTarget, int InDamage, bool InCritical)
-    {
-        FEnemyStatController statController = InTarget.FindController<FEnemyStatController>();
-        if (statController != null)
-        {
-            statController.OnDamage(InDamage);
-        }
-
-        FCombatTextManager.Instance.AddText(InCritical ? CombatTextType.Critical : CombatTextType.Normal, InDamage, InTarget);
     }
 
     private int CalcDamage(FEffectData InData)

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using TMPro;
-using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 
 public class FObjectBase : MonoBehaviour
@@ -21,6 +19,11 @@ public class FObjectBase : MonoBehaviour
 
     public virtual void Release()
     {
+        foreach(var pair in controllers)
+        {
+            pair.Value.Release();
+        }
+
         for (int i = observers.Count - 1; 0 <= i; --i)
         {
             observers[i].OnDestroyObject();
@@ -80,7 +83,7 @@ public class FObjectBase : MonoBehaviour
         if (iffController == null)
             return false;
 
-        return iffController.IsOwnLocalPlayer();
+        return iffController.IFFType == FEnum.IFFType.LocalPlayer;
     }
 
     public void AddObserver(FObjectStateObserver InObserver)
@@ -93,4 +96,8 @@ public class FObjectBase : MonoBehaviour
         observers.Remove(InObserver);
     }
 
+    public virtual void SetEnable(bool InEanble)
+    {
+
+    }
 }

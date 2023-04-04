@@ -500,7 +500,7 @@ GameObject:
   - component: {fileID: 7568226260612074280}
   - component: {fileID: 1384722830957067395}
   m_Layer: 5
-  m_Name: LocalPlayerBattleDicePresetSlot
+  m_Name: LocalPlayerEquipBattleDiceSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -1,5 +1,6 @@
 using FEnum;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
@@ -75,10 +76,10 @@ public class FBattleDice : FObjectBase, IBeginDragHandler, IDragHandler, IDropHa
         }
     }
 
-    public void SetEnable(bool InEnabled)
+    public override void SetEnable(bool InEanble)
     {
-        SetEnableCollider(InEnabled);
-        colorChanger.SetEnable(InEnabled);
+        SetEnableCollider(InEanble);
+        SetEnableColor(InEanble);
     }
 
     private void InitUI(int InEyeCount)
@@ -110,6 +111,14 @@ public class FBattleDice : FObjectBase, IBeginDragHandler, IDragHandler, IDropHa
         if (collider != null)
         {
             collider.enabled = InEnable;
+        }
+    }
+
+    private void SetEnableColor(bool InEnable)
+    {
+        if (colorChanger != null)
+        {
+            colorChanger.SetEnable(InEnable);
         }
     }
 

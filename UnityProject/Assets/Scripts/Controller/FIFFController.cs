@@ -13,11 +13,9 @@ public class FIFFController : FControllerBase
         if (InType == IFFType.Neutral)
             return false;
 
-        return IFFType != InType;
-    }
+        if (IFFType == IFFType.Neutral)
+            return false;
 
-    public bool IsOwnLocalPlayer()
-    {
-        return IFFType == IFFType.LocalPlayer;
+        return IFFType != InType;
     }
 }

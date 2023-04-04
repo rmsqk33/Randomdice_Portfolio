@@ -45,8 +45,7 @@ public class FSceneManager : FSingleton<FSceneManager>
         else
         {
             fadeTime = InFadeTime;
-            StartCoroutine(FadeOutCoroutine());
-            StartCoroutine(ChangeSceneCoroutine(SceneType.Loading));
+            StartCoroutine(ChangeSceneAfterFadeOutCoroutine(SceneType.Loading));
         }
     }
 
@@ -59,8 +58,7 @@ public class FSceneManager : FSingleton<FSceneManager>
         else
         {
             fadeTime = InFadeTime;
-            StartCoroutine(FadeOutCoroutine());
-            StartCoroutine(ChangeSceneCoroutine(InType));
+            StartCoroutine(ChangeSceneAfterFadeOutCoroutine(InType));
         }
     }
 
@@ -127,9 +125,9 @@ public class FSceneManager : FSingleton<FSceneManager>
         }
     }
     
-    private IEnumerator ChangeSceneCoroutine(SceneType InType)
+    private IEnumerator ChangeSceneAfterFadeOutCoroutine(SceneType InType)
     {
-        yield return new WaitForSecondsRealtime(fadeTime);
+        yield return StartCoroutine(FadeOutCoroutine());
 
         SceneManager.LoadScene(ConvertSceneTypeToString(InType));
     }
@@ -142,10 +140,10 @@ public class FSceneManager : FSingleton<FSceneManager>
         float deltaTime = 0;
         while (fadeSpriteRenderer.color.a < 1)
         {
+            yield return null;
+         
             deltaTime += Time.unscaledDeltaTime;
             SetFade(Mathf.Lerp(0, 1, deltaTime / fadeTime));
-
-            yield return null;
         }
     }
 
@@ -156,10 +154,10 @@ public class FSceneManager : FSingleton<FSceneManager>
         float deltaTime = 0;
         while (0 < fadeSpriteRenderer.color.a)
         {
+            yield return null;
+         
             deltaTime += Time.unscaledDeltaTime;
             SetFade(Mathf.Lerp(0, 1, 1 - deltaTime / fadeTime));
-
-            yield return null;
         }
 
         fadeSpriteRenderer.enabled = false;

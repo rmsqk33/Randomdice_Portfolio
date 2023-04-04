@@ -146,7 +146,7 @@ GameObject:
   - component: {fileID: 1630894466812503929}
   - component: {fileID: 3570639307253040600}
   m_Layer: 5
-  m_Name: RemotePlayerBattleDicePresetSlot
+  m_Name: RemotePlayerEquipBattleDiceSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -10,8 +10,8 @@ using System.Net;
 public class FServerManager : FSingleton<FServerManager>
 {
     const string SERVER_IP = "127.0.0.1";
-    const int SERVER_PORT = 7777;
-    const int P2P_SERVER_PORT = 7778;
+    const int SERVER_PORT = 5642;
+    const int P2P_SERVER_PORT = 9456;
     const int PACKET_MAX = 10240;
 
     private TcpListener tcpListener = null;
@@ -19,11 +19,12 @@ public class FServerManager : FSingleton<FServerManager>
     private TcpClient tcpClient = null;
     private NetworkStream netStream = null;
     private Thread receiveMessageThread = null;
-    public bool IsConnectedServer { get; private set; } = false;
+    private bool isConnected = false;
 
     public delegate void PacketHandler(in byte[] InBuffer);
 
     private Dictionary<PacketType, PacketHandler> packetHandlerMap = new Dictionary<PacketType, PacketHandler>();
+    private List<FServerStateObserver> observers = new List<FServerStateObserver>();
 
     struct MessageData
     {
@@ -31,6 +32,8 @@ public class FServerManager : FSingleton<FServerManager>
         public byte[] buffer;
     }
     private List<MessageData> messageQueue = new List<MessageData>();
+
+    public bool IsConnected { get { return isConnected; }}
 
     void Update()
     {
@@ -56,48 +59,68 @@ public class FServerManager : FSingleton<FServerManager>
         DisconnectServer();
     }
 
-    void DisconnectServer()
+    public void AddObserver(FServerStateObserver InObserver)
     {
-        if (IsConnectedServer)
+        observers.Add(InObserver);
+    }
+
+    public void RemoveObserver(FServerStateObserver InObserver)
+    {
+        observers.Remove(InObserver);
+    }
+
+    public void DisconnectServer()
+    {
+        if (isConnected == false)
+            return;
+
+        isConnected = false;
+
+        if (receiveMessageThread != null)
         {
-            IsConnectedServer = false;
+            receiveMessageThread.Join();
+            receiveMessageThread = null;
+        }
 
-            if (receiveMessageThread != null)
-                receiveMessageThread.Join();
+        if (netStream != null)
+        {
+            netStream.Close();
+            netStream = null;
+        }
 
-            if (netStream != null)
-                netStream.Close();
-
-            if (tcpClient != null)
-                tcpClient.Close();
+        if (tcpClient != null)
+        {
+            tcpClient.Close();
+            tcpClient = null;
         }
     }
 
-    public async void OpenP2PServer()
+    public bool OpenP2PServer()
     {
         try
         {
             tcpListener = new TcpListener(IPAddress.Any, P2P_SERVER_PORT);
             tcpListener.Start();
 
-            TcpClient client = await tcpListener.AcceptTcpClientAsync();
+            TcpClient client = tcpListener.AcceptTcpClient();
             if (client != null)
             {
                 DisconnectServer();
                 OnConnectedServer(client);
-
-                FSceneManager.Instance.ChangeSceneAfterLoading(FEnum.SceneType.Battle);
+                return true;
             }
         }
         catch (Exception e)
         {
             Debug.Log("Server Connect Fail: " + e);
         }
+
+        return false;
     }
 
-    public void StopP2PServer()
+    public void CloseP2PServer()
     {
-        if(tcpListener != null)
+        if (tcpListener != null)
         {
             tcpListener.Stop();
             tcpListener = null;
@@ -136,13 +159,16 @@ public class FServerManager : FSingleton<FServerManager>
 
     private void OnConnectedServer(TcpClient InClient)
     {
+        if (isConnected)
+            return;
+
+        isConnected = true;
+
         tcpClient = InClient;
         netStream = InClient.GetStream();
 
         receiveMessageThread = new Thread(ReceiveMessage);
         receiveMessageThread.Start();
-
-        IsConnectedServer = true;
     }
 
     async void ReceiveMessage()
@@ -151,9 +177,19 @@ public class FServerManager : FSingleton<FServerManager>
         int packetSize = 0;
         int readSize = 0;
 
-        while (IsConnectedServer)
+        while (isConnected)
         {
             readSize += await netStream.ReadAsync(buffer, readSize, PACKET_MAX - readSize);
+            if (readSize == 0)
+            {
+                DisconnectServer();
+
+                foreach (FServerStateObserver observer in observers)
+                {
+                    observer.OnDisconnectServer();
+                }
+                return;
+            }
 
             // 한번에 여러 패킷이 오는 경우를 대비하여 반복처리
             while (0 < readSize)

@@ -23,4 +23,9 @@ public class FControllerBase
     {
         return Owner.FindChildComponent<T>(InName);
     }
+
+    public bool IsOwnLocalPlayer()
+    {
+        return Owner.IsOwnLocalPlayer();
+    }
 }

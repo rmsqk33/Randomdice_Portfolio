@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class FDiceStatController : FControllerBase
 {
-    int slotIndex;
     int diceLevel;
     int eyeCount;
     float criticalChance;
@@ -23,7 +22,7 @@ public class FDiceStatController : FControllerBase
         eyeCount = InEyeCount;
         criticalChance = 0.33f;
         
-        if(Owner.IsOwnLocalPlayer())
+        if(IsOwnLocalPlayer())
         {
             FDiceController diceController = FGlobal.localPlayer.FindController<FDiceController>();
             if(diceController != null)

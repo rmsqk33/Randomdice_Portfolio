@@ -34,14 +34,19 @@ public class FEnemyStatController : FControllerBase
 
         if(HP <= 0)
         {
-            FBattleDiceController battleController = FGlobal.localPlayer.FindController<FBattleDiceController>();
-            if(battleController != null)
-            {
-                battleController.SP += SP;
-            }
-
-            FObjectManager.Instance.RemoveEnemey(ObjectID);
+            OnDeath();
         }
+    }
+
+    public void OnDeath()
+    {
+        FBattleDiceController battleController = FGlobal.localPlayer.FindController<FBattleDiceController>();
+        if (battleController != null)
+        {
+            battleController.SP += SP;
+        }
+
+        FObjectManager.Instance.RemoveObject(ObjectID);
     }
 
     private void UpdateUI()
@@ -51,6 +56,8 @@ public class FEnemyStatController : FControllerBase
             string text;
             if (1000 <= hp)
                 text = hp / 1000 + "k";
+            else if (hp < 0)
+                text = "";
             else
                 text = hp.ToString();
 

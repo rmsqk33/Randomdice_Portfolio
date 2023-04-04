@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using FEnum;
-using static UnityEngine.GraphicsBuffer;
-using UnityEngine.UIElements;
 
 public class FEffectManager : FSingleton<FEffectManager>
 {

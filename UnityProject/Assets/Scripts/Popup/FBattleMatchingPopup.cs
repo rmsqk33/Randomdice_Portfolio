@@ -7,7 +7,7 @@ public class FBattleMatchingPopup : FPopupBase
     [SerializeField]
     TextMeshProUGUI elapsedTimeText;
 
-    int prevTime;
+    int prevTime = 0;
     FTimer timer = new FTimer();
 
     public void OpenPopup()
@@ -43,11 +43,6 @@ public class FBattleMatchingPopup : FPopupBase
 
     public void OnClickCancel()
     {
-        FServerManager.Instance.StopP2PServer();
-
-        C_BATTLE_MATCHING_CANCEL packet = new C_BATTLE_MATCHING_CANCEL();
-        FServerManager.Instance.SendMessage(packet);
-
-        Close();
+        FMatchingMananger.Instance.CancelMatching();
     }
 }
