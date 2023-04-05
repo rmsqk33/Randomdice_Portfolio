@@ -42,6 +42,9 @@ public class FBasicAttackSkill : FSkillBase
 
     public override void Tick(float InDelta)
     {
+        if (toggle == false)
+            return;
+
         elapsedTime += InDelta;
 
         if (attackInterval <= elapsedTime)
@@ -52,15 +55,18 @@ public class FBasicAttackSkill : FSkillBase
         }
     }
 
-    void UseSkill()
+    public override void UseSkill()
     {
-        if(owner.IsOwnLocalPlayer())
+        if (owner.IsOwnLocalPlayer())
         {
             FObjectBase newTarget = GetTarget();
             if(target != newTarget)
             {
                 target = newTarget;
-
+                if (target != null)
+                    SendOnSkill(target.ObjectID);
+                else
+                    SendOffSkill();
             }
         }
 
@@ -72,7 +78,7 @@ public class FBasicAttackSkill : FSkillBase
         attackEyeIndex = (attackEyeIndex + 1) % eyeCount;
     }
 
-    FObjectBase GetTarget()
+    private FObjectBase GetTarget()
     {
         switch (targetType)
         {

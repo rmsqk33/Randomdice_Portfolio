@@ -48,6 +48,8 @@ namespace Packet
 		PACKET_TYPE_P2P_START_BATTLE,
 		PACKET_TYPE_P2P_CHANGE_WAVE,
 		PACKET_TYPE_P2P_READY_BATTLE,
+		PACKET_TYPE_P2P_ON_SKILL,
+		PACKET_TYPE_P2P_OFF_SKILL,
 		PACKET_TYPE_MAX,
 	}
 
@@ -2101,6 +2103,106 @@ namespace Packet
 
 		public int Deserialize(in byte[] InBuffer, int offset = 0)
 		{
+			return offset;
+		}
+
+	}
+
+	public class P2P_ON_SKILL : PacketBase
+	{
+		public int objectId;
+
+		public int skillId;
+
+		public int targetId;
+
+		public P2P_ON_SKILL()
+		{
+		}
+
+		public P2P_ON_SKILL(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			size += sizeof(int);
+			size += sizeof(int);
+			size += sizeof(int);
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_P2P_ON_SKILL;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+			InBuffer.AddRange(BitConverter.GetBytes(objectId));
+			InBuffer.AddRange(BitConverter.GetBytes(skillId));
+			InBuffer.AddRange(BitConverter.GetBytes(targetId));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			objectId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			skillId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			targetId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			return offset;
+		}
+
+	}
+
+	public class P2P_OFF_SKILL : PacketBase
+	{
+		public int objectId;
+
+		public int skillId;
+
+		public P2P_OFF_SKILL()
+		{
+		}
+
+		public P2P_OFF_SKILL(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			size += sizeof(int);
+			size += sizeof(int);
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_P2P_OFF_SKILL;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+			InBuffer.AddRange(BitConverter.GetBytes(objectId));
+			InBuffer.AddRange(BitConverter.GetBytes(skillId));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			objectId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			skillId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
 			return offset;
 		}
 

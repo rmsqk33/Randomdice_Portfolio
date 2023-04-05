@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class FSkillController : FControllerBase
 {
-    List<FSkillBase> skillList = new List<FSkillBase>();
+    Dictionary<int, FSkillBase> skillMap = new Dictionary<int, FSkillBase>();
 
     public FSkillController(FObjectBase InOwner) : base(InOwner)
     {
@@ -17,21 +17,35 @@ public class FSkillController : FControllerBase
             return;
 
         diceData.ForeachSkillID((int InID) => {
-            skillList.Add(CreateSkill(InID));
+            skillMap.Add(InID, CreateSkill(InID));
         });
     }
 
     public override void Tick(float InDeltaTime)
     {
-        foreach(FSkillBase skill in skillList)
+        foreach(var pair in skillMap)
         {
-            skill.Tick(InDeltaTime);
+            pair.Value.Tick(InDeltaTime);
         }
     }
 
-    public void Handle_P2P_USE_SKILL(P2P_USE_SKILL InPacket)
+    public void OnSkill(int InSkillID, int InTargetID)
     {
+        if(skillMap.ContainsKey(InSkillID))
+        {
+            FSkillBase skill = skillMap[InSkillID];
+            skill.Target = FObjectManager.Instance.FindObject(InTargetID);
+            skill.Toggle = true;
+            skill.UseSkill();
+        }
+    }
 
+    public void OffSkill(int InSkillID)
+    {
+        if (skillMap.ContainsKey(InSkillID))
+        {
+            skillMap[InSkillID].Toggle = false;
+        }
     }
 
     private FSkillBase CreateSkill(int InID)
