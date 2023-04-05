@@ -181,18 +181,23 @@ public class FBattleWaveController : FControllerBase, FServerStateObserver
 
     private void EndBattle()
     {
+        if (startedWave == false)
+            return;
+
         startedWave = false;
         
         FServerManager.Instance.CloseP2PServer();
         FServerManager.Instance.DisconnectServer();
-        FServerManager.Instance.ConnectMainServer();
-        FAccountMananger.Instance.TryLogin();
+        if(FServerManager.Instance.ConnectMainServer())
+        {
+            FAccountMananger.Instance.TryLogin();
 
-        C_BATTLE_RESULT packet = new C_BATTLE_RESULT();
-        packet.battleId = battleData.id;
-        packet.clearWave = wave - 1;
+            C_BATTLE_RESULT packet = new C_BATTLE_RESULT();
+            packet.battleId = battleData.id;
+            packet.clearWave = wave - 1;
 
-        FServerManager.Instance.SendMessage(packet);
+            FServerManager.Instance.SendMessage(packet);
+        }
 
         FPopupManager.Instance.OpenBattleResultPopup();
     }
