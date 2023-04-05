@@ -23,16 +23,32 @@ public class FP2PPacketHandler
     static void Handle_P2P_READY_BATTLE(in byte[] InBuffer)
     {
         FLocalPlayerStatController statController = FGlobal.localPlayer.FindController<FLocalPlayerStatController>();
+        if (statController == null)
+            return;
+
         FPresetController presetController = FGlobal.localPlayer.FindController<FPresetController>();
+        if (presetController == null)
+            return;
+
+        FDiceController diceController = FGlobal.localPlayer.FindController<FDiceController>();
+        if (diceController == null)
+            return;
 
         P2P_PLAYER_DATA playerDataPkt = new P2P_PLAYER_DATA();
         playerDataPkt.name = statController.Name;
         playerDataPkt.level = statController.Level;
+        playerDataPkt.criticalDamageRate = statController.CriticalDamageRate;
 
         int i = 0;
         presetController.ForeachDicePreset(presetController.SelectedPresetIndex, (int InDiceID) =>
         {
-            playerDataPkt.diceIdList[i] = InDiceID;
+            playerDataPkt.diceList[i].id = InDiceID;
+
+            FDice dice = diceController.FindAcquiredDice(InDiceID);
+            if(dice != null)
+            {
+                playerDataPkt.diceList[i].level = dice.level;
+            }
             ++i;
         });
 
@@ -63,7 +79,7 @@ public class FP2PPacketHandler
         FRemotePlayerBattleController battleController = FGlobal.remotePlayer.FindController<FRemotePlayerBattleController>();
         if (battleController != null)
         {
-            battleController.SetDiceLevel(pkt.index, pkt.level);
+            battleController.SetDiceBattleLevel(pkt.index, pkt.level);
         }
     }
 

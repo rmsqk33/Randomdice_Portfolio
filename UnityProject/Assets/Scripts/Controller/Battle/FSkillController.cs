@@ -1,5 +1,4 @@
 using FEnum;
-using Packet;
 using System.Collections.Generic;
 
 public class FSkillController : FControllerBase
@@ -45,6 +44,15 @@ public class FSkillController : FControllerBase
         if (skillMap.ContainsKey(InSkillID))
         {
             skillMap[InSkillID].Toggle = false;
+        }
+    }
+
+    public delegate void ForeachSkillDelegate(FSkillBase InSkill);
+    public void ForeachSkill(ForeachSkillDelegate InFunc)
+    {
+        foreach(var pair in skillMap)
+        {
+            InFunc(pair.Value);
         }
     }
 

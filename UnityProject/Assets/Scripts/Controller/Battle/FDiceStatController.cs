@@ -17,29 +17,12 @@ public class FDiceStatController : FControllerBase
     {
     }
 
-    public void Initialize(int InEyeCount)
+    public void Initialize(int InEyeCount, int InDiceLevel, float InCriticalDamageRate)
     {
         eyeCount = InEyeCount;
+        diceLevel = InDiceLevel;
+        criticalDamageRate = InCriticalDamageRate;
         criticalChance = 0.33f;
-        
-        if(IsOwnLocalPlayer())
-        {
-            FDiceController diceController = FGlobal.localPlayer.FindController<FDiceController>();
-            if(diceController != null)
-            {
-                FDice dice = diceController.FindAcquiredDice(DiceID);
-                if(dice != null)
-                {
-                    diceLevel = dice.level;
-                }
-            }
-
-            FLocalPlayerStatController localPlayerStatController = FGlobal.localPlayer.FindController<FLocalPlayerStatController>();
-            if(localPlayerStatController != null)
-            {
-                criticalDamageRate = localPlayerStatController.Critical / 100.0f;
-            }
-        }
     }
     
     public bool IsCritical()

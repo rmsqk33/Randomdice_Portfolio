@@ -1,6 +1,5 @@
 using FEnum;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
@@ -32,9 +31,11 @@ public class FBattleDice : FObjectBase, IBeginDragHandler, IDragHandler, IDropHa
         FindController<FIFFController>().IFFType = IFFType.LocalPlayer;
 
         AddController<FDiceStatController>();
-        FindController<FDiceStatController>().Initialize(InEyeCount);
+        InitDiceStat(InEyeCount, InDiceID);
 
         AddController<FSkillController>();
+
+
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -103,6 +104,24 @@ public class FBattleDice : FObjectBase, IBeginDragHandler, IDragHandler, IDropHa
         }
 
         colorChanger = new FAllColorChanger(gameObject);
+    }
+
+    private void InitDiceStat(int InEyeCount, int InDiceID)
+    {
+        FDiceController diceController = FGlobal.localPlayer.FindController<FDiceController>();
+        if (diceController == null)
+            return;
+
+        FDice dice = diceController.FindAcquiredDice(InDiceID);
+        if (dice == null)
+            return;
+
+        FLocalPlayerStatController localPlayerStatController = FGlobal.localPlayer.FindController<FLocalPlayerStatController>();
+        if (localPlayerStatController == null)
+            return;
+        
+        FindController<FDiceStatController>().Initialize(InEyeCount, dice.level, localPlayerStatController.CriticalDamageRate);
+
     }
 
     private void SetEnableCollider(bool InEnable)

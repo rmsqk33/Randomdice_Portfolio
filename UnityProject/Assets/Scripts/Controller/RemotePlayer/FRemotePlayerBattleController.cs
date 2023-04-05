@@ -1,6 +1,5 @@
 using Packet;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class FRemotePlayerBattleController : FControllerBase
 {
@@ -12,10 +11,13 @@ public class FRemotePlayerBattleController : FControllerBase
 
     int level;
     string name;
+    float criticalDamageRate;
+    Dictionary<int, int> diceLevelMap = new Dictionary<int, int>();
     EquipDiceInfo[] equipDiceList = new EquipDiceInfo[FGlobal.MAX_PRESET];
 
     public int Level { get { return level; } }
     public string Name { get { return name; } }
+    public float CriticalDamageRate { get { return criticalDamageRate; } }
 
     public FRemotePlayerBattleController(FObjectBase InOwner) : base(InOwner)
     {
@@ -27,12 +29,18 @@ public class FRemotePlayerBattleController : FControllerBase
         name = InPacket.name;
         for (int i = 0; i < FGlobal.MAX_PRESET; ++i)
         {
+            P2P_PLAYER_DATA.DICE_DATA diceData = InPacket.diceList[i];
+
             EquipDiceInfo diceInfo = new EquipDiceInfo();
-            diceInfo.diceID = InPacket.diceIdList[i];
+            diceInfo.diceID = diceData.id;
             diceInfo.level = 1;
 
             equipDiceList[i] = diceInfo;
+
+            diceLevelMap.Add(diceData.id, diceData.level);
         }
+
+        criticalDamageRate = InPacket.criticalDamageRate;
 
         FRemotePlayerBattlePanelUI ui = FindBattlePanelUI();
         if(ui != null)
@@ -41,7 +49,7 @@ public class FRemotePlayerBattleController : FControllerBase
         }
     }
 
-    public void SetDiceLevel(int InIndex, int InLevel)
+    public void SetDiceBattleLevel(int InIndex, int InLevel)
     {
         if (InIndex < 0 || equipDiceList.Length <= InIndex)
             return;
@@ -53,6 +61,16 @@ public class FRemotePlayerBattleController : FControllerBase
         {
             ui.SetDiceLevel(InIndex, InLevel);
         }
+    }
+
+    public int GetDiceLevel(int InDiceID)
+    {
+        if(diceLevelMap.ContainsKey(InDiceID))
+        {
+            return diceLevelMap[InDiceID];
+        }
+
+        return 0;
     }
 
     public delegate void ForeachEquipBattleDiceDelegate(int InDiceID, int InLevel);

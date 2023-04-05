@@ -19,6 +19,8 @@ public class FBattleWaveController : FControllerBase, FServerStateObserver
     {
     }
 
+    public bool IsEndBattle { get { return life == 0; } }
+
     public int Wave
     {
         get { return wave; }
@@ -120,6 +122,7 @@ public class FBattleWaveController : FControllerBase, FServerStateObserver
         if (battleData == null)
             return;
 
+        life = battleData.life;
         enemySummonTimer.Interval = battleData.summonInterval;
 
         SetNextWave(1);

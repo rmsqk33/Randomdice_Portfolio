@@ -1597,18 +1597,68 @@ namespace Packet
 
 	public class P2P_PLAYER_DATA : PacketBase
 	{
+		public class DICE_DATA
+		{
+			public int id;
+
+			public int level;
+
+			public DICE_DATA()
+			{
+			}
+
+			public DICE_DATA(in byte[] InBuffer)
+			{
+				Deserialize(InBuffer);
+			}
+
+			public int GetSize()
+			{
+				int size = 0;
+				size += sizeof(int);
+				size += sizeof(int);
+				return size;
+			}
+
+			public void Serialize(List<byte> InBuffer)
+			{
+				InBuffer.AddRange(BitConverter.GetBytes(id));
+				InBuffer.AddRange(BitConverter.GetBytes(level));
+			}
+
+			public int Deserialize(in byte[] InBuffer, int offset = 0)
+			{
+				id = BitConverter.ToInt32(InBuffer, offset);
+				offset += sizeof(int);
+				level = BitConverter.ToInt32(InBuffer, offset);
+				offset += sizeof(int);
+				return offset;
+			}
+
+		}
+
 		public string name = new string("");
 
 		public int level;
 
-		public int[] diceIdList = new int[5];
+		public float criticalDamageRate;
+
+		public DICE_DATA[] diceList = new DICE_DATA[5];
 
 		public P2P_PLAYER_DATA()
 		{
+			for(int i = 0; i < 5; ++i)
+			{
+				diceList[i] = new DICE_DATA();
+			}
 		}
 
 		public P2P_PLAYER_DATA(in byte[] InBuffer)
 		{
+			for(int i = 0; i < 5; ++i)
+			{
+				diceList[i] = new DICE_DATA();
+			}
 			Deserialize(InBuffer);
 		}
 
@@ -1618,7 +1668,11 @@ namespace Packet
 			size += sizeof(int);
 			size += sizeof(char) * name.Length; 
 			size += sizeof(int);
-			size += sizeof(int) * 5;
+			size += sizeof(float);
+			for(int i = 0; i < 5; ++i)
+			{
+				size += diceList[i].GetSize();
+			}
 			return size;
 		}
 
@@ -1634,9 +1688,10 @@ namespace Packet
 			InBuffer.AddRange(BitConverter.GetBytes(name.Length));
 			InBuffer.AddRange(Encoding.Unicode.GetBytes(name));
 			InBuffer.AddRange(BitConverter.GetBytes(level));
+			InBuffer.AddRange(BitConverter.GetBytes(criticalDamageRate));
 			for(int i = 0; i < 5; ++i)
 			{
-				InBuffer.AddRange(BitConverter.GetBytes(diceIdList[i]));
+				diceList[i].Serialize(InBuffer); 
 			}
 		}
 
@@ -1648,8 +1703,12 @@ namespace Packet
 			offset += name_length;
 			level = BitConverter.ToInt32(InBuffer, offset);
 			offset += sizeof(int);
-			Buffer.BlockCopy(InBuffer, offset, diceIdList, 0, sizeof(int) * 5);
-			offset += sizeof(int) * 5;
+			criticalDamageRate = BitConverter.ToSingle(InBuffer, offset);
+			offset += sizeof(float);
+			for(int i = 0; i < 5; ++i)
+			{
+				offset = diceList[i].Deserialize(InBuffer, offset);
+			}
 			return offset;
 		}
 

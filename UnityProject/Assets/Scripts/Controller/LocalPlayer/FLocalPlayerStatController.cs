@@ -14,6 +14,7 @@ public class FLocalPlayerStatController : FControllerBase
     public int Exp { get { return exp; } }
     public int MaxExp { get { return maxExp; } }
     public int Critical { get { return critical; } }
+    public float CriticalDamageRate { get { return critical / 100.0f; } }
     public string Name { get { return name; } }
 
     public FLocalPlayerStatController(FLocalPlayer InOwner) : base(InOwner)
