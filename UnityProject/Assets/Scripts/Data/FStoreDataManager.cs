@@ -1,37 +1,63 @@
 using FEnum;
 using System.Collections.Generic;
 
-public class FBoxGoodsData
+public class FStoreData
 {
-    public readonly DiceGrade grade;
-    public readonly int min;
-    public readonly int max;
+    public readonly int id;
+    public readonly string name;
+    List<int> boxIDList = new List<int>();
 
-    public FBoxGoodsData(DiceGrade grade, int min, int max)
+    public FStoreData(FDataNode InNode)
     {
-        this.grade = grade;
-        this.min = min;
-        this.max = max;
+        id = InNode.GetIntAttr("id");
+        name = InNode.GetStringAttr("name");
+        InNode.ForeachChildNodes("Box", (in FDataNode InNode) => {
+            boxIDList.Add(InNode.GetIntAttr("id"));
+        });
+    }
+
+    public delegate void ForeachBoxDelegate(in FStoreBoxData InData);
+    public void ForeachBoxData(ForeachBoxDelegate InFunc)
+    {
+        foreach(int id in boxIDList)
+        {
+            FStoreBoxData boxData = FStoreDataManager.Instance.FindStoreBoxData(id);
+            if(boxData != null)
+            {
+                InFunc(boxData);
+            }
+        }
     }
 }
 
 public class FStoreBoxData
 {
     public readonly int id;
-    public readonly int price;
+    public readonly int goldPrice;
+    public readonly int diaPrice;
+    public readonly int cardPrice;
+    public readonly StorePriceType priceType;
+
     public readonly int gold;
     public readonly string name;
     public readonly string boxImagePath;
     private List<FBoxGoodsData> goodsList = new List<FBoxGoodsData>();
 
-    public FStoreBoxData(int id, int price, int gold, string name, string boxImagePath, FDataNode InNode)
+    public FStoreBoxData(FDataNode InNode)
     {
-        this.id = id;
-        this.price = price;
-        this.gold = gold;
-        this.name = name;
-        this.boxImagePath = boxImagePath;
+        id = InNode.GetIntAttr("id");
+        goldPrice = InNode.GetIntAttr("goldPrice");
+        diaPrice = InNode.GetIntAttr("diaPrice");
+        cardPrice = InNode.GetIntAttr("cardPrice");
 
+        if (goldPrice != 0) priceType = StorePriceType.Gold;
+        else if (diaPrice != 0) priceType = StorePriceType.Dia;
+        else if (cardPrice != 0) priceType = StorePriceType.Card;
+
+        gold = InNode.GetIntAttr("gold");
+        name = InNode.GetStringAttr("name");
+        boxImagePath = InNode.GetStringAttr("image");
+        
         InNode.ForeachChildNodes("Dice", (in FDataNode InDiceNode) => {
             DiceGrade grade = (DiceGrade)InDiceNode.GetIntAttr("grade");
             int min = InDiceNode.GetIntAttr("min");
@@ -52,43 +78,80 @@ public class FStoreBoxData
     }
 }
 
+public class FBoxGoodsData
+{
+    public readonly DiceGrade grade;
+    public readonly int min;
+    public readonly int max;
+
+    public FBoxGoodsData(DiceGrade grade, int min, int max)
+    {
+        this.grade = grade;
+        this.min = min;
+        this.max = max;
+    }
+}
+
+public class FBoxGoodsImageData
+{
+    public readonly DiceGrade grade;
+    public readonly string image;
+    public readonly string prefab;
+
+    public FBoxGoodsImageData(FDataNode InNode)
+    {
+        grade = (DiceGrade)InNode.GetIntAttr("grade");
+        image = InNode.GetStringAttr("image");
+        prefab = InNode.GetStringAttr("prefab");
+    }
+}
+
 public class FStoreDataManager : FNonObjectSingleton<FStoreDataManager>
 {
-    public string boxStoreTitle;
+    Dictionary<int, FStoreData> storeDataMap = new Dictionary<int, FStoreData>();
     Dictionary<int, FStoreBoxData> boxDataMap = new Dictionary<int, FStoreBoxData>();
-    Dictionary<DiceGrade, string> boxGoodsImageMap = new Dictionary<DiceGrade, string>();
+    Dictionary<DiceGrade, FBoxGoodsImageData> boxGoodsImageMap = new Dictionary<DiceGrade, FBoxGoodsImageData>();
+
+    int battleCardBoxID;
+    
+    public int BattleCardBoxID { get { return battleCardBoxID; } }
 
     public void Initialize()
     {
-        FDataNode dataNode = FDataCenter.Instance.GetDataNodeWithQuery("StoreDataList.BoxStoreData");
-        if(dataNode != null)
+        FDataNode storeDataNode = FDataCenter.Instance.GetDataNodeWithQuery("StoreDataList");
+        if (storeDataNode != null)
         {
-            boxStoreTitle = dataNode.GetStringAttr("name");
-            dataNode.ForeachChildNodes("Card", (in FDataNode InNode) => {
-                DiceGrade grade = (DiceGrade)InNode.GetIntAttr("grade");
-                string imagePath = InNode.GetStringAttr("image");
-                boxGoodsImageMap.Add(grade, imagePath);
-            });
+            battleCardBoxID = storeDataNode.GetIntAttr("battleCardBoxID");
 
-            dataNode.ForeachChildNodes("Box", (in FDataNode InBoxNode) => {
-                int id = InBoxNode.GetIntAttr("id");
-                int price = InBoxNode.GetIntAttr("price");
-                int gold = InBoxNode.GetIntAttr("gold");
-                string name = InBoxNode.GetStringAttr("name");
-                string boxImagePath = InBoxNode.GetStringAttr("image");
+            List<FDataNode> storeNodeList = storeDataNode.GetDataNodesWithQuery("StoreData");
+            foreach(FDataNode node in storeNodeList)
+            {
+                FStoreData storeData = new FStoreData(node);
+                storeDataMap.Add(storeData.id, storeData);
+            }
 
-                FStoreBoxData boxData = new FStoreBoxData(id, price, gold, name, boxImagePath, InBoxNode);
+            List<FDataNode> boxNodeList = storeDataNode.GetDataNodesWithQuery("BoxList.Box");
+            foreach (FDataNode node in boxNodeList)
+            {
+                FStoreBoxData boxData = new FStoreBoxData(node);
                 boxDataMap.Add(boxData.id, boxData);
-            });
+            }
+
+            List<FDataNode> cardNodeList = storeDataNode.GetDataNodesWithQuery("CardList.Card");
+            foreach (FDataNode node in cardNodeList)
+            {
+                FBoxGoodsImageData imageData = new FBoxGoodsImageData(node);
+                boxGoodsImageMap.Add(imageData.grade, imageData);
+            }
         }
     }
 
-    public string GetBoxGoodsImage(DiceGrade InGrade)
+    public FBoxGoodsImageData GetBoxGoodsImageData(DiceGrade InGrade)
     {
         if (boxGoodsImageMap.ContainsKey(InGrade))
             return boxGoodsImageMap[InGrade];
 
-        return "";
+        return null;
     }
 
     public FStoreBoxData FindStoreBoxData(int InID)
@@ -99,10 +162,10 @@ public class FStoreDataManager : FNonObjectSingleton<FStoreDataManager>
         return null;
     }
 
-    public delegate void ForeachStoreBoxDataFunc(in FStoreBoxData InData);
-    public void ForeachStoreBoxData(ForeachStoreBoxDataFunc InFunc)
+    public delegate void ForeachStoreDataFunc(in FStoreData InData);
+    public void ForeachStoreData(ForeachStoreDataFunc InFunc)
     {
-        foreach(var iter in boxDataMap)
+        foreach(var iter in storeDataMap)
         {
             InFunc(iter.Value);
         }

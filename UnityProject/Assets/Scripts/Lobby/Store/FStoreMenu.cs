@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -89,19 +90,21 @@ public class FStoreMenu : FLobbyScrollMenuBase
 
     private void InitBoxList()
     {
-        boxList.Title = FStoreDataManager.Instance.boxStoreTitle;
-        FStoreDataManager.Instance.ForeachStoreBoxData((in FStoreBoxData InData) =>
+        FStoreDataManager.Instance.ForeachStoreData((in FStoreData InData) =>
         {
-            FStoreGoodsSlot slot = GameObject.Instantiate<FStoreGoodsSlot>(goodsSlotPrefab, boxList.GoodsParent);
-            slot.Name = InData.name;
-            slot.Dia = InData.price;
-            slot.GoodsImage = Resources.Load<Sprite>(InData.boxImagePath);
-            slot.Count = 1;
+            boxList.Title = InData.name;
+            InData.ForeachBoxData((in FStoreBoxData InBoxData) => {
+                FStoreGoodsSlot slot = GameObject.Instantiate<FStoreGoodsSlot>(goodsSlotPrefab, boxList.GoodsParent);
+                slot.Name = InBoxData.name;
+                slot.Dia = InBoxData.diaPrice;
+                slot.GoodsImage = Resources.Load<Sprite>(InBoxData.boxImagePath);
+                slot.Count = 1;
 
-            int boxID = InData.id;
-            slot.GetComponent<Button>().onClick.AddListener(() => { OnClickBox(boxID); });
-
-            boxList.AddGoods(boxID, slot);
+                int boxID = InBoxData.id;
+                slot.GetComponent<Button>().onClick.AddListener(() => { OnClickBox(boxID); });
+           
+                boxList.AddGoods(boxID, slot);
+            });
         });
     }
 

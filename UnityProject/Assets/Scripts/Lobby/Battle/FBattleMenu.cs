@@ -5,9 +5,20 @@ using UnityEngine;
 public class FBattleMenu : FLobbyScrollMenuBase
 {
     [SerializeField]
+    FButtonEx cardButton = null;
+    [SerializeField]
     TextMeshProUGUI card = null;
 
-    public int Card { set { card.text = value.ToString(); } }
+    int cardPrice;
+
+    public int Card 
+    { 
+        set 
+        { 
+            card.text = value + "/" + cardPrice;
+            cardButton.SetInteractable(cardPrice < value);
+        }
+    }
 
     private void Start()
     {
@@ -16,6 +27,12 @@ public class FBattleMenu : FLobbyScrollMenuBase
 
     public void Initialize()
     {
+        FStoreBoxData battleCardBox = FStoreDataManager.Instance.FindStoreBoxData(FStoreDataManager.Instance.BattleCardBoxID);
+        if (battleCardBox != null)
+        {
+            cardPrice = battleCardBox.cardPrice;
+        }
+
         FInventoryController inventoryController = FGlobal.localPlayer.FindController<FInventoryController>();
         if (inventoryController != null)
         {
@@ -25,7 +42,7 @@ public class FBattleMenu : FLobbyScrollMenuBase
 
     public void OnClickOpenBox()
     {
-
+        FPopupManager.Instance.OpenBoxPurchasePopup(FStoreDataManager.Instance.BattleCardBoxID);
     }
 
     public void OnClickCoopBattleMatching()

@@ -27,7 +27,7 @@ public class FDataNode
         if(dataAttributes.ContainsKey(InName))
             return dataAttributes[InName].StrValue;
 
-        return "";
+        return null;
     }
 
     public int GetIntAttr(in string InName)

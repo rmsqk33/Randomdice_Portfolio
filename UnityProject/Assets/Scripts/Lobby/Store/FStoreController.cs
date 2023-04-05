@@ -120,10 +120,14 @@ public class FStoreController : FControllerBase
         }
 
         FInventoryController inventoryController = FGlobal.localPlayer.FindController<FInventoryController>();
-        if (inventoryController == null || inventoryController.Gold < boxData.price)
+        if (inventoryController == null)
         {
-            OpenPurchaseResultPopup(StorePurchaseResult.STORE_PURCHASE_RESULT_NOT_ENOUGH_MONEY);
-            return;
+            switch (boxData.priceType)
+            {
+                case StorePriceType.Gold: if(inventoryController.Gold < boxData.goldPrice) OpenPurchaseResultPopup(StorePurchaseResult.STORE_PURCHASE_RESULT_NOT_ENOUGH_MONEY); return;
+                case StorePriceType.Dia: if(inventoryController.Dia < boxData.diaPrice) OpenPurchaseResultPopup(StorePurchaseResult.STORE_PURCHASE_RESULT_NOT_ENOUGH_MONEY); return;
+                case StorePriceType.Card: if(inventoryController.Card < boxData.cardPrice) OpenPurchaseResultPopup(StorePurchaseResult.STORE_PURCHASE_RESULT_NOT_ENOUGH_MONEY); return;
+            }
         }
 
         C_PURCHASE_BOX packet = new C_PURCHASE_BOX();

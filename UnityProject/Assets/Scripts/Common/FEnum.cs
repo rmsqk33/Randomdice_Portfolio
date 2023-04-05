@@ -100,4 +100,13 @@ namespace FEnum
         Critical,
         Max
     }
+
+    public enum StorePriceType
+    {
+        Gold,
+        Dia,
+        Card,
+        Max,
+    }
+
 }
