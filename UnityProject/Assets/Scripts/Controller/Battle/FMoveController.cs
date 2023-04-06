@@ -1,20 +1,31 @@
-using TMPro;
+using FEnum;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class FMoveController : FControllerBase
+public class FMoveController : FControllerBase, FStatObserver
 {
-    private FPathBase movePath;
-    private SortingGroup sortingGroup;
-    private float totalDistance;
-    private float moveDistance;
+    FPathBase movePath;
+    SortingGroup sortingGroup;
+    float totalDistance;
+    float moveDistance;
+    float speed;
 
-    public float Speed { get; set; }
     public float RemainDistance { get { return totalDistance - moveDistance; } }
 
     public FMoveController(FObjectBase InOwner) : base(InOwner)
     {
+    }
+
+    public override void Initialize()
+    {
         sortingGroup = Owner.GetComponent<SortingGroup>();
+
+        FStatController statController = FindController<FStatController>();
+        if(statController != null)
+        {
+            speed = statController.GetStat(StatType.MoveSpeed);
+            statController.AddObserver(this);
+        }
     }
 
     public override void Tick(float InDeltaTime)
@@ -22,7 +33,7 @@ public class FMoveController : FControllerBase
         if (movePath == null)
             return;
 
-        float moveDelta = Speed * InDeltaTime;
+        float moveDelta = speed * InDeltaTime;
         Owner.WorldPosition = Vector2.MoveTowards(Owner.WorldPosition, movePath.WorldPosition, moveDelta);
         moveDistance += moveDelta;
 
@@ -54,5 +65,13 @@ public class FMoveController : FControllerBase
             totalDistance += Vector2.Distance(point.NextPath.WorldPosition, point.WorldPosition);
             point = point.NextPath;
         }
+    }
+
+    public void OnStatChanged(StatType InType, float InValue)
+    {
+        if (InType != StatType.MoveSpeed)
+            return;
+
+        speed = InValue;
     }
 }

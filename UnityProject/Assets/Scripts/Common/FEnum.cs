@@ -109,4 +109,16 @@ namespace FEnum
         Max,
     }
 
+    public enum StatType
+    {
+        None,
+        HP,
+        SP,
+        MoveSpeed,
+        CriticalChance,
+        CriticalDamage,
+        Level,
+        DiceEye,
+    }
+
 }

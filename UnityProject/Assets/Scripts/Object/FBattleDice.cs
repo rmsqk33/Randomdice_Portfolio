@@ -30,12 +30,10 @@ public class FBattleDice : FObjectBase, IBeginDragHandler, IDragHandler, IDropHa
         AddController<FIFFController>();
         FindController<FIFFController>().IFFType = IFFType.LocalPlayer;
 
-        AddController<FDiceStatController>();
+        AddController<FStatController>();
         InitDiceStat(InEyeCount, InDiceID);
 
         AddController<FSkillController>();
-
-
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -108,6 +106,10 @@ public class FBattleDice : FObjectBase, IBeginDragHandler, IDragHandler, IDropHa
 
     private void InitDiceStat(int InEyeCount, int InDiceID)
     {
+        FStatController statController = FindController<FStatController>();
+        if (statController == null)
+            return;
+
         FDiceController diceController = FGlobal.localPlayer.FindController<FDiceController>();
         if (diceController == null)
             return;
@@ -119,9 +121,11 @@ public class FBattleDice : FObjectBase, IBeginDragHandler, IDragHandler, IDropHa
         FLocalPlayerStatController localPlayerStatController = FGlobal.localPlayer.FindController<FLocalPlayerStatController>();
         if (localPlayerStatController == null)
             return;
-        
-        FindController<FDiceStatController>().Initialize(InEyeCount, dice.level, localPlayerStatController.CriticalDamageRate);
 
+        statController.SetStat(StatType.Level, dice.level);
+        statController.SetStat(StatType.DiceEye, InEyeCount);
+        statController.SetStat(StatType.CriticalChance, FGlobal.DiceCriticalChange);
+        statController.SetStat(StatType.CriticalDamage, localPlayerStatController.CriticalDamageRate);
     }
 
     private void SetEnableCollider(bool InEnable)

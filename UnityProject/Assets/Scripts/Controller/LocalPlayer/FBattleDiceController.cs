@@ -192,11 +192,11 @@ public class FBattleDiceController : FControllerBase
         if (IsCombinableDice(dragDice, dropDice) == false)
             return;
 
-        FDiceStatController diceStatController = dropDice.FindController<FDiceStatController>();
-        if (diceStatController == null)
+        FStatController statController = dropDice.FindController<FStatController>();
+        if (statController == null)
             return;
 
-        CombineDice(dragDiceIndex, InSlotIndex, diceStatController.EyeCount + 1);
+        CombineDice(dragDiceIndex, InSlotIndex, statController.GetIntStat(StatType.DiceEye) + 1);
         DeactiveDiceCombinable();
     }
 
@@ -252,11 +252,11 @@ public class FBattleDiceController : FControllerBase
         if (dice == null)
             return;
 
-        FDiceStatController diceStatController = dice.FindController<FDiceStatController>();
-        if (diceStatController == null)
+        FStatController statController = dice.FindController<FStatController>();
+        if (statController == null)
             return;
 
-        SetDiceEyeTotalCount(diceStatController.DiceID, -diceStatController.EyeCount);
+        SetDiceEyeTotalCount(dice.ContentID, -statController.GetIntStat(StatType.DiceEye));
 
         FObjectManager.Instance.RemoveObjectAndSendP2P(objectID);
         summonDiceIDMap.Remove(InIndex);
@@ -305,21 +305,21 @@ public class FBattleDiceController : FControllerBase
 
     private bool IsCombinableDice(FObjectBase InDragDice, FObjectBase InDropDice)
     {
-        FDiceStatController dragDiceController = InDragDice.FindController<FDiceStatController>();
-        if (dragDiceController == null)
+        FStatController dragStatController = InDragDice.FindController<FStatController>();
+        if (dragStatController == null)
             return false;
 
-        FDiceStatController dropDiceController = InDropDice.FindController<FDiceStatController>();
-        if (dropDiceController == null)
+        FStatController dropStatController = InDropDice.FindController<FStatController>();
+        if (dropStatController == null)
             return false;
 
-        if (dragDiceController.DiceID != dropDiceController.DiceID)
+        if (InDragDice.ContentID != InDropDice.ContentID)
             return false;
 
-        if (dragDiceController.EyeCount != dropDiceController.EyeCount)
+        if (dragStatController.GetIntStat(StatType.DiceEye) != dropStatController.GetIntStat(StatType.DiceEye))
             return false;
 
-        if (FBattleDataManager.Instance.MaxEyeCount == dragDiceController.EyeCount)
+        if (FBattleDataManager.Instance.MaxEyeCount == dragStatController.GetIntStat(StatType.DiceEye))
             return false;
 
         return true;
