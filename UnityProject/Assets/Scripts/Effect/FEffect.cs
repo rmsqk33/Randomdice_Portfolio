@@ -42,7 +42,7 @@ public class FEffect : MonoBehaviour
 
         FCombatTextManager.Instance.AddText(InCritical ? CombatTextType.Critical : CombatTextType.Normal, InDamage, InTarget);
 
-        FStatController statController = InTarget.FindController<FStatController>();
+        FEnemyStatController statController = InTarget.FindController<FEnemyStatController>();
         if (statController != null)
         {
             statController.OnDamage(InDamage);

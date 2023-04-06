@@ -38,12 +38,12 @@ public class FDamageEffect : FEffect
         if (owner.IsOwnLocalPlayer() == false)
             return;
 
-        FStatController statController = owner.FindController<FStatController>();
-        if (statController == null)
+        FDiceStatController battleDiceController = owner.FindController<FDiceStatController>();
+        if (battleDiceController == null)
             return;
 
-        bool critical = statController.IsCritical();
-        int damage = (int)(critical ? this.damage * statController.GetStat(StatType.CriticalDamage) : this.damage);
+        bool critical = battleDiceController.IsCritical();
+        int damage = (int)(critical ? this.damage * battleDiceController.CriticalDamageRate : this.damage);
         if (0 < radius)
         {
             FObjectManager.Instance.ForeachObject((FObjectBase InObject) =>
@@ -72,18 +72,18 @@ public class FDamageEffect : FEffect
         if (owner.IsOwnLocalPlayer() == false)
             return 0;
 
-        FStatController statController = owner.FindController<FStatController>();
-        if (statController == null)
+        FDiceStatController battleDiceController = owner.FindController<FDiceStatController>();
+        if (battleDiceController == null)
             return 0;
 
         FBattleDiceController battleController = FGlobal.localPlayer.FindController<FBattleDiceController>();
         if (battleController == null)
             return 0;
 
-        FEquipBattleDice battleDice = battleController.FindEquipBattleDice(owner.ContentID);
+        FEquipBattleDice battleDice = battleController.FindEquipBattleDice(battleDiceController.DiceID);
         if (battleDice == null)
             return 0;
 
-        return InData.damage + InData.damagePerLevel * statController.GetIntStat(StatType.Level) + InData.damagePerBattleLevel * battleDice.level;
+        return InData.damage + InData.damagePerLevel * battleDiceController.DiceLevel + InData.damagePerBattleLevel * battleDice.level;
     }
 }

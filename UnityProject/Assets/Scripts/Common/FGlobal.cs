@@ -10,6 +10,4 @@ public class FGlobal
 
     public static FLocalPlayer localPlayer = null;
     public static FRemotePlayer remotePlayer = null;
-
-    public static float DiceCriticalChange = 0.33f;
 }

@@ -22,16 +22,15 @@ public class FRemotePlayerBattleDice : FObjectBase
         AddController<FIFFController>();
         FindController<FIFFController>().IFFType = IFFType.RemotePlayer;
         
-        AddController<FStatController>();
+        AddController<FDiceStatController>();
        
         FRemotePlayerBattleController battleController = FGlobal.remotePlayer.FindController<FRemotePlayerBattleController>();
         if (battleController != null)
         {
-            FStatController statController = FindController<FStatController>();
-            statController.SetStat(StatType.Level, battleController.GetDiceLevel(InDiceID));
-            statController.SetStat(StatType.DiceEye, InEyeCount);
-            statController.SetStat(StatType.CriticalChance, FGlobal.DiceCriticalChange);
-            statController.SetStat(StatType.CriticalDamage, battleController.CriticalDamageRate);
+            FDiceStatController diceStatController = FindController<FDiceStatController>();
+
+            int diceLevel = battleController.GetDiceLevel(InDiceID);
+            diceStatController.Initialize(InEyeCount, diceLevel, battleController.CriticalDamageRate);
         }
 
         AddController<FSkillController>();
