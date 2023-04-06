@@ -135,7 +135,7 @@ public class FP2PPacketHandler
         {
             FCombatTextManager.Instance.AddText(pkt.critical ? CombatTextType.Critical : CombatTextType.Normal, pkt.damage, target);
          
-            FEnemyStatController statController = target.FindController<FEnemyStatController>();
+            FStatController statController = target.FindController<FStatController>();
             if (statController != null)
             {
                 statController.OnDamage(pkt.damage);

@@ -66,14 +66,14 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
             if (moveController != null)
             {
                 moveController.SetStartPoint(startPoint);
-                moveController.Speed = enemyData.moveSpeed;
             }
 
-            FEnemyStatController statController = newEnemy.FindController<FEnemyStatController>();
+            FStatController statController = newEnemy.FindController<FStatController>();
             if (statController != null)
             {
-                statController.HP = enemyData.hp + enemyData.hpIncreaseBySpawnCount * (enemySpawnCount / 2);
-                statController.SP = enemyData.sp;
+                statController.SetStat(StatType.HP, enemyData.hp + enemyData.hpIncreaseBySpawnCount * (enemySpawnCount / 2));
+                statController.SetStat(StatType.SP, enemyData.sp);
+                statController.SetStat(StatType.MoveSpeed, enemyData.moveSpeed);
             }
 
             AddObject(enemySpawnCount++, newEnemy);

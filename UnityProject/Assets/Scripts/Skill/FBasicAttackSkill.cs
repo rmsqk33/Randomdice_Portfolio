@@ -20,11 +20,11 @@ public class FBasicAttackSkill : FSkillBase
 
     protected override void Initialize(FSkillData InSkillData)
     {
-        FDiceStatController diceStatController = owner.FindController<FDiceStatController>();
-        if (diceStatController == null)
+        FStatController statController = owner.FindController<FStatController>();
+        if (statController == null)
             return;
 
-        Transform eyeParent = diceStatController.FindChildComponent<Transform>("Eye");
+        Transform eyeParent = statController.FindChildComponent<Transform>("Eye");
         if (eyeParent == null)
             return;
 
@@ -33,7 +33,7 @@ public class FBasicAttackSkill : FSkillBase
             eyeList.Add(eye);
         }
 
-        eyeCount = diceStatController.EyeCount;
+        eyeCount = statController.GetIntStat(StatType.DiceEye);
 
         projectileID = InSkillData.projectileID;
         targetType = InSkillData.targetType;
