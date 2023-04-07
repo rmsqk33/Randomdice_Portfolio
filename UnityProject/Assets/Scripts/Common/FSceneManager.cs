@@ -15,10 +15,17 @@ public class FSceneManager : FSingleton<FSceneManager>
     public SceneType CurrentSceneType { get { return currentSceneType; } }
     public float Progress { get { return progress; } }
 
-
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Init()
     {
+#if DEBUG
+        if (FServerManager.Instance.IsConnected == false)
+        {
+            FServerManager.Instance.ConnectMainServer();
+            FAccountMananger.Instance.TryLogin();
+        }
+#endif
+
         Instance.fadeSpriteRenderer = Instance.gameObject.AddComponent<SpriteRenderer>();
         Instance.fadeSpriteRenderer.color = new Color(0, 0, 0, 0);
         Instance.fadeSpriteRenderer.sprite = Resources.Load<Sprite>("Sprite/Loading/Square");
