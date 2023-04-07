@@ -21,7 +21,7 @@
 	</Dice>
 	<Dice id="5" name="얼음 주사위" icon="Sprite/Dice/Dice_ICE" notAcquiredIcon="Sprite/Dice/Black_Dice_ICE" color="#408ff2" grade="1" description="몬스터 공격 시 [얼음] 디버프를 남겨 이동속도를 감소 시킨다.">
 		<SkillList>
-			<Skill id="1" />
+			<Skill id="2" />
 		</SkillList>
 	</Dice>
 	<Dice id="6" name="쇠 주사위" icon="Sprite/Dice/Dice_IRON" notAcquiredIcon="Sprite/Dice/Black_Dice_IRON" color="#636363" grade="1" description="보스 공격 시 2배 데미지를 입힌다."></Dice>

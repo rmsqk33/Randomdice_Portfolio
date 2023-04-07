@@ -35,6 +35,10 @@ public class FServerManager : FSingleton<FServerManager>
 
     public bool IsConnected { get { return isConnected; }}
 
+#if DEBUG
+    public bool InitUser { get; set; }
+#endif 
+
     void Update()
     {
         ExecuteMessage();

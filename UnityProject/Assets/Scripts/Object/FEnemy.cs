@@ -12,7 +12,8 @@ public class FEnemy : FObjectBase, FStatObserver
         AddController<FIFFController>();
         AddController<FStatController>();
         AddController<FMoveController>();
-
+        AddController<FAbnormalityController>();
+        
         FindController<FStatController>().AddObserver(this);
     }
 

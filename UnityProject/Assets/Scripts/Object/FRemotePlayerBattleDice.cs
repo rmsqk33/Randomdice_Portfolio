@@ -35,6 +35,7 @@ public class FRemotePlayerBattleDice : FObjectBase
         }
 
         AddController<FSkillController>();
+        AddController<FAbnormalityController>();
     }
 
     private void InitUI(int InEyeCount)

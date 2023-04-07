@@ -74,6 +74,15 @@ public class FPacketHandler
         {
             statController.Handle_S_USER_DATA(pkt);
         }
+
+#if DEBUG
+        FServerManager.Instance.InitUser = true;
+        if(FSceneManager.Instance.CurrentSceneType == SceneType.Battle)
+        {
+            FGlobal.localPlayer.IsHost = true;
+            FBattleScene.InitBattle();
+        }
+#endif
     }
 
     static void Handle_S_STORE_DICE_LIST(in byte[] InBuffer)

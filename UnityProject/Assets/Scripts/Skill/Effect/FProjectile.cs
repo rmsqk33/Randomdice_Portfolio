@@ -1,10 +1,10 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class FProjectile : MonoBehaviour, FObjectStateObserver
 {
     private int speed;
     private int effectID;
+    private int abnormalityID;
     private Vector2 targetPosition;
     private FObjectBase owner;
     private FObjectBase target;
@@ -36,6 +36,7 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
         {
             speed = projectileData.speed;
             effectID = projectileData.effectID;
+            abnormalityID = projectileData.abnormalityID;
         }
     }
 
@@ -55,6 +56,9 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
             if (effectID != 0)
                 ActiveEffect();
 
+            if (abnormalityID != 0)
+                ActiveAbnormality();
+
             Remove();
         }
     }
@@ -65,6 +69,18 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
             FEffectManager.Instance.AddEffect(effectID, owner, target);
         else
             FEffectManager.Instance.AddEffect(effectID, owner, targetPosition);
+    }
+
+    private void ActiveAbnormality()
+    {
+        if (target == null)
+            return;
+
+        FAbnormalityController abnormalityController = target.FindController<FAbnormalityController>();
+        if (abnormalityController == null)
+            return;
+
+        abnormalityController.AddAbnormality(abnormalityID);
     }
 
     private void Remove()

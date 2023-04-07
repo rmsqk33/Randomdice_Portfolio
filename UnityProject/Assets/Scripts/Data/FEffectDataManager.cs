@@ -7,6 +7,7 @@ public class FProjectileData
 {
     public readonly int id;
     public readonly int effectID;
+    public readonly int abnormalityID;
     public readonly int speed;
     public readonly string prefab;
 
@@ -14,6 +15,7 @@ public class FProjectileData
     {
         id = InNode.GetIntAttr("id");
         effectID = InNode.GetIntAttr("effectID");
+        abnormalityID = InNode.GetIntAttr("abnormalityID");
         speed = InNode.GetIntAttr("speed");
         prefab = InNode.GetStringAttr("prefab");
     }

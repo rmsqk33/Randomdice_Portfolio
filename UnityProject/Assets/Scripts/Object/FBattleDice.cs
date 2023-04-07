@@ -34,6 +34,7 @@ public class FBattleDice : FObjectBase, IBeginDragHandler, IDragHandler, IDropHa
         InitDiceStat(InEyeCount, InDiceID);
 
         AddController<FSkillController>();
+        AddController<FAbnormalityController>();
     }
 
     public void OnBeginDrag(PointerEventData eventData)

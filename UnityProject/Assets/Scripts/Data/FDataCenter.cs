@@ -19,6 +19,7 @@ public class FDataCenter : FNonObjectSingleton<FDataCenter>
         FBattleDataManager.Instance.Initialize();
         FEffectDataManager.Instance.Initialize();
         FSkillDataManager.Instance.Initialize();
+        FAbnormalityDataManager.Instance.Initialize();
     }
 
     void ParseXML(in string InPath)

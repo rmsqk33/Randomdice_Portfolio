@@ -1,0 +1,7 @@
+<AbnormalityList>
+    <Abnormality id="1" maxOverlap="3" duration="2" statType="3" desc="이동 속도 감소">
+        <Overlap overlap="1" effectPercentage="-0.15" effectImage="Sprite/Skill/Effect/Ice1" />
+        <Overlap overlap="2" effectPercentage="-0.30" effectImage="Sprite/Skill/Effect/Ice2" />
+        <Overlap overlap="3" effectPercentage="-0.45" effectImage="Sprite/Skill/Effect/Ice3" />
+    </Abnormality>
+</AbnormalityList>
