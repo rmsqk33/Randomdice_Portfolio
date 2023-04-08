@@ -4,33 +4,13 @@ using FEnum;
 public class FDamageEffect : FEffect
 {
     int damage;
-    int radius;
-    float duration;
 
-    public override void Initialize(int InEffectID, FObjectBase InOwner, FObjectBase InTarget = null)
+    public override void Initialize(FEffectData InEffectData, FObjectBase InOwner, FObjectBase InTarget = null)
     {
-        FEffectData effectData = FEffectDataManager.Instance.FindEffectData(InEffectID);
-        if (effectData == null)
-            return;
+        base.Initialize(InEffectData, InOwner, InTarget);
+        damage = CalcDamage(InEffectData);
 
-        base.Initialize(InEffectID, InOwner, InTarget);
-        radius = effectData.radius;
-        duration = effectData.duration;
-        damage = CalcDamage(effectData);
-        
-
-        if (duration == 0)
-        {
-            DamageToTarget();
-
-            Animator anim = GetComponent<Animator>();
-            if (anim != null)
-            {
-                duration = anim.GetCurrentAnimatorStateInfo(0).length;
-            }
-        }
-
-        StartCoroutine(RemoveEffect(duration));
+        DamageToTarget();
     }
 
     private void DamageToTarget()
@@ -55,10 +35,10 @@ public class FDamageEffect : FEffect
                 if (iffController.IsEnumy(IFFType.LocalPlayer) == false)
                     return;
 
-                if (radius < Vector2.Distance(InObject.WorldPosition, transform.position))
+                if (radius + InObject.transform.localScale.x * 0.5 < Vector2.Distance(InObject.WorldPosition, WorldPosition))
                     return;
 
-                DamageToTarget(target, damage, critical);
+                DamageToTarget(InObject, damage, critical);
             });
         }
         else if (target != null)

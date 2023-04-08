@@ -48,16 +48,24 @@ public class FEffectManager : FSingleton<FEffectManager>
 
     public void AddEffect(int InEffectID, FObjectBase InOwner, Vector2 InPosition)
     {
-        FEffect effect = CreateEffect(InEffectID);
-        effect.Initialize(InEffectID, InOwner);
+        FEffectData InEffectData = FEffectDataManager.Instance.FindEffectData(InEffectID);
+        if (InEffectData == null)
+            return;
+
+        FEffect effect = CreateEffect(InEffectData);
         effect.WorldPosition = InPosition;
+        effect.Initialize(InEffectData, InOwner);
     }
 
     public void AddEffect(int InEffectID, FObjectBase InOwner, FObjectBase InTarget)
     {
-        FEffect effect = CreateEffect(InEffectID);
-        effect.Initialize(InEffectID, InOwner, InTarget);
+        FEffectData InEffectData = FEffectDataManager.Instance.FindEffectData(InEffectID);
+        if (InEffectData == null)
+            return;
+
+        FEffect effect = CreateEffect(InEffectData);
         effect.WorldPosition = InTarget.WorldPosition;
+        effect.Initialize(InEffectData, InOwner, InTarget);
     }
 
     public void RemoveEffect(int InInstanceID)
@@ -89,13 +97,9 @@ public class FEffectManager : FSingleton<FEffectManager>
         return projectile;
     }
 
-    private FEffect CreateEffect(int InEffectID)
+    private FEffect CreateEffect(FEffectData InEffectData)
     {
-        FEffectData effectData = FEffectDataManager.Instance.FindEffectData(InEffectID);
-        if (effectData == null)
-            return null;
-
-        GameObject prefab = Resources.Load<GameObject>(effectData.prefab);
+        GameObject prefab = Resources.Load<GameObject>(InEffectData.prefab);
         if (prefab == null)
             return null;
 
@@ -103,7 +107,7 @@ public class FEffectManager : FSingleton<FEffectManager>
         gameObject.transform.SetParent(transform);
 
         FEffect effect = null;
-        switch (effectData.type)
+        switch (InEffectData.type)
         {
             case SkillEffectType.Damage: effect = gameObject.AddComponent<FDamageEffect>(); break;
         }

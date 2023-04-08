@@ -10,6 +10,8 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
 
     Dictionary<int, FObjectBase> objectMap = new Dictionary<int, FObjectBase>();
     Dictionary<int, FObjectBase> enemyMap = new Dictionary<int, FObjectBase>();
+    List<FObjectBase> removeObjectList = new List<FObjectBase>();
+
     int enemySpawnCount = 0;
     int diceInstanceID = 0;
 
@@ -106,9 +108,7 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
                 enemyMap.Remove(InID);
             }
 
-            objectMap[InID].Release();
-            GameObject.Destroy(objectMap[InID].gameObject);
-            objectMap.Remove(InID);
+            removeObjectList.Add(objectMap[InID]);
         }
     }
 
@@ -142,6 +142,7 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
     private void Update()
     {
         UpdateFrontEnemy();
+        RemoveObjectAfterTick();
     }
 
     private void UpdateFrontEnemy()
@@ -167,5 +168,16 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
                 FrontEnemy = enemy;
             }
         }
+    }
+
+    private void RemoveObjectAfterTick()
+    {
+        foreach(FObjectBase InObject in removeObjectList)
+        {
+            InObject.Release();
+            GameObject.Destroy(InObject.gameObject);
+            objectMap.Remove(InObject.ObjectID);
+        }
+        removeObjectList.Clear();
     }
 }

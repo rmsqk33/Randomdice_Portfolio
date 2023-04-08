@@ -32,6 +32,7 @@ public class FRemotePlayerBattleDice : FObjectBase
             statController.SetStat(StatType.DiceEye, InEyeCount);
             statController.SetStat(StatType.CriticalChance, FGlobal.DiceCriticalChange);
             statController.SetStat(StatType.CriticalDamage, battleController.CriticalDamageRate);
+            statController.SetStat(StatType.AttackSpeed, 1);
         }
 
         AddController<FSkillController>();

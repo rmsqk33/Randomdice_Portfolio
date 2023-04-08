@@ -2,15 +2,11 @@ using FEnum;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FBasicAttackSkill : FSkillBase
+public class FBasicAttackSkill : FSkillBase, FStatObserver
 {
     int eyeCount;
     int attackEyeIndex;
-
-    int projectileID;
-    SkillTargetType targetType;
-    float attackInterval;
-    float elapsedTime;
+    float originInterval;
 
     List<Transform> eyeList = new List<Transform>();
 
@@ -34,58 +30,25 @@ public class FBasicAttackSkill : FSkillBase
         }
 
         eyeCount = statController.GetIntStat(StatType.DiceEye);
+        originInterval = InSkillData.interval / eyeCount;
+        interval = originInterval / statController.GetStat(StatType.AttackSpeed);
 
-        projectileID = InSkillData.projectileID;
-        targetType = InSkillData.targetType;
-        attackInterval = InSkillData.interval / eyeCount;
-    }
-
-    public override void Tick(float InDelta)
-    {
-        if (toggle == false)
-            return;
-
-        elapsedTime += InDelta;
-
-        if (attackInterval <= elapsedTime)
-        {
-            UseSkill();
-
-            elapsedTime = 0;
-        }
+        statController.AddObserver(this);
     }
 
     public override void UseSkill()
     {
-        if (owner.IsOwnLocalPlayer())
-        {
-            FObjectBase newTarget = GetTarget();
-            if(target != newTarget)
-            {
-                target = newTarget;
-                if (target != null)
-                    SendOnSkill(target.ObjectID);
-                else
-                    SendOffSkill();
-            }
-        }
-
-        if (target == null)
-            return;
-
         PlayAttackAnim(attackEyeIndex);
         FEffectManager.Instance.AddProjectile(projectileID, owner, GetEyePosition(attackEyeIndex), target);
         attackEyeIndex = (attackEyeIndex + 1) % eyeCount;
     }
 
-    private FObjectBase GetTarget()
+    public void OnStatChanged(StatType InType, float InValue)
     {
-        switch (targetType)
-        {
-            case SkillTargetType.Front: return FObjectManager.Instance.FrontEnemy;
-        }
+        if (InType != StatType.AttackSpeed)
+            return;
 
-        return null;
+        interval = originInterval / InValue;
     }
 
     private Vector2 GetEyePosition(int InEyeIndex)

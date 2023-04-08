@@ -48,6 +48,9 @@ public class FAbnormality
 
     public void Tick(float InDelta)
     {
+        if (durationTimer.Interval == 0)
+            return;
+
         durationTimer.Tick(InDelta);
         if (durationTimer.IsElapsedCheckTime())
         {
@@ -81,7 +84,7 @@ public class FAbnormality
         if (statController == null)
             return;
 
-        statController.SetStat(statType, originStat + originStat * abnormalityData.effectPercentage);
+        statController.SetStat(statType, originStat * abnormalityData.effectPercentage);
         if (abnormalityData.effectImage != null)
         {
             if(effect != null)

@@ -72,11 +72,13 @@ namespace FEnum
     public enum SkillType
     {
         Basic,
+        Abnormal,
     }
 
     public enum SkillTargetType
     {
         Front,
+        Myself,
     }
 
     public enum SkillEffectType
@@ -119,6 +121,7 @@ namespace FEnum
         CriticalDamage,
         Level,
         DiceEye,
+        AttackSpeed,
     }
 
 }

@@ -1,3 +1,5 @@
 <EffectDataList>
-    <EffectData id="1" type="0" damage="5" damagePerLevel="5" damagePerBattleLevel="5" prefab="Prefabs/Effect/BasicAttack"/>
+    <EffectData id="1" type="0" damage="5" damagePerLevel="5" damagePerBattleLevel="5" radius="100" prefab="Prefabs/Effect/FireExplosion"/>
+    <EffectData id="3" type="0" damage="5" damagePerLevel="5" damagePerBattleLevel="5" prefab="Prefabs/Effect/BasicAttack"/>
+    <EffectData id="5" type="0" damage="5" damagePerLevel="5" damagePerBattleLevel="5" prefab="Prefabs/Effect/BasicAttack"/>
 </EffectDataList>

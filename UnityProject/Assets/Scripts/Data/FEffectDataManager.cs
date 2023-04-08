@@ -1,7 +1,5 @@
 using FEnum;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
 
 public class FProjectileData
 {
@@ -31,7 +29,6 @@ public class FEffectData
     public readonly int damagePerLevel;
     public readonly int damagePerBattleLevel;
     public readonly int radius;
-    public readonly int duration;
 
     public FEffectData(FDataNode InNode)
     {
@@ -43,7 +40,6 @@ public class FEffectData
         damagePerLevel = InNode.GetIntAttr("damagePerLevel");
         damagePerBattleLevel = InNode.GetIntAttr("damagePerBattleLevel");
         radius = InNode.GetIntAttr("radius");
-        duration = InNode.GetIntAttr("duration");
     }
 }
 

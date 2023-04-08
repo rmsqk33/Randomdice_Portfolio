@@ -127,6 +127,7 @@ public class FBattleDice : FObjectBase, IBeginDragHandler, IDragHandler, IDropHa
         statController.SetStat(StatType.DiceEye, InEyeCount);
         statController.SetStat(StatType.CriticalChance, FGlobal.DiceCriticalChange);
         statController.SetStat(StatType.CriticalDamage, localPlayerStatController.CriticalDamageRate);
+        statController.SetStat(StatType.AttackSpeed, 1);
     }
 
     private void SetEnableCollider(bool InEnable)

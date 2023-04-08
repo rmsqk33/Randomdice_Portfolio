@@ -7,8 +7,9 @@ public class FSkillData
     public readonly SkillType skillType;
     public readonly SkillTargetType targetType;
     public readonly int projectileID;
-    public readonly int effectID;
+    public readonly int abnormalityID;
     public readonly float interval;
+    public readonly float duration;
 
     public FSkillData(FDataNode InNode)
     {
@@ -16,7 +17,9 @@ public class FSkillData
         skillType = (SkillType)InNode.GetIntAttr("skillType");
         targetType = (SkillTargetType)InNode.GetIntAttr("skillTargetType");
         projectileID = InNode.GetIntAttr("projectileID");
+        abnormalityID = InNode.GetIntAttr("abnormalityID");
         interval = InNode.GetFloatAttr("interval");
+        duration = InNode.GetFloatAttr("duration");
     }
 }
 

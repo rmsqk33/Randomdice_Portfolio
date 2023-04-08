@@ -66,6 +66,7 @@ public class FSkillController : FControllerBase
         switch (skillData.skillType)
         {
             case SkillType.Basic: skill = new FBasicAttackSkill(Owner, skillData); break;
+            case SkillType.Abnormal: skill = new FAbnormalitySkill(Owner, skillData); break;
         }
 
         return skill;

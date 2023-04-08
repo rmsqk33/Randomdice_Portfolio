@@ -5,23 +5,17 @@
 		</SkillList>
 	</Dice>
 	<Dice id="2" name="전기 주사위" icon="Sprite/Dice/Dice_ELECT" notAcquiredIcon="Sprite/Dice/Black_Dice_ELECT" color="#ffad0d" grade="1" description="몬스터 공격 시 타겟을 포함한 3개의 몬스터에게 [전기] 데미지를 입힌다." >
-		<SkillList>
-			<Skill id="1" />
-		</SkillList>
 	</Dice>
 	<Dice id="3" name="바람 주사위" icon="Sprite/Dice/Dice_WIND" notAcquiredIcon="Sprite/Dice/Black_Dice_WIND" color="#00c7a1" grade="1" description="몬스터를 빠른 속도로 공격한다.">
 		<SkillList>
-			<Skill id="1" />
+			<Skill id="3" />
 		</SkillList>
 	</Dice>
 	<Dice id="4" name="독 주사위" icon="Sprite/Dice/Dice_POISON" notAcquiredIcon="Sprite/Dice/Black_Dice_POISON" color="#30bd1c" grade="1" description="몬스터 공격 시 [독] 디버프를 남겨 초당 독 데미지를 입힌다. ">
-		<SkillList>
-			<Skill id="1" />
-		</SkillList>
 	</Dice>
 	<Dice id="5" name="얼음 주사위" icon="Sprite/Dice/Dice_ICE" notAcquiredIcon="Sprite/Dice/Black_Dice_ICE" color="#408ff2" grade="1" description="몬스터 공격 시 [얼음] 디버프를 남겨 이동속도를 감소 시킨다.">
 		<SkillList>
-			<Skill id="2" />
+			<Skill id="5" />
 		</SkillList>
 	</Dice>
 	<Dice id="6" name="쇠 주사위" icon="Sprite/Dice/Dice_IRON" notAcquiredIcon="Sprite/Dice/Black_Dice_IRON" color="#636363" grade="1" description="보스 공격 시 2배 데미지를 입힌다."></Dice>
