@@ -49,7 +49,7 @@ public class FChainEffect : FEffect
                 FObjectBase chainTarget = chainTargetList[i];
 
                 CreateChainEffect(prevTarget, chainTarget);
-                DamageToTarget(chainTarget, (int)(damage - (chainDamageRate * i) * damage));
+                DamageToTarget(chainTarget, (int)(damage - (chainDamageRate * (i + 1)) * damage));
 
                 prevTarget = chainTarget;
             }
