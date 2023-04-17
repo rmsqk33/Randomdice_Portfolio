@@ -84,6 +84,7 @@ namespace FEnum
     public enum SkillEffectType
     {
         Damage,
+        Chain,
     }
 
     public enum SceneType

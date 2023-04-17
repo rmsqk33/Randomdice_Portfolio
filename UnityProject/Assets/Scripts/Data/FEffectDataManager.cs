@@ -30,6 +30,11 @@ public class FEffectData
     public readonly int damagePerBattleLevel;
     public readonly int radius;
 
+    public readonly int chainCount;
+    public readonly float chainDamageRate;
+    public readonly float chainRadius;
+    public readonly string chainPrefab;
+
     public FEffectData(FDataNode InNode)
     {
         id = InNode.GetIntAttr("id");
@@ -40,6 +45,11 @@ public class FEffectData
         damagePerLevel = InNode.GetIntAttr("damagePerLevel");
         damagePerBattleLevel = InNode.GetIntAttr("damagePerBattleLevel");
         radius = InNode.GetIntAttr("radius");
+
+        chainCount = InNode.GetIntAttr("chainCount");
+        chainDamageRate = InNode.GetFloatAttr("chainDamageRate");
+        chainRadius = InNode.GetFloatAttr("chainRadius");
+        chainPrefab = InNode.GetStringAttr("chainPrefab");
     }
 }
 

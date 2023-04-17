@@ -110,6 +110,7 @@ public class FEffectManager : FSingleton<FEffectManager>
         switch (InEffectData.type)
         {
             case SkillEffectType.Damage: effect = gameObject.AddComponent<FDamageEffect>(); break;
+            case SkillEffectType.Chain: effect = gameObject.AddComponent<FChainEffect>(); break;
         }
         
         if(effect != null)
