@@ -2,7 +2,6 @@ using FEnum;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class FChainEffect : FEffect
 {
@@ -17,7 +16,7 @@ public class FChainEffect : FEffect
     private int chainCount;
     private float chainDamageRate;
     private float chainRadius;
-    private Transform effectPrefab;
+    private Transform hitEffectPrefab;
     private Transform chainPrefab;
 
     public override void Initialize(FEffectData InEffectData, FObjectBase InOwner, FObjectBase InTarget = null)
@@ -28,28 +27,32 @@ public class FChainEffect : FEffect
         chainDamageRate = InEffectData.chainDamageRate;
         chainRadius = InEffectData.chainRadius;
         chainPrefab = Resources.Load<Transform>(InEffectData.chainPrefab);
-        effectPrefab = Resources.Load<Transform>(InEffectData.prefab);
+        hitEffectPrefab = Resources.Load<Transform>(InEffectData.prefab);
 
-        DamageToTarget();
+        if (owner.IsOwnLocalPlayer())
+        {
+            DamageToTarget(target, damage);
+        }
+
+        ChainEffect();
     }
 
-    private void DamageToTarget()
+    private void ChainEffect()
     {
-        if (owner.IsOwnLocalPlayer() == false)
-            return;
-
-        DamageToTarget(target, damage);
-
         List<FObjectBase> chainTargetList = GetChainTargetList();
         if (0 < chainTargetList.Count)
         {
             FObjectBase prevTarget = target;
-            for(int i = 0; i < chainTargetList.Count; ++i)
+            for (int i = 0; i < chainTargetList.Count; ++i)
             {
                 FObjectBase chainTarget = chainTargetList[i];
 
                 CreateChainEffect(prevTarget, chainTarget);
-                DamageToTarget(chainTarget, (int)(damage - (chainDamageRate * (i + 1)) * damage));
+
+                if (owner.IsOwnLocalPlayer())
+                {
+                    DamageToTarget(chainTarget, (int)(damage - (chainDamageRate * (i + 1)) * damage));
+                }
 
                 prevTarget = chainTarget;
             }
@@ -89,15 +92,14 @@ public class FChainEffect : FEffect
 
     private void CreateChainEffect(FObjectBase InFrom, FObjectBase InTo)
     {
-        Transform effect = Instantiate(effectPrefab, this.transform);
-        effect.localScale = new Vector2(effect.localScale.x / this.transform.localScale.x, effect.localScale.y / this.transform.localScale.y);
+        Transform effect = Instantiate(hitEffectPrefab, this.transform);
         effect.position = InTo.WorldPosition;
 
         Transform chain = Instantiate(chainPrefab, this.transform);
         chain.position = InFrom.WorldPosition;
 
         float distance = Vector2.Distance(InFrom.WorldPosition, InTo.WorldPosition);
-        chain.localScale = new Vector2(distance / this.transform.localScale.x, chain.localScale.y / this.transform.localScale.y);
+        chain.localScale = new Vector2(distance, chain.localScale.y);
 
         float angle = -Vector2.Angle(Vector2.right, InTo.WorldPosition - InFrom.WorldPosition);
         chain.Rotate(new Vector3(0, 0, 1), angle);

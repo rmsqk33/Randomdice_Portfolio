@@ -99,11 +99,7 @@ public class FEffectManager : FSingleton<FEffectManager>
 
     private FEffect CreateEffect(FEffectData InEffectData)
     {
-        GameObject prefab = Resources.Load<GameObject>(InEffectData.prefab);
-        if (prefab == null)
-            return null;
-
-        GameObject gameObject = Instantiate(prefab);
+        GameObject gameObject = new GameObject();
         gameObject.transform.SetParent(transform);
 
         FEffect effect = null;

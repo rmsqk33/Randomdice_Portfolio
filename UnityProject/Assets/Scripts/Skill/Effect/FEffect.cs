@@ -1,4 +1,5 @@
 using FEnum;
+using Newtonsoft.Json;
 using Packet;
 using System.Collections;
 using UnityEngine;
@@ -22,9 +23,12 @@ public class FEffect : MonoBehaviour
         radius = InEffectData.radius;
         damage = CalcDamage(InEffectData);
 
-        if(radius != 0)
+        GameObject hitEffectPrefab = Resources.Load<GameObject>(InEffectData.prefab);
+        Instantiate(hitEffectPrefab, this.transform);
+
+        if (radius != 0)
         {
-            transform.localScale = new Vector3(radius * 2, radius * 2, 1);
+            hitEffectPrefab.transform.localScale = new Vector3(radius * 2, radius * 2, 1);
         }
 
         Animator anim = GetComponent<Animator>();
