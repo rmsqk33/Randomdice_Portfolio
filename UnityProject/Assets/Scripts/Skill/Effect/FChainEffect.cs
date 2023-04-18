@@ -13,6 +13,7 @@ public class FChainEffect : FEffect
         }
     }
 
+    private int damage;
     private int chainCount;
     private float chainDamageRate;
     private Transform hitEffectPrefab;
@@ -22,6 +23,7 @@ public class FChainEffect : FEffect
     {
         base.Initialize(InEffectData, InOwner, InTarget);
         
+        damage = FGlobal.CalcDamage(InOwner, InEffectData.damage, InEffectData.damagePerLevel, InEffectData.damagePerBattleLevel);
         chainCount = InEffectData.chainCount;
         chainDamageRate = InEffectData.chainDamageRate;
         chainPrefab = Resources.Load<Transform>(InEffectData.chainPrefab);

@@ -8,7 +8,6 @@ public class FEffect : MonoBehaviour
     protected FObjectBase owner;
     protected FObjectBase target;
     protected int effectID;
-    protected int damage;
     protected float radius;
 
     public int InstanceID { get; set; }
@@ -20,7 +19,6 @@ public class FEffect : MonoBehaviour
         target = InTarget;
         effectID = InEffectData.id;
         radius = InEffectData.radius;
-        damage = CalcDamage(InEffectData);
 
         GameObject hitEffectPrefab = Resources.Load<GameObject>(InEffectData.prefab);
         GameObject hitEffect = Instantiate(hitEffectPrefab, this.transform);
@@ -71,25 +69,5 @@ public class FEffect : MonoBehaviour
         pkt.critical = critical;
 
         FServerManager.Instance.SendMessage(pkt);
-    }
-
-    private int CalcDamage(FEffectData InData)
-    {
-        if (owner.IsOwnLocalPlayer() == false)
-            return 0;
-
-        FStatController statController = owner.FindController<FStatController>();
-        if (statController == null)
-            return 0;
-
-        FBattleDiceController battleController = FGlobal.localPlayer.FindController<FBattleDiceController>();
-        if (battleController == null)
-            return 0;
-
-        FEquipBattleDice battleDice = battleController.FindEquipBattleDice(owner.ContentID);
-        if (battleDice == null)
-            return 0;
-
-        return InData.damage + InData.damagePerLevel * statController.GetIntStat(StatType.Level) + InData.damagePerBattleLevel * battleDice.level;
     }
 }

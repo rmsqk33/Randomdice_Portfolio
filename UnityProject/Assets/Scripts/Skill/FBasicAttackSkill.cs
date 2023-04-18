@@ -38,6 +38,18 @@ public class FBasicAttackSkill : FSkillBase, FStatObserver
 
     public override void UseSkill()
     {
+        FObjectBase target = GetTarget();
+        if(target != this.target)
+        {
+            if (target != null)
+                SendOnSkill(target);
+            else
+                SendOffSkill();
+        }
+
+        if (target == null)
+            return;
+
         PlayAttackAnim(attackEyeIndex);
         FEffectManager.Instance.AddProjectile(projectileID, owner, GetEyePosition(attackEyeIndex), target);
         attackEyeIndex = (attackEyeIndex + 1) % eyeCount;

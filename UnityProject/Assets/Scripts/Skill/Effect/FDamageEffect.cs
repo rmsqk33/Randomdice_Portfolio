@@ -1,11 +1,14 @@
 using UnityEngine;
-using FEnum;
 
 public class FDamageEffect : FEffect
 {
+    int damage;
+
     public override void Initialize(FEffectData InEffectData, FObjectBase InOwner, FObjectBase InTarget = null)
     {
         base.Initialize(InEffectData, InOwner, InTarget);
+
+        damage = FGlobal.CalcDamage(InOwner, InEffectData.damage, InEffectData.damagePerLevel, InEffectData.damagePerBattleLevel);
 
         DamageToTarget();
     }

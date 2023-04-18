@@ -27,7 +27,7 @@ public class FDamageAbnormality : FAbnormality
             if (battleDice == null)
                 return;
 
-            damage = InAbnormalityData.damage + InAbnormalityData.damagePerLevel * statController.GetIntStat(StatType.Level) + InAbnormalityData.damagePerBattleLevel * battleDice.level;
+            damage = FGlobal.CalcDamage(owner, InAbnormalityData.damage, InAbnormalityData.damagePerLevel, InAbnormalityData.damagePerBattleLevel);
             criticalDamageRate = statController.GetStat(StatType.CriticalDamage);
             criticalChance = statController.GetStat(StatType.CriticalChance);
         }

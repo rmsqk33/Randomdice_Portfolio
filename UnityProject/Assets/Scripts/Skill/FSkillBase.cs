@@ -47,7 +47,9 @@ public class FSkillBase
         Initialize(InSkillData);
 
         if (interval == 0)
-            UseSkillInner();
+        {
+            UseSkill();
+        }
     }
 
     protected virtual void Initialize(FSkillData InSkillData) { }
@@ -65,38 +67,17 @@ public class FSkillBase
 
         if (interval <= elapsedTime)
         {
-            UseSkillInner();
+            UseSkill();
             elapsedTime = 0;
         }
     }
 
-    private void UseSkillInner()
-    {
-        if (owner.IsOwnLocalPlayer())
-        {
-            FObjectBase newTarget = GetTarget();
-            if (target != newTarget)
-            {
-                target = newTarget;
-                if (target != null)
-                    SendOnSkill(target.ObjectID);
-                else
-                    SendOffSkill();
-            }
-        }
-
-        if (target == null)
-            return;
-
-        UseSkill();
-    }
-
-    protected void SendOnSkill(int InTargetID)
+    protected void SendOnSkill(FObjectBase InTarget = null)
     {
         P2P_ON_SKILL pkt = new P2P_ON_SKILL();
         pkt.objectId = owner.ObjectID;
         pkt.skillId = skillID;
-        pkt.targetId = InTargetID;
+        pkt.targetId = InTarget != null ? InTarget.ObjectID : 0;
 
         FServerManager.Instance.SendMessage(pkt);
     }
