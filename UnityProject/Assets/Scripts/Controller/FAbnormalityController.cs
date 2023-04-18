@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine.Rendering;
 
 public class FAbnormalityController : FControllerBase
 {
@@ -8,7 +9,7 @@ public class FAbnormalityController : FControllerBase
     {
     }
 
-    public void AddAbnormality(int InID)
+    public void AddAbnormality(FObjectBase InOwner, int InID)
     {
         int index = FindAbnormalityIndex(InID);
         if (index != -1)
@@ -17,10 +18,7 @@ public class FAbnormalityController : FControllerBase
         }
         else
         {
-            FAbnormality abnormality = new FAbnormality();
-            abnormality.Initialize(Owner, InID);
-
-            abnormalityList.Add(abnormality);
+            abnormalityList.Add(CreateAbnormality(InOwner, InID));
         }
     }
 
@@ -40,6 +38,30 @@ public class FAbnormalityController : FControllerBase
         {
             abnormalityList[i].Tick(InDeltaTime);
         }
+    }
+
+    public bool HasAbnormality(int InID)
+    {
+        return FindAbnormalityIndex(InID) != -1;
+    }
+
+    private FAbnormality CreateAbnormality(FObjectBase InOwner, int InID)
+    {
+        FAbnormalityData abnormalityData = FAbnormalityDataManager.Instance.FindAbnormalityData(InID);
+        if (abnormalityData == null)
+            return null;
+
+        FAbnormality abnormality = null;
+
+        switch (abnormalityData.type)
+        {
+            case FEnum.AbnormalityType.Stat: abnormality = new FStatAbnormality(); break;
+            case FEnum.AbnormalityType.Damage: abnormality = new FDamageAbnormality(); break;
+        }
+
+        abnormality.Initialize(Owner, InOwner, abnormalityData);
+
+        return abnormality;
     }
 
     private int FindAbnormalityIndex(int InID)

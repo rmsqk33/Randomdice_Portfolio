@@ -80,7 +80,7 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
         if (abnormalityController == null)
             return;
 
-        abnormalityController.AddAbnormality(abnormalityID);
+        abnormalityController.AddAbnormality(owner, abnormalityID);
     }
 
     private void Remove()

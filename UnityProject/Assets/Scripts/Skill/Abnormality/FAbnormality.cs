@@ -1,42 +1,48 @@
 using FEnum;
-using System;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class FAbnormality 
+public abstract class FAbnormality 
 {
-    FObjectBase target;
-    FTimer durationTimer = new FTimer();
+    protected FObjectBase target;
+    protected FObjectBase owner;
+
+    FTimer durationTimer;
+    FTimer intervalTimer;
     
     int abnormalityID;
     int maxOverlap;
     int overlap;
 
-    StatType statType;
-    float originStat;
     GameObject effect;
 
     public int ID { get { return abnormalityID; } }
 
-    public void Initialize(FObjectBase InTarget, int InID) 
+    protected abstract void Initialize(FAbnormalityData InAbnormalityData);
+    protected abstract void OnEffect(FAbnormalityOverlapData InAbnormalityData);
+    protected abstract void OffEffect();
+    
+    public void Initialize(FObjectBase InTarget, FObjectBase InOwner, FAbnormalityData InAbnormalityData) 
     {
-        FAbnormalityData abnormalityData = FAbnormalityDataManager.Instance.FindAbnormalityData(InID);
-        if (abnormalityData == null)
-            return;
-
-        abnormalityID = InID;
+        abnormalityID = InAbnormalityData.id;
         target = InTarget;
+        owner = InOwner;
         overlap = 1;
-        maxOverlap = abnormalityData.maxOverlap;
-        durationTimer.Interval = abnormalityData.duration;
-
-        statType = abnormalityData.statType;
-
-        FStatController statController = InTarget.FindController<FStatController>();
-        if(statController != null)
+        maxOverlap = InAbnormalityData.maxOverlap;
+        
+        if(0 < InAbnormalityData.duration)
         {
-            originStat = statController.GetStat(statType);
+            durationTimer = new FTimer(InAbnormalityData.duration);
+            durationTimer.Start();
         }
+        
+
+        if(0 < InAbnormalityData.interval)
+        {
+            intervalTimer = new FTimer(InAbnormalityData.interval);
+            intervalTimer.Start();
+        }
+
+        Initialize(InAbnormalityData);
 
         OnEffect();
     }
@@ -44,20 +50,37 @@ public class FAbnormality
     public void Release()
     {
         OffEffect();
+        if (effect != null)
+        {
+            GameObject.Destroy(effect);
+        }
     }
 
     public void Tick(float InDelta)
     {
-        if (durationTimer.Interval == 0)
-            return;
-
-        durationTimer.Tick(InDelta);
-        if (durationTimer.IsElapsedCheckTime())
+        if (intervalTimer != null)
         {
-            FAbnormalityController abnormalityController = target.FindController<FAbnormalityController>();
-            if(abnormalityController != null)
+            intervalTimer.Tick(InDelta);
+            if (intervalTimer.IsElapsedCheckTime())
             {
-                abnormalityController.RemoveAbnormality(abnormalityID);
+                FAbnormalityOverlapData abnormalityData = FAbnormalityDataManager.Instance.FindAbnormalityOverlapData(abnormalityID, overlap);
+                if (abnormalityData != null)
+                {
+                    OnEffect(abnormalityData);
+                }
+            }
+        }
+
+        if (durationTimer != null)
+        {
+            durationTimer.Tick(InDelta);
+            if (durationTimer.IsElapsedCheckTime())
+            {
+                FAbnormalityController abnormalityController = target.FindController<FAbnormalityController>();
+                if (abnormalityController != null)
+                {
+                    abnormalityController.RemoveAbnormality(abnormalityID);
+                }
             }
         }
     }
@@ -80,14 +103,9 @@ public class FAbnormality
         if (abnormalityData == null)
             return;
 
-        FStatController statController = target.FindController<FStatController>();
-        if (statController == null)
-            return;
-
-        statController.SetStat(statType, originStat * abnormalityData.effectPercentage);
         if (abnormalityData.effectImage != null)
         {
-            if(effect != null)
+            if (effect != null)
                 GameObject.Destroy(effect);
 
             effect = new GameObject("effect");
@@ -96,19 +114,7 @@ public class FAbnormality
             spriteRenderer.sortingLayerName = "Object";
             effect.transform.SetParent(target.transform, false);
         }
-    }
 
-    private void OffEffect()
-    {
-        FStatController statController = target.FindController<FStatController>();
-        if (statController != null)
-        {
-            statController.SetStat(statType, originStat);
-        }
-
-        if (effect != null)
-        {
-            GameObject.Destroy(effect);
-        }
+        OnEffect(abnormalityData);
     }
 }

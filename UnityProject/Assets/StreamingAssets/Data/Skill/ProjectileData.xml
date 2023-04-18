@@ -2,5 +2,6 @@
     <ProjectileData id="1" effectID="1" speed="2000" prefab="Prefabs/Projectile/BasicAttack"/>
     <ProjectileData id="2" effectID="2" speed="2000" prefab="Prefabs/Projectile/BasicAttack"/>
     <ProjectileData id="3" effectID="3" speed="2000" prefab="Prefabs/Projectile/BasicAttack"/>
+    <ProjectileData id="4" effectID="4" abnormalityID="4" speed="2000" prefab="Prefabs/Projectile/BasicAttack"/>
     <ProjectileData id="5" effectID="5" abnormalityID="5" speed="2000" prefab="Prefabs/Projectile/BasicAttack"/>
 </ProjectileDataList>

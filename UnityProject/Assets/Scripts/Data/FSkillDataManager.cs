@@ -15,7 +15,7 @@ public class FSkillData
     {
         id = InNode.GetIntAttr("id");
         skillType = (SkillType)InNode.GetIntAttr("skillType");
-        targetType = (SkillTargetType)InNode.GetIntAttr("skillTargetType");
+        targetType = (SkillTargetType)InNode.GetIntAttr("targetType");
         projectileID = InNode.GetIntAttr("projectileID");
         abnormalityID = InNode.GetIntAttr("abnormalityID");
         interval = InNode.GetFloatAttr("interval");

@@ -19,18 +19,30 @@ public class FAbnormalityData
 {
     public readonly int id;
     public readonly int maxOverlap;
+    public readonly int damage;
+    public readonly int damagePerLevel;
+    public readonly int damagePerBattleLevel;
+    public readonly float interval;
     public readonly float duration;
     public readonly StatType statType;
-    
+    public readonly AbnormalityType type;
+
     Dictionary<int, FAbnormalityOverlapData> overlapMap = new Dictionary<int, FAbnormalityOverlapData>();
 
     public FAbnormalityData(FDataNode InNode)
     {
         id = InNode.GetIntAttr("id");
         maxOverlap = InNode.GetIntAttr("maxOverlap");
-        duration = InNode.GetFloatAttr("duration");
-        statType = (StatType)InNode.GetIntAttr("statType");
+        damage = InNode.GetIntAttr("damage");
+        damagePerLevel = InNode.GetIntAttr("damagePerLevel");
+        damagePerBattleLevel = InNode.GetIntAttr("damagePerBattleLevel");
 
+        interval = InNode.GetFloatAttr("interval");
+        duration = InNode.GetFloatAttr("duration");
+
+        statType = (StatType)InNode.GetIntAttr("statType");
+        type = (AbnormalityType)InNode.GetIntAttr("type");
+        
         InNode.ForeachChildNodes("Overlap", (in FDataNode InNode) => {
             FAbnormalityOverlapData overlapData = new FAbnormalityOverlapData(InNode);
             overlapMap.Add(overlapData.overlap, overlapData);

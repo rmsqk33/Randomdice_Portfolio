@@ -1,13 +1,11 @@
 <AbnormalityList>
-    <Abnormality id="3" maxOverlap="1" statType="8" >
-        <Overlap overlap="1" effectPercentage="1.33" />
+    <Abnormality id="4" type="1" maxOverlap="1" interval="1" duration="4" damage="5" damagePerLevel="5" damagePerBattleLevel="5">
+        <Overlap overlap="1" effectPercentage="1" effectImage="Sprite/Skill/Effect/Poison/mark" />
     </Abnormality>
-    <Abnormality id="5" maxOverlap="3" duration="2" statType="3">
+    <Abnormality id="5" type="0" maxOverlap="3" duration="2" statType="3">
         <Overlap overlap="1" effectPercentage="0.85" effectImage="Sprite/Skill/Effect/Ice/1" />
         <Overlap overlap="2" effectPercentage="0.70" effectImage="Sprite/Skill/Effect/Ice/2" />
         <Overlap overlap="3" effectPercentage="0.55" effectImage="Sprite/Skill/Effect/Ice/3" />
     </Abnormality>
-    <Abnormality id="2" maxOverlap="1" duration="4" statType="8">
-        <Overlap overlap="1" effectPercentage="2" effectImage="Sprite/Skill/Effect/Ice1" />
-    </Abnormality>
+    
 </AbnormalityList>

@@ -79,6 +79,7 @@ namespace FEnum
     {
         Front,
         Myself,
+        NoneAbnormalityFront,
     }
 
     public enum SkillEffectType
@@ -125,4 +126,9 @@ namespace FEnum
         AttackSpeed,
     }
 
+    public enum AbnormalityType
+    { 
+        Stat,
+        Damage
+    }
 }

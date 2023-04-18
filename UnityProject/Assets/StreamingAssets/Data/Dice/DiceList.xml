@@ -15,6 +15,9 @@
 		</SkillList>
 	</Dice>
 	<Dice id="4" name="독 주사위" icon="Sprite/Dice/Dice_POISON" notAcquiredIcon="Sprite/Dice/Black_Dice_POISON" color="#30bd1c" grade="1" description="몬스터 공격 시 [독] 디버프를 남겨 초당 독 데미지를 입힌다. ">
+		<SkillList>
+			<Skill id="4" />
+		</SkillList>
 	</Dice>
 	<Dice id="5" name="얼음 주사위" icon="Sprite/Dice/Dice_ICE" notAcquiredIcon="Sprite/Dice/Black_Dice_ICE" color="#408ff2" grade="1" description="몬스터 공격 시 [얼음] 디버프를 남겨 이동속도를 감소 시킨다.">
 		<SkillList>

@@ -14,7 +14,7 @@ public class FAbnormalitySkill : FSkillBase
         if (abnormalityController == null)
             return;
 
-        abnormalityController.AddAbnormality(abnormalityID);
+        abnormalityController.AddAbnormality(owner, abnormalityID);
     }
 
 }

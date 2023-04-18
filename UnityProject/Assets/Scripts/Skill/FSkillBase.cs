@@ -7,6 +7,7 @@ public class FSkillBase
     protected int skillID;
     protected int projectileID;
     protected int abnormalityID;
+    protected int checkAbnormalityID;
 
     protected SkillTargetType targetType;
     protected FObjectBase target;
@@ -28,6 +29,19 @@ public class FSkillBase
         projectileID = InSkillData.projectileID;
         abnormalityID = InSkillData.abnormalityID;
         
+        if(targetType == SkillTargetType.NoneAbnormalityFront)
+        {
+            checkAbnormalityID = InSkillData.abnormalityID;
+            if(checkAbnormalityID == 0)
+            {
+                FProjectileData projectileData = FEffectDataManager.Instance.FindProjectileData(InSkillData.projectileID);
+                if(projectileData != null)
+                {
+                    checkAbnormalityID = projectileData.abnormalityID;
+                }
+            }
+        }
+
         interval = InSkillData.interval;
 
         Initialize(InSkillData);
@@ -98,12 +112,29 @@ public class FSkillBase
 
     protected FObjectBase GetTarget()
     {
+        FObjectBase target = null;
+
         switch (targetType)
         {
-            case SkillTargetType.Front: return FObjectManager.Instance.FrontEnemy;
-            case SkillTargetType.Myself: return owner;
+            case SkillTargetType.Front: target = FObjectManager.Instance.FrontEnemy; break;
+            case SkillTargetType.Myself: target = owner; break;
+            case SkillTargetType.NoneAbnormalityFront:
+                FObjectManager.Instance.ForeachSortedEnemy((FObjectBase InObject) => {
+                    if (target != null)
+                        return;
+
+                    if (InObject.FindController<FAbnormalityController>().HasAbnormality(checkAbnormalityID))
+                        return;
+
+                    target = InObject;
+                });
+    
+                if(target == null)
+                    target = FObjectManager.Instance.FrontEnemy;
+
+                break;
         }
 
-        return null;
+        return target;
     }
 }
