@@ -1,20 +1,23 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class FObjectBase : MonoBehaviour
 {
     private Dictionary<Type, FControllerBase> controllers = new Dictionary<Type, FControllerBase>();
     private List<FObjectStateObserver> observers = new List<FObjectStateObserver>();
-
+    private SortingGroup sortingGroup;
+    
     public int ObjectID { get; set; }
     public int ContentID { get; set; }
     public Vector2 WorldPosition { get { return transform.position; } set { transform.position = value; } }
     public Vector2 LocalPosition { get { return transform.localPosition; } set { transform.localPosition = value; } }
+    public int SortingOrder { set { if (sortingGroup != null) sortingGroup.sortingOrder = value; } }
 
     protected virtual void Awake()
     {
-
+        sortingGroup = GetComponent<SortingGroup>();
     }
 
     public virtual void Release()

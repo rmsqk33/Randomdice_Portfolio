@@ -1,5 +1,4 @@
 using FEnum;
-using Newtonsoft.Json;
 using Packet;
 using System.Collections;
 using UnityEngine;
@@ -24,14 +23,14 @@ public class FEffect : MonoBehaviour
         damage = CalcDamage(InEffectData);
 
         GameObject hitEffectPrefab = Resources.Load<GameObject>(InEffectData.prefab);
-        Instantiate(hitEffectPrefab, this.transform);
+        GameObject hitEffect = Instantiate(hitEffectPrefab, this.transform);
 
         if (radius != 0)
         {
             hitEffectPrefab.transform.localScale = new Vector3(radius * 2, radius * 2, 1);
         }
 
-        Animator anim = GetComponent<Animator>();
+        Animator anim = hitEffect.GetComponent<Animator>();
         if (anim != null)
         {
             StartCoroutine(RemoveEffect(anim.GetCurrentAnimatorStateInfo(0).length));

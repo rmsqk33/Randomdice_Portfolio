@@ -15,7 +15,6 @@ public class FChainEffect : FEffect
 
     private int chainCount;
     private float chainDamageRate;
-    private float chainRadius;
     private Transform hitEffectPrefab;
     private Transform chainPrefab;
 
@@ -25,7 +24,6 @@ public class FChainEffect : FEffect
         
         chainCount = InEffectData.chainCount;
         chainDamageRate = InEffectData.chainDamageRate;
-        chainRadius = InEffectData.chainRadius;
         chainPrefab = Resources.Load<Transform>(InEffectData.chainPrefab);
         hitEffectPrefab = Resources.Load<Transform>(InEffectData.prefab);
 
@@ -39,55 +37,23 @@ public class FChainEffect : FEffect
 
     private void ChainEffect()
     {
-        List<FObjectBase> chainTargetList = GetChainTargetList();
-        if (0 < chainTargetList.Count)
+        int i = 0;
+        FObjectBase prevTarget = target;
+        FObjectManager.Instance.ForeachSortedEnemy(chainCount + 1, (FObjectBase InObject) =>
         {
-            FObjectBase prevTarget = target;
-            for (int i = 0; i < chainTargetList.Count; ++i)
+            if (prevTarget == InObject)
+                return;
+
+            CreateChainEffect(prevTarget, InObject);
+
+            if (owner.IsOwnLocalPlayer())
             {
-                FObjectBase chainTarget = chainTargetList[i];
-
-                CreateChainEffect(prevTarget, chainTarget);
-
-                if (owner.IsOwnLocalPlayer())
-                {
-                    DamageToTarget(chainTarget, (int)(damage - (chainDamageRate * (i + 1)) * damage));
-                }
-
-                prevTarget = chainTarget;
+                DamageToTarget(InObject, (int)(damage - (chainDamageRate * (i + 1)) * damage));
             }
-        }
-    }
 
-    private List<FObjectBase> GetChainTargetList()
-    {
-        List<KeyValuePair<int, FObjectBase>> objectDistanceList = new List<KeyValuePair<int, FObjectBase>>();
-        FObjectManager.Instance.ForeachObject((FObjectBase InObject) => {
-            if (target == InObject)
-                return;
-
-            FIFFController iffController = InObject.FindController<FIFFController>();
-            if (iffController == null)
-                return;
-
-            if (iffController.IsEnumy(IFFType.LocalPlayer) == false)
-                return;
-
-            objectDistanceList.Add(new KeyValuePair<int, FObjectBase>((int)Vector2.Distance(target.WorldPosition, InObject.WorldPosition), InObject));
+            prevTarget = InObject;
+            ++i;
         });
-
-        objectDistanceList.Sort(new PairCompair());
-
-        List<FObjectBase> retValue = new List<FObjectBase>();
-        for(int i = 0; i < Math.Min(chainCount, objectDistanceList.Count); ++i)
-        {
-            if (chainRadius * (i + 1) < objectDistanceList[i].Key)
-                break;
-
-            retValue.Add(objectDistanceList[i].Value);
-        }
-
-        return retValue;
     }
 
     private void CreateChainEffect(FObjectBase InFrom, FObjectBase InTo)

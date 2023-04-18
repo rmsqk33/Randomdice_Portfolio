@@ -2,6 +2,7 @@ using Packet;
 using FEnum;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
 {
@@ -9,14 +10,14 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
     List<FStartPoint> startPointList;
 
     Dictionary<int, FObjectBase> objectMap = new Dictionary<int, FObjectBase>();
-    Dictionary<int, FObjectBase> enemyMap = new Dictionary<int, FObjectBase>();
+    List<FObjectBase> sortedEnemyList = new List<FObjectBase>();
     List<FObjectBase> removeObjectList = new List<FObjectBase>();
 
     int enemySpawnCount = 0;
     int diceInstanceID = 0;
 
     public FObjectBase FrontEnemy { get; private set; }
-    public int EnemyCount { get { return enemyMap.Count; } }
+    public int EnemyCount { get { return sortedEnemyList.Count; } }
     public int Seed { set { diceInstanceID = (value + 1) * 100000000; } }
 
     private void Start()
@@ -81,7 +82,7 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
             }
 
             AddObject(enemySpawnCount++, newEnemy);
-            enemyMap.Add(newEnemy.ObjectID, newEnemy);
+            sortedEnemyList.Add(newEnemy);
         }
 
         if (FGlobal.localPlayer.IsHost)
@@ -102,14 +103,6 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
     {
         if (objectMap.ContainsKey(InID))
         {
-            if (enemyMap.ContainsKey(InID))
-            {
-                if (FrontEnemy != null && FrontEnemy.ObjectID == InID)
-                    FrontEnemy = null;
-
-                enemyMap.Remove(InID);
-            }
-
             removeObjectList.Add(objectMap[InID]);
         }
     }
@@ -141,33 +134,73 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
         }
     }
 
+    public delegate void ForeachSortedEnemyDelegate(FObjectBase InObject);
+    public void ForeachSortedEnemy(int InCount, ForeachSortedEnemyDelegate InFunc)
+    {
+        int i = 0;
+        foreach (FObjectBase obj in sortedEnemyList)
+        {
+            if(obj.FindController<FIFFController>().IsEnumy(IFFType.LocalPlayer))
+            {
+                InFunc(obj);
+
+                ++i;
+                if (i == InCount)
+                    break;
+            }
+        }
+    }
+
+    public void ForeachSortedEnemy(ForeachSortedEnemyDelegate InFunc)
+    {
+        foreach (FObjectBase obj in sortedEnemyList)
+        {
+            if (obj.FindController<FIFFController>().IsEnumy(IFFType.LocalPlayer))
+            {
+                InFunc(obj);
+            }
+        }
+    }
+
     private void Update()
     {
-        UpdateFrontEnemy();
+        SortEnemyByRemainDistance();
         RemoveObjectAfterTick();
     }
 
-    private void UpdateFrontEnemy()
+    private void SortEnemyByRemainDistance()
     {
-        foreach (var pair in enemyMap)
+        bool dirty = false;
+        for(int i = 0; i < sortedEnemyList.Count - 1; ++i)
         {
-            FObjectBase enemy = pair.Value;
+            FObjectBase A = sortedEnemyList[i];
+            FObjectBase B = sortedEnemyList[i + 1];
 
-            FIFFController iffController = enemy.FindController<FIFFController>();
-            if (iffController.IsEnumy(IFFType.LocalPlayer) == false)
-                continue;
+            float remainDistanceA = A.FindController<FMoveController>().RemainDistance;
+            float remainDistanceB = B.FindController<FMoveController>().RemainDistance;
 
-            if (FrontEnemy == null)
+            if(remainDistanceB < remainDistanceA)
             {
-                FrontEnemy = enemy;
-                continue;
+                FObjectBase temp = sortedEnemyList[i];
+                sortedEnemyList[i] = sortedEnemyList[i + 1];
+                sortedEnemyList[i + 1] = temp;
+
+                A.SortingOrder = i + 1;
+                B.SortingOrder = i;
+
+                dirty = true;
             }
+        }
 
-            FMoveController moveController = enemy.FindController<FMoveController>();
-            FMoveController frontEnemyMoveController = FrontEnemy.FindController<FMoveController>();
-            if (moveController.RemainDistance < frontEnemyMoveController.RemainDistance)
+        if(dirty || FrontEnemy == null)
+        {
+            foreach(FObjectBase obj in sortedEnemyList)
             {
-                FrontEnemy = enemy;
+                if(obj.FindController<FIFFController>().IsEnumy(IFFType.LocalPlayer))
+                {
+                    FrontEnemy = obj;
+                    break;
+                }
             }
         }
     }
@@ -176,6 +209,8 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
     {
         foreach(FObjectBase InObject in removeObjectList)
         {
+            sortedEnemyList.Remove(InObject);
+
             InObject.Release();
             GameObject.Destroy(InObject.gameObject);
             objectMap.Remove(InObject.ObjectID);

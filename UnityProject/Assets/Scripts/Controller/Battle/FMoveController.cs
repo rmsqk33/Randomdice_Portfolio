@@ -5,7 +5,6 @@ using UnityEngine.Rendering;
 public class FMoveController : FControllerBase, FStatObserver
 {
     FPathBase movePath;
-    SortingGroup sortingGroup;
     float totalDistance;
     float moveDistance;
     float speed;
@@ -18,8 +17,6 @@ public class FMoveController : FControllerBase, FStatObserver
 
     public override void Initialize()
     {
-        sortingGroup = Owner.GetComponent<SortingGroup>();
-
         FStatController statController = FindController<FStatController>();
         if(statController != null)
         {
@@ -36,15 +33,6 @@ public class FMoveController : FControllerBase, FStatObserver
         float moveDelta = speed * InDeltaTime;
         Owner.WorldPosition = Vector2.MoveTowards(Owner.WorldPosition, movePath.WorldPosition, moveDelta);
         moveDistance += moveDelta;
-
-        if(sortingGroup != null)
-        {
-            int sortingOrder = (int)(-RemainDistance);
-            if (sortingGroup.sortingOrder != sortingOrder)
-            {
-                sortingGroup.sortingOrder = sortingOrder;
-            }
-        }
 
         if (Owner.WorldPosition == movePath.WorldPosition)
         {

@@ -17,15 +17,8 @@ public class FDamageEffect : FEffect
         
         if (0 < radius)
         {
-            FObjectManager.Instance.ForeachObject((FObjectBase InObject) =>
+            FObjectManager.Instance.ForeachSortedEnemy((FObjectBase InObject) =>
             {
-                FIFFController iffController = InObject.FindController<FIFFController>();
-                if (iffController == null)
-                    return;
-
-                if (iffController.IsEnumy(IFFType.LocalPlayer) == false)
-                    return;
-
                 if (radius + InObject.transform.localScale.x * 0.5 < Vector2.Distance(InObject.WorldPosition, WorldPosition))
                     return;
 

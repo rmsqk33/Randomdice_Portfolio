@@ -32,7 +32,6 @@ public class FEffectData
 
     public readonly int chainCount;
     public readonly float chainDamageRate;
-    public readonly float chainRadius;
     public readonly string chainPrefab;
 
     public FEffectData(FDataNode InNode)
@@ -48,7 +47,6 @@ public class FEffectData
 
         chainCount = InNode.GetIntAttr("chainCount");
         chainDamageRate = InNode.GetFloatAttr("chainDamageRate");
-        chainRadius = InNode.GetFloatAttr("chainRadius");
         chainPrefab = InNode.GetStringAttr("chainPrefab");
     }
 }
