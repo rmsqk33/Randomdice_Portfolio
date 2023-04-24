@@ -37,23 +37,20 @@ public class FChainEffect : FEffect
 
     private void ChainEffect()
     {
-        int i = 0;
         FObjectBase prevTarget = target;
-        FObjectManager.Instance.ForeachSortedEnemy(chainCount + 1, (FObjectBase InObject) =>
-        {
-            if (prevTarget == InObject)
-                return;
 
-            CreateChainEffect(prevTarget, InObject);
+        List<FObjectBase> targetList = FObjectManager.Instance.GetSortedEnemyList(target, chainCount);
+        for(int i = 0; i < targetList.Count; ++i)
+        {
+            CreateChainEffect(prevTarget, targetList[i]);
 
             if (owner.IsOwnLocalPlayer())
             {
-                DamageToTarget(InObject, (int)(effectValue - (chainDamageRate * (i + 1)) * effectValue));
+                DamageToTarget(targetList[i], (int)(effectValue - (chainDamageRate * (i + 1)) * effectValue));
             }
 
-            prevTarget = InObject;
-            ++i;
-        });
+            prevTarget = targetList[i];
+        }
     }
 
     private void CreateChainEffect(FObjectBase InFrom, FObjectBase InTo)

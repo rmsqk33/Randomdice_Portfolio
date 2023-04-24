@@ -27,7 +27,7 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
 
     public int CreateLocalPlayerBattleDice(int InDiceID, int InEyeCount, int InSlotIndex)
     {
-        InDiceID = 5;
+        InDiceID = 2;
 
         FObjectBase dice = FBattleDiceCreator.Instance.CreateLocalPlayerDice(InDiceID, InEyeCount, InSlotIndex);
         AddObject(diceInstanceID++, dice);
@@ -135,22 +135,6 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
     }
 
     public delegate void ForeachSortedEnemyDelegate(FObjectBase InObject);
-    public void ForeachSortedEnemy(int InCount, ForeachSortedEnemyDelegate InFunc)
-    {
-        int i = 0;
-        foreach (FObjectBase obj in sortedEnemyList)
-        {
-            if(obj.FindController<FIFFController>().IsEnumy(IFFType.LocalPlayer))
-            {
-                InFunc(obj);
-
-                ++i;
-                if (i == InCount)
-                    break;
-            }
-        }
-    }
-
     public void ForeachSortedEnemy(ForeachSortedEnemyDelegate InFunc)
     {
         foreach (FObjectBase obj in sortedEnemyList)
@@ -160,6 +144,29 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
                 InFunc(obj);
             }
         }
+    }
+
+    public List<FObjectBase> GetSortedEnemyList(FObjectBase InStartObject, int InCount)
+    {
+        List<FObjectBase> retList = new List<FObjectBase>();
+
+        int startIndex = sortedEnemyList.FindIndex(i => i.ObjectID == InStartObject.ObjectID);
+        if (startIndex != -1)
+        {
+            for(int i = startIndex + 1; i < sortedEnemyList.Count; ++i)
+            {
+                FObjectBase enemy = sortedEnemyList[i];
+                if (enemy.FindController<FIFFController>().IsEnumy(IFFType.LocalPlayer))
+                {
+                    retList.Add(enemy);
+             
+                    if (retList.Count == InCount)
+                        break;
+                }
+            }
+        }
+
+        return retList;
     }
 
     private void Update()
