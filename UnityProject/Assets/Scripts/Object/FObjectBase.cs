@@ -1,5 +1,7 @@
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -13,7 +15,22 @@ public class FObjectBase : MonoBehaviour
     public int ContentID { get; set; }
     public Vector2 WorldPosition { get { return transform.position; } set { transform.position = value; } }
     public Vector2 LocalPosition { get { return transform.localPosition; } set { transform.localPosition = value; } }
-    public int SortingOrder { set { if (sortingGroup != null) sortingGroup.sortingOrder = value; } }
+    public int SortingOrder 
+    {
+        set 
+        { 
+            if (sortingGroup != null) 
+                sortingGroup.sortingOrder = value; 
+        }
+
+        get 
+        {
+            if (sortingGroup != null)
+                return sortingGroup.sortingOrder;
+
+            return 0;
+        }
+    }
 
     protected virtual void Awake()
     {

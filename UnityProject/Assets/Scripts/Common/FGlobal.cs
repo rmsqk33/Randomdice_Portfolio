@@ -15,7 +15,7 @@ public class FGlobal
 
     public static float DiceCriticalChange = 0.33f;
 
-    public static int CalcEffectValue(FObjectBase InObject, int InValue, int InValuePerLevel, int InValuePerBattleLevel)
+    public static float CalcEffectValue(FObjectBase InObject, float InValue, float InValuePerLevel, float InValuePerBattleLevel)
     {
         FStatController statController = InObject.FindController<FStatController>();
         if (statController == null)

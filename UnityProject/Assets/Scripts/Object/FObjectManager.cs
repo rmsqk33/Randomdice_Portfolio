@@ -2,7 +2,6 @@ using Packet;
 using FEnum;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
 {
@@ -28,7 +27,7 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
 
     public int CreateLocalPlayerBattleDice(int InDiceID, int InEyeCount, int InSlotIndex)
     {
-        InDiceID = 4;
+        InDiceID = 5;
 
         FObjectBase dice = FBattleDiceCreator.Instance.CreateLocalPlayerDice(InDiceID, InEyeCount, InSlotIndex);
         AddObject(diceInstanceID++, dice);
@@ -81,6 +80,7 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
                 statController.SetStat(StatType.MoveSpeed, enemyData.moveSpeed);
             }
 
+            newEnemy.SortingOrder = -enemySpawnCount;
             AddObject(enemySpawnCount++, newEnemy);
             sortedEnemyList.Add(newEnemy);
         }
@@ -93,10 +93,10 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
         }
     }
 
-    private void AddObject(int InObjectID, FObjectBase InDice)
+    private void AddObject(int InObjectID, FObjectBase InObject)
     {
-        InDice.ObjectID = InObjectID;
-        objectMap.Add(InObjectID, InDice);
+        InObject.ObjectID = InObjectID;
+        objectMap.Add(InObjectID, InObject);
     }
 
     public void RemoveObject(int InID)
@@ -185,8 +185,7 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
                 sortedEnemyList[i] = sortedEnemyList[i + 1];
                 sortedEnemyList[i + 1] = temp;
 
-                A.SortingOrder = i + 1;
-                B.SortingOrder = i;
+                B.SortingOrder = A.SortingOrder + 1;
 
                 dirty = true;
             }

@@ -9,6 +9,8 @@ public class FEnemy : FObjectBase, FStatObserver
 
     protected override void Awake()
     {
+        base.Awake();
+
         AddController<FIFFController>();
         AddController<FStatController>();
         AddController<FMoveController>();

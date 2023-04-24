@@ -9,6 +9,7 @@ public class FEffect : MonoBehaviour
     protected FObjectBase target;
     protected int effectID;
     protected float radius;
+    protected float effectValue;
 
     public int InstanceID { get; set; }
     public Vector2 WorldPosition { get { return transform.position; } set { transform.position = value; } }
@@ -19,13 +20,13 @@ public class FEffect : MonoBehaviour
         target = InTarget;
         effectID = InEffectData.id;
         radius = InEffectData.radius;
+        effectValue = FGlobal.CalcEffectValue(InOwner, InEffectData.value, InEffectData.valuePerLevel, InEffectData.valuePerBattleLevel);
 
-        GameObject hitEffectPrefab = Resources.Load<GameObject>(InEffectData.prefab);
-        GameObject hitEffect = Instantiate(hitEffectPrefab, this.transform);
+        GameObject hitEffect = Instantiate(Resources.Load<GameObject>(InEffectData.prefab), this.transform);
 
         if (radius != 0)
         {
-            hitEffectPrefab.transform.localScale = new Vector3(radius * 2, radius * 2, 1);
+            hitEffect.transform.localScale = new Vector3(radius * 2, radius * 2, 1);
         }
 
         Animator anim = hitEffect.GetComponent<Animator>();

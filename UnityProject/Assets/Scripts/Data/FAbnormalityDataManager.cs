@@ -19,9 +19,9 @@ public class FAbnormalityData
 {
     public readonly int id;
     public readonly int maxOverlap;
-    public readonly int value;
-    public readonly int valuePerLevel;
-    public readonly int valuePerBattleLevel;
+    public readonly float value;
+    public readonly float valuePerLevel;
+    public readonly float valuePerBattleLevel;
     public readonly float interval;
     public readonly float duration;
     public readonly StatType statType;
@@ -34,9 +34,9 @@ public class FAbnormalityData
     {
         id = InNode.GetIntAttr("id");
         maxOverlap = InNode.GetIntAttr("maxOverlap");
-        value = InNode.GetIntAttr("value");
-        valuePerLevel = InNode.GetIntAttr("valuePerLevel");
-        valuePerBattleLevel = InNode.GetIntAttr("valuePerBattleLevel");
+        value = InNode.GetFloatAttr("value");
+        valuePerLevel = InNode.GetFloatAttr("valuePerLevel");
+        valuePerBattleLevel = InNode.GetFloatAttr("valuePerBattleLevel");
 
         interval = InNode.GetFloatAttr("interval");
         duration = InNode.GetFloatAttr("duration");

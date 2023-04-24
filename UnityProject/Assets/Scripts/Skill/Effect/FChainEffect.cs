@@ -13,7 +13,6 @@ public class FChainEffect : FEffect
         }
     }
 
-    private int damage;
     private int chainCount;
     private float chainDamageRate;
     private Transform hitEffectPrefab;
@@ -23,7 +22,6 @@ public class FChainEffect : FEffect
     {
         base.Initialize(InEffectData, InOwner, InTarget);
         
-        damage = FGlobal.CalcEffectValue(InOwner, InEffectData.value, InEffectData.valuePerLevel, InEffectData.valuePerBattleLevel);
         chainCount = InEffectData.chainCount;
         chainDamageRate = InEffectData.chainDamageRate;
         chainPrefab = Resources.Load<Transform>(InEffectData.chainPrefab);
@@ -31,7 +29,7 @@ public class FChainEffect : FEffect
 
         if (owner.IsOwnLocalPlayer())
         {
-            DamageToTarget(target, damage);
+            DamageToTarget(target, (int)effectValue);
         }
 
         ChainEffect();
@@ -50,7 +48,7 @@ public class FChainEffect : FEffect
 
             if (owner.IsOwnLocalPlayer())
             {
-                DamageToTarget(InObject, (int)(damage - (chainDamageRate * (i + 1)) * damage));
+                DamageToTarget(InObject, (int)(effectValue - (chainDamageRate * (i + 1)) * effectValue));
             }
 
             prevTarget = InObject;

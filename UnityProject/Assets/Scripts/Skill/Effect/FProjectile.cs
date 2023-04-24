@@ -41,7 +41,7 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
             effectID = projectileData.effectID;
             abnormalityID = projectileData.abnormalityID;
 
-            damage = FGlobal.CalcEffectValue(InOwner, projectileData.damage, projectileData.damagePerLevel, projectileData.damagePerBattleLevel);
+            damage = (int)FGlobal.CalcEffectValue(InOwner, projectileData.damage, projectileData.damagePerLevel, projectileData.damagePerBattleLevel);
         }
     }
 
@@ -59,7 +59,7 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
         if((Vector2)WorldPosition == targetPos)
         {
             if (damage != 0)
-                DamageToTarget(owner, damage);
+                DamageToTarget(target, damage);
 
             if (effectID != 0)
                 ActiveEffect();
@@ -73,6 +73,9 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
 
     private void DamageToTarget(FObjectBase InTarget, int InDamage)
     {
+        if (InTarget == null)
+            return;
+
         FStatController statController = owner.FindController<FStatController>();
         if (statController == null)
             return;

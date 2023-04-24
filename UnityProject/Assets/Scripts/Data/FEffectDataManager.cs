@@ -31,9 +31,9 @@ public class FEffectData
     public readonly SkillEffectType type;
     public readonly string prefab;
 
-    public readonly int value;
-    public readonly int valuePerLevel;
-    public readonly int valuePerBattleLevel;
+    public readonly float value;
+    public readonly float valuePerLevel;
+    public readonly float valuePerBattleLevel;
     public readonly int radius;
 
     public readonly int chainCount;
@@ -48,9 +48,9 @@ public class FEffectData
         type = (SkillEffectType)InNode.GetIntAttr("type");
         prefab = InNode.GetStringAttr("prefab");
 
-        value = InNode.GetIntAttr("value");
-        valuePerLevel = InNode.GetIntAttr("valuePerLevel");
-        valuePerBattleLevel = InNode.GetIntAttr("valuePerBattleLevel");
+        value = InNode.GetFloatAttr("value");
+        valuePerLevel = InNode.GetFloatAttr("valuePerLevel");
+        valuePerBattleLevel = InNode.GetFloatAttr("valuePerBattleLevel");
         radius = InNode.GetIntAttr("radius");
 
         chainCount = InNode.GetIntAttr("chainCount");
