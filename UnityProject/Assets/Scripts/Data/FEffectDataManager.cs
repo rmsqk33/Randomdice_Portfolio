@@ -6,22 +6,30 @@ public class FProjectileData
     public readonly int id;
     public readonly int effectID;
     public readonly int abnormalityID;
+    public readonly int collisionObjectID;
+    
     public readonly int speed;
     public readonly int damage;
     public readonly int damagePerLevel;
     public readonly int damagePerBattleLevel;
     public readonly string prefab;
 
+    public readonly ProjectileMoveType moveType;
+    
     public FProjectileData(FDataNode InNode)
     {
         id = InNode.GetIntAttr("id");
         effectID = InNode.GetIntAttr("effectID");
         abnormalityID = InNode.GetIntAttr("abnormalityID");
+        collisionObjectID = InNode.GetIntAttr("collisionObjectID");
+
         speed = InNode.GetIntAttr("speed");
         damage = InNode.GetIntAttr("damage");
         damagePerLevel = InNode.GetIntAttr("damagePerLevel");
         damagePerBattleLevel = InNode.GetIntAttr("damagePerBattleLevel");
         prefab = InNode.GetStringAttr("prefab");
+
+        moveType = (ProjectileMoveType)InNode.GetIntAttr("moveType");
     }
 }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FDamageAbnormality : FAbnormality
 {
-    float criticalDamageRate;
+    float criticalDamage;
     float criticalChance;
 
     bool localPlayerOwner;
@@ -26,25 +26,17 @@ public class FDamageAbnormality : FAbnormality
             if (battleDice == null)
                 return;
 
-            criticalDamageRate = statController.GetStat(StatType.CriticalDamage);
+            criticalDamage = statController.GetStat(StatType.CriticalDamage);
             criticalChance = statController.GetStat(StatType.CriticalChance);
         }
     }
 
     protected override void OnEffect(FAbnormalityOverlapData InAbnormalityData)
     {
-        bool critical = Random.value <= criticalChance;
-        int damage = (int)(critical ? this.effectValue * criticalDamageRate : this.effectValue);
-
-        FCombatTextManager.Instance.AddText(critical ? CombatTextType.Critical : CombatTextType.Normal, damage, target);
-        target.FindController<FStatController>().OnDamage(damage);
-
-        P2P_DAMAGE pkt = new P2P_DAMAGE();
-        pkt.objectId = target.ObjectID;
-        pkt.damage = damage;
-        pkt.critical = critical;
-
-        FServerManager.Instance.SendMessage(pkt);
+        if (localPlayerOwner)
+        {
+            FObjectManager.Instance.DamageToTarget(target, (int)effectValue, criticalChance, criticalDamage);
+        }
     }
 
     protected override void OffEffect()

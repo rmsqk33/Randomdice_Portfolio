@@ -1,7 +1,6 @@
 using Packet;
 using FEnum;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class FDice
 {

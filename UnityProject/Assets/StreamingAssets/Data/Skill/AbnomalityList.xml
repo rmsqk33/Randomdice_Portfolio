@@ -7,4 +7,7 @@
         <Overlap overlap="2" effectPercentage="2" effectImage="Sprite/Skill/Effect/Ice/2" />
         <Overlap overlap="3" effectPercentage="3" effectImage="Sprite/Skill/Effect/Ice/3" />
     </Abnormality>
+    <Abnormality id="12" type="1" maxOverlap="1" interval="1" duration="2" value="200" valuePerLevel="5" valuePerBattleLevel="5" abilityType="8">
+        <Overlap overlap="1" effectPercentage="1"/>
+    </Abnormality>
 </AbnormalityList>

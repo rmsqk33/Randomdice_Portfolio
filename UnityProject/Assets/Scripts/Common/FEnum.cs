@@ -73,10 +73,12 @@ namespace FEnum
     {
         Basic,
         Abnormal,
+        Summon,
     }
 
     public enum SkillTargetType
     {
+        None,
         Front,
         Myself,
         NoneAbnormalityFront,
@@ -143,6 +145,7 @@ namespace FEnum
         ChainLightning,
         Poison,
         Ice,
+        Thorn,
     }
 
     public enum AbilitySlotType
@@ -152,4 +155,11 @@ namespace FEnum
         BasicAttackTarget,
         Max
     }
+
+    public enum ProjectileMoveType
+    {
+        Normal,
+        Curve,
+    }
+
 }

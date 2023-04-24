@@ -24,13 +24,15 @@
 			<Skill id="5" />
 		</SkillList>
 	</Dice>
-	<Dice id="6" name="쇠 주사위" icon="Sprite/Dice/Dice_IRON" notAcquiredIcon="Sprite/Dice/Black_Dice_IRON" color="#636363" grade="1" description="보스 공격 시 2배 데미지를 입힌다."></Dice>
 	<Dice id="7" name="고장난 주사위" icon="Sprite/Dice/Dice_BROKEN" notAcquiredIcon="Sprite/Dice/Black_Dice_BROKEN" color="#8f0aff" grade="1" description="무작위 몬스터를 공격한다."></Dice>
 	<Dice id="8" name="도박 주사위" icon="Sprite/Dice/Dice_GAMBLE" notAcquiredIcon="Sprite/Dice/Black_Dice_GAMBLE" color="#5908fa" grade="1" description="무작위 데미지를 입힌다."></Dice>
 	<Dice id="9" name="잠금 주사위" icon="Sprite/Dice/Dice_LOCK" notAcquiredIcon="Sprite/Dice/Black_Dice_LOCK" color="#4a4a4a" grade="1" description="몬스터 공격 시 일정 확률로 [잠금] 디버프를 걸어 움직이지 못하게 한다."></Dice>
-	<Dice id="10" name="광산 주사위" icon="Sprite/Dice/Dice_MINE" notAcquiredIcon="Sprite/Dice/Black_Dice_MINE" color="#00e8ff" grade="2" description="일정 시간마다 추가 SP를 획득한다."></Dice>
 	<Dice id="11" name="빛 주사위" icon="Sprite/Dice/Dice_LIGHT" notAcquiredIcon="Sprite/Dice/Black_Dice_LIGHT" color="#ffcc08" grade="2" description="십자범위 4칸 주사위에게 [공격속도 증가] 버프를 준다."></Dice>
-	<Dice id="12" name="가시 주사위" icon="Sprite/Dice/Dice_THORN" notAcquiredIcon="Sprite/Dice/Black_Dice_THORN" color="#2e8a30" grade="2" description="기본공격 대신 몬스터 경로에 [가시]를 설치한다."></Dice>
+	<Dice id="12" name="가시 주사위" icon="Sprite/Dice/Dice_THORN" notAcquiredIcon="Sprite/Dice/Black_Dice_THORN" color="#2e8a30" grade="2" description="기본공격 대신 몬스터 경로에 [가시]를 설치한다.">
+		<SkillList>
+			<Skill id="12" />
+		</SkillList>
+	</Dice>
 	<Dice id="13" name="균열 주사위" icon="Sprite/Dice/Dice_CRACK" notAcquiredIcon="Sprite/Dice/Black_Dice_CRACK" color="#f726bf" grade="2" description="몬스터 공격 시 추가 데미지를 받는 [균열] 디버프를 남긴다."></Dice>
 	<Dice id="14" name="크리티컬 주사위" icon="Sprite/Dice/Dice_CRITICAL" notAcquiredIcon="Sprite/Dice/Black_Dice_CRITICAL" color="#ff2600" grade="2" description="십자범위 4칸 주사위에게 [크리티컬 확률 증가] 버프를 준다."></Dice>
 	<Dice id="15" name="에너지 주사위" icon="Sprite/Dice/Dice_ENERGY" notAcquiredIcon="Sprite/Dice/Black_Dice_ENERGY" color="#05ad8c" grade="2" description="현재 보유한 SP에 비례하여 데미지를 입힌다."></Dice>

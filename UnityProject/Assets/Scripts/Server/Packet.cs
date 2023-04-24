@@ -41,7 +41,9 @@ namespace Packet
 		PACKET_TYPE_P2P_CHANGE_DICE_LEVEL,
 		PACKET_TYPE_P2P_SPAWN_ENEMY,
 		PACKET_TYPE_P2P_DAMAGE,
-		PACKET_TYPE_P2P_SPAWN_DICE,
+		PACKET_TYPE_P2P_SPAWN_REMOTE_DICE,
+		PACKET_TYPE_P2P_C_REQUEST_SPAWN_DICE,
+		PACKET_TYPE_P2P_S_REQUEST_SPAWN_DICE,
 		PACKET_TYPE_P2P_DESPAWN_OBJECT,
 		PACKET_TYPE_P2P_CHANGE_LIFE,
 		PACKET_TYPE_P2P_START_BATTLE,
@@ -1763,7 +1765,11 @@ namespace Packet
 
 	public class P2P_SPAWN_ENEMY : PacketBase
 	{
+		public int instanceId;
+
 		public int enemyId;
+
+		public int spawnPointIndex;
 
 		public P2P_SPAWN_ENEMY()
 		{
@@ -1778,6 +1784,8 @@ namespace Packet
 		{
 			int size = 0;
 			size += sizeof(int);
+			size += sizeof(int);
+			size += sizeof(int);
 			return size;
 		}
 
@@ -1790,12 +1798,18 @@ namespace Packet
 			int size = GetSize() + sizeof(int) + sizeof(PacketType);
 			InBuffer.AddRange(BitConverter.GetBytes(size));
 			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+			InBuffer.AddRange(BitConverter.GetBytes(instanceId));
 			InBuffer.AddRange(BitConverter.GetBytes(enemyId));
+			InBuffer.AddRange(BitConverter.GetBytes(spawnPointIndex));
 		}
 
 		public int Deserialize(in byte[] InBuffer, int offset = 0)
 		{
+			instanceId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
 			enemyId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			spawnPointIndex = BitConverter.ToInt32(InBuffer, offset);
 			offset += sizeof(int);
 			return offset;
 		}
@@ -1855,7 +1869,7 @@ namespace Packet
 
 	}
 
-	public class P2P_SPAWN_DICE : PacketBase
+	public class P2P_SPAWN_REMOTE_DICE : PacketBase
 	{
 		public int objectId;
 
@@ -1865,11 +1879,11 @@ namespace Packet
 
 		public int eyeCount;
 
-		public P2P_SPAWN_DICE()
+		public P2P_SPAWN_REMOTE_DICE()
 		{
 		}
 
-		public P2P_SPAWN_DICE(in byte[] InBuffer)
+		public P2P_SPAWN_REMOTE_DICE(in byte[] InBuffer)
 		{
 			Deserialize(InBuffer);
 		}
@@ -1886,7 +1900,119 @@ namespace Packet
 
 		public override PacketType GetPacketType()
 		{
-			return PacketType.PACKET_TYPE_P2P_SPAWN_DICE;
+			return PacketType.PACKET_TYPE_P2P_SPAWN_REMOTE_DICE;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+			InBuffer.AddRange(BitConverter.GetBytes(objectId));
+			InBuffer.AddRange(BitConverter.GetBytes(index));
+			InBuffer.AddRange(BitConverter.GetBytes(diceId));
+			InBuffer.AddRange(BitConverter.GetBytes(eyeCount));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			objectId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			index = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			diceId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			eyeCount = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			return offset;
+		}
+
+	}
+
+	public class P2P_C_REQUEST_SPAWN_DICE : PacketBase
+	{
+		public int index;
+
+		public int diceId;
+
+		public int eyeCount;
+
+		public P2P_C_REQUEST_SPAWN_DICE()
+		{
+		}
+
+		public P2P_C_REQUEST_SPAWN_DICE(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			size += sizeof(int);
+			size += sizeof(int);
+			size += sizeof(int);
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_P2P_C_REQUEST_SPAWN_DICE;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+			InBuffer.AddRange(BitConverter.GetBytes(index));
+			InBuffer.AddRange(BitConverter.GetBytes(diceId));
+			InBuffer.AddRange(BitConverter.GetBytes(eyeCount));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			index = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			diceId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			eyeCount = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			return offset;
+		}
+
+	}
+
+	public class P2P_S_REQUEST_SPAWN_DICE : PacketBase
+	{
+		public int objectId;
+
+		public int index;
+
+		public int diceId;
+
+		public int eyeCount;
+
+		public P2P_S_REQUEST_SPAWN_DICE()
+		{
+		}
+
+		public P2P_S_REQUEST_SPAWN_DICE(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			size += sizeof(int);
+			size += sizeof(int);
+			size += sizeof(int);
+			size += sizeof(int);
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_P2P_S_REQUEST_SPAWN_DICE;
 		}
 		public override void Serialize(List<byte> InBuffer)
 		{

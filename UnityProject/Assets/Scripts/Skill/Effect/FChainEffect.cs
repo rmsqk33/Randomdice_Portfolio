@@ -27,10 +27,7 @@ public class FChainEffect : FEffect
         chainPrefab = Resources.Load<Transform>(InEffectData.chainPrefab);
         hitEffectPrefab = Resources.Load<Transform>(InEffectData.prefab);
 
-        if (owner.IsOwnLocalPlayer())
-        {
-            DamageToTarget(target, (int)effectValue);
-        }
+        FObjectManager.Instance.DamageToTarget(owner, target, (int)effectValue);
 
         ChainEffect();
     }
@@ -43,11 +40,7 @@ public class FChainEffect : FEffect
         for(int i = 0; i < targetList.Count; ++i)
         {
             CreateChainEffect(prevTarget, targetList[i]);
-
-            if (owner.IsOwnLocalPlayer())
-            {
-                DamageToTarget(targetList[i], (int)(effectValue - (chainDamageRate * (i + 1)) * effectValue));
-            }
+            FObjectManager.Instance.DamageToTarget(owner, targetList[i], (int)(effectValue - (chainDamageRate * (i + 1)) * effectValue));
 
             prevTarget = targetList[i];
         }

@@ -38,13 +38,17 @@ public class FBasicAttackSkill : FSkillBase, FStatObserver
 
     public override void UseSkill()
     {
-        FObjectBase target = GetTarget();
-        if(target != this.target)
+        if (owner.IsOwnLocalPlayer())
         {
-            if (target != null)
-                SendOnSkill(target);
-            else
-                SendOffSkill();
+            FObjectBase newTarget = GetTarget();
+            if (newTarget != target)
+            {
+                target = newTarget;
+                if (newTarget != null)
+                    SendOnSkill(newTarget);
+                else
+                    SendOffSkill();
+            }
         }
 
         if (target == null)

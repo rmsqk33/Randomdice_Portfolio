@@ -51,11 +51,6 @@ public class FStatController : FControllerBase
         return 0;
     }
 
-    public bool IsCritical()
-    {
-        return Random.value <= GetStat(StatType.CriticalChance);
-    }
-
     public void AddObserver(FStatObserver InObserver)
     {
         observers.Add(InObserver);

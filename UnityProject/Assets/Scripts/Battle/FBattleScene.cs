@@ -23,7 +23,6 @@ public class FBattleScene : MonoBehaviour
         FGlobal.localPlayer.AddController<FBattleDiceController>();
         FGlobal.localPlayer.AddController<FBattleWaveController>();
         FGlobal.localPlayer.FindController<FBattleWaveController>().StartBattle(FBattleDataManager.Instance.CoopBattleID);
-        FObjectManager.Instance.Seed = FGlobal.localPlayer.IsHost == true ? 1 : 0;
     }
 
     private void LeaveScene(Scene InScene1, Scene InScene2)

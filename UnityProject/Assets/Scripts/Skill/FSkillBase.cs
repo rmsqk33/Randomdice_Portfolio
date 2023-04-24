@@ -93,29 +93,29 @@ public class FSkillBase
 
     protected FObjectBase GetTarget()
     {
-        FObjectBase target = null;
+        FObjectBase newTarget = null;
 
         switch (targetType)
         {
-            case SkillTargetType.Front: target = FObjectManager.Instance.FrontEnemy; break;
-            case SkillTargetType.Myself: target = owner; break;
+            case SkillTargetType.Front: newTarget = FObjectManager.Instance.FrontEnemy; break;
+            case SkillTargetType.Myself: newTarget = owner; break;
             case SkillTargetType.NoneAbnormalityFront:
                 FObjectManager.Instance.ForeachSortedEnemy((FObjectBase InObject) => {
-                    if (target != null)
+                    if (newTarget != null)
                         return;
 
                     if (InObject.FindController<FAbnormalityController>().HasAbnormality(checkAbnormalityID))
                         return;
 
-                    target = InObject;
+                    newTarget = InObject;
                 });
     
                 if(target == null)
-                    target = FObjectManager.Instance.FrontEnemy;
+                    newTarget = FObjectManager.Instance.FrontEnemy;
 
                 break;
         }
 
-        return target;
+        return newTarget;
     }
 }

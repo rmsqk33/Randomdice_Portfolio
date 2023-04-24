@@ -2,28 +2,6 @@ using FEnum;
 using System;
 using System.Collections.Generic;
 
-public class FEnemyData
-{
-	public readonly int id;
-	public readonly int hp;
-	public readonly int sp;
-    public readonly int hpIncreaseBySpawnCount;
-    public readonly int moveSpeed;
-    public readonly EnemyType enemyType;
-    public readonly string prefabPath;
-
-	public FEnemyData(FDataNode InNode)
-	{
-        id = InNode.GetIntAttr("id");
-        hp = InNode.GetIntAttr("hp");
-        sp = InNode.GetIntAttr("sp");
-        hpIncreaseBySpawnCount = InNode.GetIntAttr("hpIncreaseBySpawnCount");
-        moveSpeed = InNode.GetIntAttr("moveSpeed");
-        enemyType = (EnemyType)InNode.GetIntAttr("type");
-        prefabPath = InNode.GetStringAttr("prefab");
-	}
-}
-
 public class FWaveData
 { 
 	public readonly int wave;
@@ -101,7 +79,6 @@ public class FBattleDiceLevelData
 public class FBattleDataManager : FNonObjectSingleton<FBattleDataManager>
 {
 	Dictionary<int, FBattleData> battleDataMap = new Dictionary<int, FBattleData>();
-	Dictionary<int, FEnemyData> enemyDataMap = new Dictionary<int, FEnemyData>();
 	Dictionary<int, FBattleDiceLevelData> diceLevelMap = new Dictionary<int, FBattleDiceLevelData>();
 
     public int InitSP { get; private set; }
@@ -136,13 +113,6 @@ public class FBattleDataManager : FNonObjectSingleton<FBattleDataManager>
 			MaxLevel = diceLevelMap.Count;
         }
 
-		List<FDataNode> enemyDataList = FDataCenter.Instance.GetDataNodesWithQuery("EnemyList.Enemy");
-		foreach(FDataNode dataNode in enemyDataList)
-		{
-			FEnemyData enemyData = new FEnemyData(dataNode);
-			enemyDataMap.Add(enemyData.id, enemyData);
-        }
-
 		List<FDataNode> battleDataNodeList = FDataCenter.Instance.GetDataNodesWithQuery("BattleData");
 		foreach(FDataNode node in battleDataNodeList)
 		{
@@ -166,12 +136,4 @@ public class FBattleDataManager : FNonObjectSingleton<FBattleDataManager>
 
 		return null;
 	}
-
-	public FEnemyData FindEnemyData(int InID)
-	{
-		if(enemyDataMap.ContainsKey(InID))
-			return enemyDataMap[InID];
-
-		return null;
-    }
 }

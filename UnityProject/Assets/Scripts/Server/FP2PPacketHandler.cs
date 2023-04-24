@@ -1,5 +1,6 @@
 using FEnum;
 using Packet;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class FP2PPacketHandler
@@ -9,7 +10,9 @@ public class FP2PPacketHandler
     {
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_PLAYER_DATA, Handle_P2P_PLAYER_DATA);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_CHANGE_DICE_LEVEL, Handle_P2P_CHANGE_DICE_LEVEL);
-        FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_SPAWN_DICE, Handle_P2P_SPAWN_DICE);
+        FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_SPAWN_REMOTE_DICE, Handle_P2P_SPAWN_REMOTE_DICE);
+        FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_C_REQUEST_SPAWN_DICE, Handle_C_REQUEST_SPAWN_DICE);
+        FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_S_REQUEST_SPAWN_DICE, Handle_S_REQUEST_SPAWN_DICE);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_DESPAWN_OBJECT, Handle_P2P_DESPAWN_OBJECT);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_CHANGE_LIFE, Handle_P2P_CHANGE_LIFE);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_SPAWN_ENEMY, Handle_P2P_SPAWN_ENEMY);
@@ -83,11 +86,30 @@ public class FP2PPacketHandler
         }
     }
 
-    static void Handle_P2P_SPAWN_DICE(in byte[] InBuffer)
+    static void Handle_P2P_SPAWN_REMOTE_DICE(in byte[] InBuffer)
     {
-        P2P_SPAWN_DICE pkt = new P2P_SPAWN_DICE(InBuffer);
+        P2P_SPAWN_REMOTE_DICE pkt = new P2P_SPAWN_REMOTE_DICE(InBuffer);
 
         FObjectManager.Instance.CreateRemotePlayerBattleDice(pkt.objectId, pkt.diceId, pkt.eyeCount, pkt.index);
+    }
+
+    static void Handle_C_REQUEST_SPAWN_DICE(in byte[] InBuffer)
+    {
+        P2P_C_REQUEST_SPAWN_DICE pkt = new P2P_C_REQUEST_SPAWN_DICE(InBuffer);
+
+        FObjectManager.Instance.CreateRemotePlayerBattleDice(pkt.diceId, pkt.eyeCount, pkt.index);
+    }
+
+    static void Handle_S_REQUEST_SPAWN_DICE(in byte[] InBuffer)
+    {
+        P2P_S_REQUEST_SPAWN_DICE pkt = new P2P_S_REQUEST_SPAWN_DICE(InBuffer);
+
+        FBattleDiceController diceController = FGlobal.localPlayer.FindController<FBattleDiceController>();
+        if(diceController != null)
+        {
+            FObjectManager.Instance.CreateLocalPlayerBattleDice(pkt.objectId, pkt.diceId, pkt.eyeCount, pkt.index);
+            diceController.AddBattleDice(pkt.objectId, pkt.diceId, pkt.eyeCount, pkt.index);
+        }
     }
 
     static void Handle_P2P_DESPAWN_OBJECT(in byte[] InBuffer)
@@ -112,7 +134,7 @@ public class FP2PPacketHandler
     {
         P2P_SPAWN_ENEMY pkt = new P2P_SPAWN_ENEMY(InBuffer);
 
-        FObjectManager.Instance.CreateEnemy(pkt.enemyId);
+        FObjectManager.Instance.CreateEnemy(pkt.instanceId, pkt.enemyId, pkt.spawnPointIndex);
     }
 
     static void Handle_P2P_CHANGE_WAVE(in byte[] InBuffer)

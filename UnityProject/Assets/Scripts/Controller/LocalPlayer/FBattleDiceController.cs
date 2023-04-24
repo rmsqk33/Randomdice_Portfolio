@@ -164,10 +164,18 @@ public class FBattleDiceController : FControllerBase
         SP -= DiceSummonCost;
         DiceSummonCost += FBattleDataManager.Instance.DiceSummonCostIncrease;
 
-        int summonSlotIndex = Random.Range(0, emptyDiceSlotIndexList.Count);
+        int summonSlotIndex = emptyDiceSlotIndexList[Random.Range(0, emptyDiceSlotIndexList.Count)];
         int summonDiceID = equipDiceList[Random.Range(0, equipDiceList.Count())].diceID;
 
-        CreateSummonDice(emptyDiceSlotIndexList[summonSlotIndex], summonDiceID, InEyeCount);
+        if (FGlobal.localPlayer.IsHost)
+        {
+            int objectID = FObjectManager.Instance.CreateLocalPlayerBattleDice(summonDiceID, InEyeCount, summonSlotIndex);
+            AddBattleDice(objectID, summonDiceID, InEyeCount, summonSlotIndex);
+        }
+        else
+        {
+            RequestCreateDice(emptyDiceSlotIndexList[summonSlotIndex], summonDiceID, InEyeCount);
+        }
     }
 
     public void OnBegieDragDice(int InSlotIndex)
@@ -224,22 +232,40 @@ public class FBattleDiceController : FControllerBase
         return null;
     }
 
-    private void SummonDiceRandomDice(int InSlotIndex, int InEyeCount)
+    public void AddBattleDice(int InObjectID, int InDiceID, int InEyeCount, int InIndex)
     {
-        int summonDiceID = equipDiceList[Random.Range(0, equipDiceList.Count())].diceID;
-
-        CreateSummonDice(InSlotIndex, summonDiceID, InEyeCount);
-    }
-
-    private void CreateSummonDice(int InIndex, int InDiceID, int InEyeCount)
-    {
-        int objectID = FObjectManager.Instance.CreateLocalPlayerBattleDice(InDiceID, InEyeCount, InIndex);
-
-        summonDiceIDMap.Add(InIndex, objectID);
+        summonDiceIDMap.Add(InIndex, InObjectID);
         emptyDiceSlotIndexList.Remove(InIndex);
 
         SetDiceEyeTotalCount(InDiceID, InEyeCount);
         SetDiceSummonDisableReason(DiceSummonDisableReason.NOT_EMPTY_SLOT, 0 < emptyDiceSlotIndexList.Count);
+    }
+
+    private void SummonRandomDice(int InSlotIndex, int InEyeCount)
+    {
+        int summonDiceID = equipDiceList[Random.Range(0, equipDiceList.Count())].diceID;
+
+        if (FGlobal.localPlayer.IsHost)
+        {
+            int objectID = FObjectManager.Instance.CreateLocalPlayerBattleDice(summonDiceID, InEyeCount, InSlotIndex);
+            AddBattleDice(objectID, InSlotIndex, summonDiceID, InEyeCount);
+        }
+        else
+        {
+            RequestCreateDice(InSlotIndex, summonDiceID, InEyeCount);
+        }
+    }
+
+    private void RequestCreateDice(int InIndex, int InDiceID, int InEyeCount)
+    {
+        emptyDiceSlotIndexList.Remove(InIndex);
+
+        P2P_C_REQUEST_SPAWN_DICE pkt = new P2P_C_REQUEST_SPAWN_DICE();
+        pkt.diceId = InDiceID;
+        pkt.index = InIndex;
+        pkt.eyeCount = InEyeCount;
+
+        FServerManager.Instance.SendMessage(pkt);
     }
 
     private void RemoveSummonDice(int InIndex)
@@ -329,7 +355,7 @@ public class FBattleDiceController : FControllerBase
     {
         RemoveSummonDice(InDragIndex);
         RemoveSummonDice(InDropIndex);
-        SummonDiceRandomDice(InDropIndex, InEyeCount);
+        SummonRandomDice(InDropIndex, InEyeCount);
     }
 
     private void SetDiceEyeTotalCount(int InDiceID, int InDelta)

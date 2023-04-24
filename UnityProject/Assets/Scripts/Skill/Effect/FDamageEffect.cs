@@ -21,12 +21,12 @@ public class FDamageEffect : FEffect
                 if (radius + InObject.transform.localScale.x * 0.5 < Vector2.Distance(InObject.WorldPosition, WorldPosition))
                     return;
 
-                DamageToTarget(InObject, (int)effectValue);
+                FObjectManager.Instance.DamageToTarget(owner, InObject, (int)effectValue);
             });
         }
         else if (target != null)
         {
-            DamageToTarget(target, (int)effectValue);
+            FObjectManager.Instance.DamageToTarget(owner, target, (int)effectValue);
         }
     }
 }

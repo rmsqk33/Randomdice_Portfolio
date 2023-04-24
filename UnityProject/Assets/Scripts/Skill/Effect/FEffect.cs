@@ -48,27 +48,4 @@ public class FEffect : MonoBehaviour
         FEffectManager.Instance.RemoveEffect(InstanceID);
     }
 
-    protected void DamageToTarget(FObjectBase InTarget, int InDamage)
-    {
-        FStatController statController = owner.FindController<FStatController>();
-        if (statController == null)
-            return;
-
-        FStatController targetStatController = InTarget.FindController<FStatController>();
-        if (targetStatController == null)
-            return;
-
-        bool critical = statController.IsCritical();
-        int damage = (int)(critical ? InDamage * statController.GetStat(StatType.CriticalDamage) : InDamage);
-
-        FCombatTextManager.Instance.AddText(critical ? CombatTextType.Critical : CombatTextType.Normal, damage, InTarget);
-        targetStatController.OnDamage(InDamage);
-
-        P2P_DAMAGE pkt = new P2P_DAMAGE();
-        pkt.objectId = InTarget.ObjectID;
-        pkt.damage = damage;
-        pkt.critical = critical;
-
-        FServerManager.Instance.SendMessage(pkt);
-    }
 }

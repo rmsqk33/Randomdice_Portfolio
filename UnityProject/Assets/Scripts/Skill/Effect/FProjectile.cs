@@ -4,10 +4,16 @@ using UnityEngine;
 
 public class FProjectile : MonoBehaviour, FObjectStateObserver
 {
+    private static float CURVE_SECTION = 0.1f;
+    private static float MIN_SPEED = 100;
+
     private int speed;
     private int effectID;
     private int abnormalityID;
+    private int collisionObjectID;
     private int damage;
+    private int distance;
+    private ProjectileMoveType moveType;
     private Vector2 targetPosition;
     private FObjectBase owner;
     private FObjectBase target;
@@ -18,8 +24,10 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
     public void Initialize(int InProjectileID, FObjectBase InOwner, Vector2 InTargetPosition)
     {
         Initialize(InProjectileID, InOwner);
-
+    
         targetPosition = InTargetPosition;
+        if (moveType == ProjectileMoveType.Curve)
+            distance = (int)Vector2.Distance(WorldPosition, targetPosition);
     }
 
     public void Initialize(int InProjectileID, FObjectBase InOwner, FObjectBase InTarget)
@@ -28,6 +36,8 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
 
         target = InTarget;
         target.AddObserver(this);
+        if (moveType == ProjectileMoveType.Curve)
+            distance = (int)Vector2.Distance(WorldPosition, target.WorldPosition);
     }
 
     private void Initialize(int InProjectileID, FObjectBase InOwner)
@@ -40,8 +50,9 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
             speed = projectileData.speed;
             effectID = projectileData.effectID;
             abnormalityID = projectileData.abnormalityID;
-
+            collisionObjectID = projectileData.collisionObjectID;
             damage = (int)FGlobal.CalcEffectValue(InOwner, projectileData.damage, projectileData.damagePerLevel, projectileData.damagePerBattleLevel);
+            moveType = projectileData.moveType;
         }
     }
 
@@ -50,16 +61,23 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
         Remove();
     }
 
-    public void Tick(float InDeltaTile)
+    public void Tick(float InDeltaTime)
     {
         Vector2 targetPos = target == null ? targetPosition : target.WorldPosition;
 
-        float moveDelta = speed * InDeltaTile;
+        float moveDelta = speed * InDeltaTime;
+        if (moveType == ProjectileMoveType.Curve)
+        {
+            float remainDistance = Vector2.Distance(targetPos, WorldPosition);
+            float section = remainDistance / distance;
+            moveDelta = section < CURVE_SECTION ? moveDelta : Mathf.Max(moveDelta * section, MIN_SPEED * InDeltaTime);
+        }
+
         WorldPosition = Vector2.MoveTowards(WorldPosition, targetPos, moveDelta);
         if((Vector2)WorldPosition == targetPos)
         {
             if (damage != 0)
-                DamageToTarget(target, damage);
+                FObjectManager.Instance.DamageToTarget(owner, target, damage);
 
             if (effectID != 0)
                 ActiveEffect();
@@ -67,35 +85,11 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
             if (abnormalityID != 0)
                 ActiveAbnormality();
 
+            if (collisionObjectID != 0)
+                ActiveCollisionObject();
+
             Remove();
         }
-    }
-
-    private void DamageToTarget(FObjectBase InTarget, int InDamage)
-    {
-        if (InTarget == null)
-            return;
-
-        FStatController statController = owner.FindController<FStatController>();
-        if (statController == null)
-            return;
-
-        FStatController targetStatController = InTarget.FindController<FStatController>();
-        if (targetStatController == null)
-            return;
-
-        bool critical = statController.IsCritical();
-        int damage = (int)(critical ? InDamage * statController.GetStat(StatType.CriticalDamage) : InDamage);
-
-        FCombatTextManager.Instance.AddText(critical ? CombatTextType.Critical : CombatTextType.Normal, damage, InTarget);
-        targetStatController.OnDamage(InDamage);
-
-        P2P_DAMAGE pkt = new P2P_DAMAGE();
-        pkt.objectId = InTarget.ObjectID;
-        pkt.damage = damage;
-        pkt.critical = critical;
-
-        FServerManager.Instance.SendMessage(pkt);
     }
 
     private void ActiveEffect()
@@ -116,6 +110,11 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
             return;
 
         abnormalityController.AddAbnormality(owner, abnormalityID);
+    }
+
+    private void ActiveCollisionObject()
+    {
+
     }
 
     private void Remove()
