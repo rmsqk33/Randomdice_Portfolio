@@ -13,7 +13,16 @@ public class FDiceStatInfo : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI upgradeValue;
 
-    public Sprite StatIcon { set { statIcon.sprite = value; } }
+    public Sprite StatIcon 
+    { 
+        set
+        {
+            Vector2 originSize = statIcon.rectTransform.sizeDelta;
+
+            statIcon.sprite = value;
+            statIcon.rectTransform.localScale = new Vector2(1, value.textureRect.height / value.textureRect.width);
+        } 
+    }
     public string Title { set { title.text = value; } }
     public string Value { set { this.value.text = value; } }
     public string UpgradeValue { set { upgradeValue.text = value; } }

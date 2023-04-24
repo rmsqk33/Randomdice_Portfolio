@@ -1,3 +1,4 @@
+using FEnum;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -51,7 +52,8 @@ public class FDiceInfoPopup : FPopupBase
         notAcquiredDiceSlot.gameObject.SetActive(false);
         acquiredDiceSlot.gameObject.SetActive(true);
         acquiredDiceSlot.Init(diceData, dice);
-        
+        InitStat(diceData);
+
         FDiceGradeData gradeData = FDiceDataManager.Instance.FindGradeData(diceData.grade);
         if (gradeData != null)
         {
@@ -78,11 +80,71 @@ public class FDiceInfoPopup : FPopupBase
         acquiredDiceSlot.gameObject.SetActive(false);
         notAcquiredDiceSlot.gameObject.SetActive(true);
         notAcquiredDiceSlot.Init(diceData);
+        InitStat(diceData);
         SetUpgradable(false);
 
         FDiceGradeData gradeData = FDiceDataManager.Instance.FindGradeData(diceData.grade);
         if(gradeData != null)
             SetCommonDiceInfo(diceData, gradeData);
+    }
+
+    void InitStat(FDiceData InDiceData, FDice InDice = null)
+    {
+        int slotIndex = (int)AbilitySlotType.Max;
+        InDiceData.ForeachSkillID((int InSkillID) => {
+            FSkillData skillData = FSkillDataManager.Instance.FindSkillData(InSkillID);
+            if (skillData == null)
+                return;
+
+            FEffectData effectData = null;
+            FAbnormalityData abnormalityData = null;
+
+            if (skillData.abnormalityID != 0)
+                abnormalityData = FAbnormalityDataManager.Instance.FindAbnormalityData(skillData.abnormalityID);
+
+            if (skillData.skillType == FEnum.SkillType.Basic)
+            {
+                FProjectileData projectileData = FEffectDataManager.Instance.FindProjectileData(skillData.projectileID);
+                if (projectileData != null)
+                {
+                    int damage = InDice == null ? projectileData.damage : projectileData.damage + projectileData.damagePerLevel * InDice.level;
+                    SetStat((int)AbilitySlotType.BasicAttackDamage, AbilityType.BasicAttackDamage, damage.ToString(), projectileData.damagePerLevel.ToString());
+                    SetStat((int)AbilitySlotType.BasicAttackSpeed, AbilityType.BasicAttackSpeed, skillData.interval.ToString(), "");
+                    SetStat((int)AbilitySlotType.BasicAttackTarget, AbilityType.BasicAttackTarget, FAbilityDataManager.Instance.GetTargetTypeString(skillData.targetType), "");
+
+                    effectData = FEffectDataManager.Instance.FindEffectData(projectileData.effectID);
+
+                    if (projectileData.abnormalityID != 0)
+                        abnormalityData = FAbnormalityDataManager.Instance.FindAbnormalityData(projectileData.abnormalityID);
+                }
+            }
+
+            if (effectData != null && effectData.abilityType != AbilityType.None)
+            {
+                SetStat(slotIndex++, effectData.abilityType, effectData.value.ToString(), effectData.valuePerLevel.ToString());
+            }
+
+            if (abnormalityData != null && abnormalityData.abilityType != AbilityType.None)
+            {
+                SetStat(slotIndex++, abnormalityData.abilityType, abnormalityData.value.ToString(), abnormalityData.valuePerLevel.ToString());
+            }
+        });
+
+        for(int i = slotIndex; i < statInfoList.Count; ++i)
+        {
+            SetStat(i, AbilityType.None, "-", "-");
+        }
+    }
+
+    void SetStat(int InIndex, AbilityType InType, string InValue, string InUpgradeValue)
+    {
+        if (InIndex < 0 || statInfoList.Count <= InIndex)
+            return;
+
+        statInfoList[InIndex].Title = FAbilityDataManager.Instance.GetAbilityTitle(InType);
+        statInfoList[InIndex].Value = InValue;
+        statInfoList[InIndex].UpgradeValue = InUpgradeValue;
+        statInfoList[InIndex].StatIcon = Resources.Load<Sprite>(FAbilityDataManager.Instance.GetAbilityIcon(InType));
     }
 
     void SetUpgradable(bool InUpgradable)

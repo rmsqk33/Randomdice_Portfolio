@@ -23,7 +23,7 @@ public class FStatAbnormality : FAbnormality
         if (statController == null)
             return;
 
-        statController.SetStat(statType, originStat * InAbnormalityData.effectPercentage);
+        statController.SetStat(statType, originStat + originStat * (effectValue * InAbnormalityData.effectPercentage));
     }
 
     protected override void OffEffect()

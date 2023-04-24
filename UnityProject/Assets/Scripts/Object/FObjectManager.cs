@@ -28,7 +28,7 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
 
     public int CreateLocalPlayerBattleDice(int InDiceID, int InEyeCount, int InSlotIndex)
     {
-        InDiceID = 2;
+        InDiceID = 4;
 
         FObjectBase dice = FBattleDiceCreator.Instance.CreateLocalPlayerDice(InDiceID, InEyeCount, InSlotIndex);
         AddObject(diceInstanceID++, dice);

@@ -8,7 +8,7 @@ public class FDamageEffect : FEffect
     {
         base.Initialize(InEffectData, InOwner, InTarget);
 
-        damage = FGlobal.CalcDamage(InOwner, InEffectData.damage, InEffectData.damagePerLevel, InEffectData.damagePerBattleLevel);
+        damage = FGlobal.CalcEffectValue(InOwner, InEffectData.value, InEffectData.valuePerLevel, InEffectData.valuePerBattleLevel);
 
         DamageToTarget();
     }

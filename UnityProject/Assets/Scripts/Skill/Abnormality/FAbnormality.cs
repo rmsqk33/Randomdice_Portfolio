@@ -5,6 +5,7 @@ public abstract class FAbnormality
 {
     protected FObjectBase target;
     protected FObjectBase owner;
+    protected float effectValue;
 
     FTimer durationTimer;
     FTimer intervalTimer;
@@ -28,8 +29,9 @@ public abstract class FAbnormality
         owner = InOwner;
         overlap = 1;
         maxOverlap = InAbnormalityData.maxOverlap;
-        
-        if(0 < InAbnormalityData.duration)
+        effectValue = FGlobal.CalcEffectValue(owner, InAbnormalityData.value, InAbnormalityData.valuePerLevel, InAbnormalityData.valuePerBattleLevel);
+
+        if (0 < InAbnormalityData.duration)
         {
             durationTimer = new FTimer(InAbnormalityData.duration);
             durationTimer.Start();

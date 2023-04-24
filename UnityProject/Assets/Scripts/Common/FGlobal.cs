@@ -15,7 +15,7 @@ public class FGlobal
 
     public static float DiceCriticalChange = 0.33f;
 
-    public static int CalcDamage(FObjectBase InObject, int InDamage, int InDamagePerLevel, int InDamagePerBattleLevel)
+    public static int CalcEffectValue(FObjectBase InObject, int InValue, int InValuePerLevel, int InValuePerBattleLevel)
     {
         FStatController statController = InObject.FindController<FStatController>();
         if (statController == null)
@@ -29,6 +29,6 @@ public class FGlobal
         if (battleDice == null)
             return 0;
 
-        return InDamage + InDamagePerLevel * statController.GetIntStat(StatType.Level) + InDamagePerBattleLevel * battleDice.level;
+        return InValue + InValuePerLevel * statController.GetIntStat(StatType.Level) + InValuePerBattleLevel * battleDice.level;
     }
 }

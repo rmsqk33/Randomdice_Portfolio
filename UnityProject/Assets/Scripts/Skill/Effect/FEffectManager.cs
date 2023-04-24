@@ -105,6 +105,7 @@ public class FEffectManager : FSingleton<FEffectManager>
         FEffect effect = null;
         switch (InEffectData.type)
         {
+            case SkillEffectType.Normal: effect = gameObject.AddComponent<FEffect>(); break;
             case SkillEffectType.Damage: effect = gameObject.AddComponent<FDamageEffect>(); break;
             case SkillEffectType.Chain: effect = gameObject.AddComponent<FChainEffect>(); break;
         }

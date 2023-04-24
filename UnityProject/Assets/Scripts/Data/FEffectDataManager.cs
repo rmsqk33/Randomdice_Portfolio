@@ -7,6 +7,9 @@ public class FProjectileData
     public readonly int effectID;
     public readonly int abnormalityID;
     public readonly int speed;
+    public readonly int damage;
+    public readonly int damagePerLevel;
+    public readonly int damagePerBattleLevel;
     public readonly string prefab;
 
     public FProjectileData(FDataNode InNode)
@@ -15,6 +18,9 @@ public class FProjectileData
         effectID = InNode.GetIntAttr("effectID");
         abnormalityID = InNode.GetIntAttr("abnormalityID");
         speed = InNode.GetIntAttr("speed");
+        damage = InNode.GetIntAttr("damage");
+        damagePerLevel = InNode.GetIntAttr("damagePerLevel");
+        damagePerBattleLevel = InNode.GetIntAttr("damagePerBattleLevel");
         prefab = InNode.GetStringAttr("prefab");
     }
 }
@@ -25,14 +31,16 @@ public class FEffectData
     public readonly SkillEffectType type;
     public readonly string prefab;
 
-    public readonly int damage;
-    public readonly int damagePerLevel;
-    public readonly int damagePerBattleLevel;
+    public readonly int value;
+    public readonly int valuePerLevel;
+    public readonly int valuePerBattleLevel;
     public readonly int radius;
 
     public readonly int chainCount;
     public readonly float chainDamageRate;
     public readonly string chainPrefab;
+
+    public readonly AbilityType abilityType;
 
     public FEffectData(FDataNode InNode)
     {
@@ -40,14 +48,16 @@ public class FEffectData
         type = (SkillEffectType)InNode.GetIntAttr("type");
         prefab = InNode.GetStringAttr("prefab");
 
-        damage = InNode.GetIntAttr("damage");
-        damagePerLevel = InNode.GetIntAttr("damagePerLevel");
-        damagePerBattleLevel = InNode.GetIntAttr("damagePerBattleLevel");
+        value = InNode.GetIntAttr("value");
+        valuePerLevel = InNode.GetIntAttr("valuePerLevel");
+        valuePerBattleLevel = InNode.GetIntAttr("valuePerBattleLevel");
         radius = InNode.GetIntAttr("radius");
 
         chainCount = InNode.GetIntAttr("chainCount");
         chainDamageRate = InNode.GetFloatAttr("chainDamageRate");
         chainPrefab = InNode.GetStringAttr("chainPrefab");
+
+        abilityType = (AbilityType)InNode.GetIntAttr("abilityType");
     }
 }
 

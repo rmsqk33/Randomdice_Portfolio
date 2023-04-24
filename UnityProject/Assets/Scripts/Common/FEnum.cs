@@ -84,6 +84,7 @@ namespace FEnum
 
     public enum SkillEffectType
     {
+        Normal,
         Damage,
         Chain,
     }
@@ -130,5 +131,25 @@ namespace FEnum
     { 
         Stat,
         Damage
+    }
+
+    public enum AbilityType
+    {
+        None,
+        BasicAttackDamage,
+        BasicAttackSpeed,
+        BasicAttackTarget,
+        FireExplosion,
+        ChainLightning,
+        Poison,
+        Ice,
+    }
+
+    public enum AbilitySlotType
+    {
+        BasicAttackDamage,
+        BasicAttackSpeed,
+        BasicAttackTarget,
+        Max
     }
 }

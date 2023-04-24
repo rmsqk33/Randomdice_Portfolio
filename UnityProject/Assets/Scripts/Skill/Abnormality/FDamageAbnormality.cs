@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class FDamageAbnormality : FAbnormality
 {
-    int damage;
     float criticalDamageRate;
     float criticalChance;
 
@@ -27,7 +26,6 @@ public class FDamageAbnormality : FAbnormality
             if (battleDice == null)
                 return;
 
-            damage = FGlobal.CalcDamage(owner, InAbnormalityData.damage, InAbnormalityData.damagePerLevel, InAbnormalityData.damagePerBattleLevel);
             criticalDamageRate = statController.GetStat(StatType.CriticalDamage);
             criticalChance = statController.GetStat(StatType.CriticalChance);
         }
@@ -36,7 +34,7 @@ public class FDamageAbnormality : FAbnormality
     protected override void OnEffect(FAbnormalityOverlapData InAbnormalityData)
     {
         bool critical = Random.value <= criticalChance;
-        int damage = (int)(critical ? this.damage * criticalDamageRate : this.damage);
+        int damage = (int)(critical ? this.effectValue * criticalDamageRate : this.effectValue);
 
         FCombatTextManager.Instance.AddText(critical ? CombatTextType.Critical : CombatTextType.Normal, damage, target);
         target.FindController<FStatController>().OnDamage(damage);
