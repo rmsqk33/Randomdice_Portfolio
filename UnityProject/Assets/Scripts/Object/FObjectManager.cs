@@ -187,7 +187,7 @@ public class FObjectManager : FSingleton<FObjectManager>
         int damage = (int)(critical ? InDamage * InCriticalDamage : InDamage);
 
         FCombatTextManager.Instance.AddText(critical ? CombatTextType.Critical : CombatTextType.Normal, damage, InTarget);
-        targetStatController.OnDamage(InDamage);
+        targetStatController.OnDamage(damage);
 
         P2P_DAMAGE pkt = new P2P_DAMAGE();
         pkt.objectId = InTarget.ObjectID;
