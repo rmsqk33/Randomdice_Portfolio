@@ -22,6 +22,7 @@ public class FBattleScene : MonoBehaviour
     {
         FGlobal.localPlayer.AddController<FBattleDiceController>();
         FGlobal.localPlayer.AddController<FBattleWaveController>();
+        FGlobal.localPlayer.AddController<FSkillAreaController>();
         FGlobal.localPlayer.FindController<FBattleWaveController>().StartBattle(FBattleDataManager.Instance.CoopBattleID);
     }
 
@@ -29,5 +30,8 @@ public class FBattleScene : MonoBehaviour
     {
         FGlobal.localPlayer.RemoveController<FBattleDiceController>();
         FGlobal.localPlayer.RemoveController<FBattleWaveController>();
+        FGlobal.localPlayer.RemoveController<FSkillAreaController>();
+
+        FObjectManager.Instance.Clear();
     }
 }

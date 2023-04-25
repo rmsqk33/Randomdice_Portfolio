@@ -13,10 +13,17 @@ public class FDamageEffect : FEffect
     {
         if (owner.IsOwnLocalPlayer() == false)
             return;
-        
+
+        if (owner.SummonOwner == null)
+            return;
+
+        FSkillAreaController skillAreaController = owner.SummonOwner.FindController<FSkillAreaController>();
+        if (skillAreaController == null)
+            return;
+
         if (0 < radius)
         {
-            FObjectManager.Instance.ForeachSortedEnemy((FObjectBase InObject) =>
+            skillAreaController.ForeachEnemy((FObjectBase InObject) =>
             {
                 if (radius + InObject.transform.localScale.x * 0.5 < Vector2.Distance(InObject.WorldPosition, WorldPosition))
                     return;

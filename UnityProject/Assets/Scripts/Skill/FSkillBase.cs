@@ -25,17 +25,17 @@ public class FSkillBase
         skillID = InSkillData.id;
         targetType = InSkillData.targetType;
         toggle = owner.IsOwnLocalPlayer();
-        
+
         projectileID = InSkillData.projectileID;
         abnormalityID = InSkillData.abnormalityID;
-        
-        if(targetType == SkillTargetType.NoneAbnormalityFront)
+
+        if (targetType == SkillTargetType.NoneAbnormalityFront)
         {
             checkAbnormalityID = InSkillData.abnormalityID;
-            if(checkAbnormalityID == 0)
+            if (checkAbnormalityID == 0)
             {
                 FProjectileData projectileData = FEffectDataManager.Instance.FindProjectileData(InSkillData.projectileID);
-                if(projectileData != null)
+                if (projectileData != null)
                 {
                     checkAbnormalityID = projectileData.abnormalityID;
                 }
@@ -93,25 +93,24 @@ public class FSkillBase
 
     protected FObjectBase GetTarget()
     {
-        FObjectBase newTarget = null;
+        if (owner.SummonOwner == null)
+            return null;
 
+        FSkillAreaController skillAreaController = owner.SummonOwner.FindController<FSkillAreaController>();
+        if (skillAreaController == null)
+            return null;
+
+        FObjectBase newTarget = null;
         switch (targetType)
         {
-            case SkillTargetType.Front: newTarget = FObjectManager.Instance.FrontEnemy; break;
+            case SkillTargetType.Front:
+                newTarget = skillAreaController.FrontEnemy;
+                break;
             case SkillTargetType.Myself: newTarget = owner; break;
             case SkillTargetType.NoneAbnormalityFront:
-                FObjectManager.Instance.ForeachSortedEnemy((FObjectBase InObject) => {
-                    if (newTarget != null)
-                        return;
-
-                    if (InObject.FindController<FAbnormalityController>().HasAbnormality(checkAbnormalityID))
-                        return;
-
-                    newTarget = InObject;
-                });
-    
-                if(target == null)
-                    newTarget = FObjectManager.Instance.FrontEnemy;
+                newTarget = skillAreaController.FindNotHaveAbnormality(checkAbnormalityID);
+                if (newTarget == null)
+                    newTarget = skillAreaController.FrontEnemy;
 
                 break;
         }

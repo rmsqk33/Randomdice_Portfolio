@@ -174,7 +174,7 @@ public class FBattleDiceController : FControllerBase
         }
         else
         {
-            RequestCreateDice(emptyDiceSlotIndexList[summonSlotIndex], summonDiceID, InEyeCount);
+            RequestCreateDice(summonDiceID, InEyeCount, summonSlotIndex);
         }
     }
 
@@ -248,7 +248,7 @@ public class FBattleDiceController : FControllerBase
         if (FGlobal.localPlayer.IsHost)
         {
             int objectID = FObjectManager.Instance.CreateLocalPlayerBattleDice(summonDiceID, InEyeCount, InSlotIndex);
-            AddBattleDice(objectID, InSlotIndex, summonDiceID, InEyeCount);
+            AddBattleDice(objectID, summonDiceID, InEyeCount, InSlotIndex);
         }
         else
         {
@@ -256,14 +256,14 @@ public class FBattleDiceController : FControllerBase
         }
     }
 
-    private void RequestCreateDice(int InIndex, int InDiceID, int InEyeCount)
+    private void RequestCreateDice(int InDiceID, int InEyeCount, int InIndex)
     {
         emptyDiceSlotIndexList.Remove(InIndex);
 
         P2P_C_REQUEST_SPAWN_DICE pkt = new P2P_C_REQUEST_SPAWN_DICE();
         pkt.diceId = InDiceID;
-        pkt.index = InIndex;
         pkt.eyeCount = InEyeCount;
+        pkt.index = InIndex;
 
         FServerManager.Instance.SendMessage(pkt);
     }

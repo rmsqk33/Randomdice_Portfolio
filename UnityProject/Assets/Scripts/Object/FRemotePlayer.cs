@@ -1,10 +1,9 @@
 
 public class FRemotePlayer : FObjectBase
 {
-    protected override void Awake()
+    public void Initialize()
     {
-        base.Awake();
-
         AddController<FRemotePlayerBattleController>();
+        AddController<FSkillAreaController>();
     }
 }

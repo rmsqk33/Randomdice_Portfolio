@@ -1,6 +1,7 @@
 
 public class FControllerBase
 {
+    protected FObjectBase SummonOwner { get { return Owner.SummonOwner; } }
     protected FObjectBase Owner { get; set; }
     public int ObjectID { get { return Owner.ObjectID; } }
     public int ContentID { get { return Owner.ContentID; } }

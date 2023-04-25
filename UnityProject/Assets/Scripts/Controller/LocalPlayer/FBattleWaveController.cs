@@ -1,4 +1,6 @@
 using Packet;
+using System.Linq;
+using UnityEngine;
 
 public class FBattleWaveController : FControllerBase, FServerStateObserver
 {
@@ -15,8 +17,14 @@ public class FBattleWaveController : FControllerBase, FServerStateObserver
     FBattleData battleData;
     FWaveData waveData;
 
+    FStartPoint [] startPointList;
+
     public FBattleWaveController(FLocalPlayer InOwner) : base(InOwner)
     {
+        startPointList = GameObject.FindObjectsOfType<FStartPoint>();
+
+        if (FGlobal.localPlayer.IsHost == false)
+            startPointList = startPointList.Reverse().ToArray();
     }
 
     public bool IsEndBattle { get { return life == 0; } }
@@ -150,6 +158,14 @@ public class FBattleWaveController : FControllerBase, FServerStateObserver
         CheckEndWaveProcess(InDeltaTime);
     }
 
+    public FStartPoint GetStartPoint(int InIndex)
+    {
+        if (InIndex < 0 || startPointList.Length <= InIndex)
+            return null;
+
+        return startPointList[InIndex];
+    }
+
     private void CreateEnemyProcess(float InDeltaTime)
     {
         enemySummonTimer.Tick(InDeltaTime);
@@ -157,7 +173,26 @@ public class FBattleWaveController : FControllerBase, FServerStateObserver
             return;
 
         int enemyID = waveData.GetEnemyID(summonCount);
-        FObjectManager.Instance.CreateEnemy(enemyID);
+        //for(int i = 0; i < startPointList.Length; ++i)
+        for(int i = 0; i < 1; ++i)
+        {
+            FObjectBase enemy = FObjectManager.Instance.CreateEnemy(enemyID);
+            if (enemy != null)
+            {
+                FMoveController moveController = enemy.FindController<FMoveController>();
+                if (moveController != null)
+                {
+                    moveController.SetStartPoint(startPointList[i]);
+                }
+
+                P2P_SPAWN_ENEMY pkt = new P2P_SPAWN_ENEMY();
+                pkt.instanceId = enemy.ObjectID;
+                pkt.enemyId = enemyID;
+                pkt.spawnPointIndex = i;
+                FServerManager.Instance.SendMessage(pkt);
+            }
+        }
+        
         ++summonCount;
 
         if (waveData.SummonCount <= summonCount)

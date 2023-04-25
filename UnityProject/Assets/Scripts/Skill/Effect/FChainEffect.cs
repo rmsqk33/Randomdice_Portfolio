@@ -34,9 +34,16 @@ public class FChainEffect : FEffect
 
     private void ChainEffect()
     {
+        if (owner.SummonOwner == null)
+            return;
+
+        FSkillAreaController skillAreaController = owner.SummonOwner.FindController<FSkillAreaController>();
+        if (skillAreaController == null)
+            return;
+
         FObjectBase prevTarget = target;
 
-        List<FObjectBase> targetList = FObjectManager.Instance.GetSortedEnemyList(target, chainCount);
+        List<FObjectBase> targetList = skillAreaController.GetEnemyList(target, chainCount);
         for(int i = 0; i < targetList.Count; ++i)
         {
             CreateChainEffect(prevTarget, targetList[i]);

@@ -88,9 +88,7 @@ public class FAccountMananger : FNonObjectSingleton<FAccountMananger>
     {
         if (FGlobal.localPlayer == null)
         {
-            GameObject gameObject = new GameObject("localPlayer");
-            FGlobal.localPlayer = gameObject.AddComponent<FLocalPlayer>();
-            GameObject.DontDestroyOnLoad(gameObject);
+            FObjectManager.Instance.CreateLocalPlayer();
         }
     }
 }

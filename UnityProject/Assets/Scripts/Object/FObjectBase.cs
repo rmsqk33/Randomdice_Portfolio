@@ -13,6 +13,7 @@ public class FObjectBase : MonoBehaviour
     
     public int ObjectID { get; set; }
     public int ContentID { get; set; }
+    public FObjectBase SummonOwner { get; set; }
     public Vector2 WorldPosition { get { return transform.position; } set { transform.position = value; } }
     public Vector2 LocalPosition { get { return transform.localPosition; } set { transform.localPosition = value; } }
     public int SortingOrder 
@@ -46,7 +47,7 @@ public class FObjectBase : MonoBehaviour
 
         for (int i = observers.Count - 1; 0 <= i; --i)
         {
-            observers[i].OnDestroyObject();
+            observers[i].OnDestroyObject(this);
         }
     }
 
@@ -99,11 +100,7 @@ public class FObjectBase : MonoBehaviour
 
     public bool IsOwnLocalPlayer()
     {
-        FIFFController iffController = FindController<FIFFController>();
-        if (iffController == null)
-            return false;
-
-        return iffController.IFFType == FEnum.IFFType.LocalPlayer;
+        return SummonOwner == FGlobal.localPlayer;
     }
 
     public void AddObserver(FObjectStateObserver InObserver)

@@ -62,11 +62,7 @@ public class FP2PPacketHandler
     {
         P2P_PLAYER_DATA pkt = new P2P_PLAYER_DATA(InBuffer);
 
-        if (FGlobal.remotePlayer == null)
-        {
-            GameObject gameObject = new GameObject("remotePlayer");
-            FGlobal.remotePlayer = gameObject.AddComponent<FRemotePlayer>();
-        }
+        FObjectManager.Instance.CreateRemotePlayer();
 
         FRemotePlayerBattleController battleController = FGlobal.remotePlayer.FindController<FRemotePlayerBattleController>();
         if(battleController != null)
@@ -134,7 +130,23 @@ public class FP2PPacketHandler
     {
         P2P_SPAWN_ENEMY pkt = new P2P_SPAWN_ENEMY(InBuffer);
 
-        FObjectManager.Instance.CreateEnemy(pkt.instanceId, pkt.enemyId, pkt.spawnPointIndex);
+        FObjectBase enemy = FObjectManager.Instance.CreateEnemy(pkt.instanceId, pkt.enemyId);
+        if (enemy == null)
+            return;
+
+        FMoveController moveController = enemy.FindController<FMoveController>();
+        if (moveController == null)
+            return;
+
+        FBattleWaveController waveController = FGlobal.localPlayer.FindController<FBattleWaveController>();
+        if (waveController == null)
+            return;
+
+        FStartPoint spawnPoint = waveController.GetStartPoint(pkt.spawnPointIndex);
+        if (spawnPoint == null)
+            return;
+
+        moveController.SetStartPoint(spawnPoint);
     }
 
     static void Handle_P2P_CHANGE_WAVE(in byte[] InBuffer)

@@ -56,7 +56,7 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
         }
     }
 
-    public void OnDestroyObject()
+    public void OnDestroyObject(FObjectBase InObject)
     {
         Remove();
     }

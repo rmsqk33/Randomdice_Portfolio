@@ -1,10 +1,4 @@
-using FEnum;
-using UnityEngine;
 
-public class FStartPoint : FPathBase
+public class FStartPoint : FPath
 {
-    [SerializeField]
-    IFFType iffType;
-
-    public IFFType IffType { get { return iffType; } }
 }

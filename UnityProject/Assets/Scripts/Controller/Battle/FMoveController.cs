@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 
 public class FMoveController : FControllerBase, FStatObserver
 {
-    FPathBase movePath;
+    FPath movePath;
     float totalDistance;
     float moveDistance;
     float speed;
@@ -41,13 +41,13 @@ public class FMoveController : FControllerBase, FStatObserver
         }
     }
 
-    public void SetStartPoint(FPathBase InPoint)
+    public void SetStartPoint(FPath InPoint)
     {
         Owner.WorldPosition = InPoint.WorldPosition;
         movePath = InPoint.NextPath;
         totalDistance = 0;
 
-        FPathBase point = InPoint;
+        FPath point = InPoint;
         while (point.NextPath != null)
         {
             totalDistance += Vector2.Distance(point.NextPath.WorldPosition, point.WorldPosition);

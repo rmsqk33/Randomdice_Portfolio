@@ -27,9 +27,6 @@ public class FBattleDice : FObjectBase, IBeginDragHandler, IDragHandler, IDropHa
 
         InitUI(InEyeCount);
 
-        AddController<FIFFController>();
-        FindController<FIFFController>().IFFType = IFFType.LocalPlayer;
-
         AddController<FStatController>();
         InitDiceStat(InEyeCount, InDiceID);
 

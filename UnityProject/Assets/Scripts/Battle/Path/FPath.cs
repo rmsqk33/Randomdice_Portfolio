@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public class FPathBase : MonoBehaviour
+public class FPath : MonoBehaviour
 {
     [SerializeField]
-    FPathBase nextPath;
+    FPath nextPath;
 
     public Vector2 WorldPosition { get { return transform.position; } }
-    public FPathBase NextPath { get { return nextPath; } }
+    public FPath NextPath { get { return nextPath; } }
 
     public virtual void OnPass(FObjectBase InObject)
     {

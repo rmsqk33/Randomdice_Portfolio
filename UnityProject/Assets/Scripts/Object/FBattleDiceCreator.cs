@@ -18,6 +18,7 @@ public class FBattleDiceCreator : FSceneLoadedSingleton<FBattleDiceCreator>
             return null;
 
         FBattleDice dice = GameObject.Instantiate<FBattleDice>(localPlayerDicePrefab, localPlayerDiceSlotList[InSlotIndex]);
+        dice.SummonOwner = FGlobal.localPlayer;
         dice.Initialize(InDiceID, InEyeCount, InSlotIndex);
 
         return dice;
@@ -29,6 +30,7 @@ public class FBattleDiceCreator : FSceneLoadedSingleton<FBattleDiceCreator>
             return null;
 
         FRemotePlayerBattleDice dice = GameObject.Instantiate<FRemotePlayerBattleDice>(remotePlayerDicePrefab, remotePlayerDiceSlotList[InSlotIndex]);
+        dice.SummonOwner = FGlobal.remotePlayer;
         dice.Initialize(InDiceID, InEyeCount);
 
         return dice;

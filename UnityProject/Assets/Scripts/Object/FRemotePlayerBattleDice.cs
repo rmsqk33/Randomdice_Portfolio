@@ -19,9 +19,6 @@ public class FRemotePlayerBattleDice : FObjectBase
 
         InitUI(InEyeCount);
 
-        AddController<FIFFController>();
-        FindController<FIFFController>().IFFType = IFFType.RemotePlayer;
-        
         AddController<FStatController>();
        
         FRemotePlayerBattleController battleController = FGlobal.remotePlayer.FindController<FRemotePlayerBattleController>();

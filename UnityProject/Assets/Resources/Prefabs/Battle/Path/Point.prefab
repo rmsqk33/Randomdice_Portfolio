@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4590253256596655933}
   - component: {fileID: 7688288294103633736}
   m_Layer: 5
-  m_Name: ChangeIFFPoint
+  m_Name: Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,8 +41,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 965742025143285998}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f73c9acbbd42564894ab1e707a3fd3e, type: 3}
+  m_Script: {fileID: 11500000, guid: e0194b7c541a7df4f9977364919d2d5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   nextPath: {fileID: 0}
-  iffType: 1

@@ -1,6 +1,6 @@
 using Packet;
 
-public class FEndPont : FPathBase
+public class FEndPont : FPath
 {
     public override void OnPass(FObjectBase InObject)
     {

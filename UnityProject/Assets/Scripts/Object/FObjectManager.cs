@@ -3,25 +3,52 @@ using FEnum;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
+public class FObjectManager : FSingleton<FObjectManager>
 {
-    [SerializeField]
-    List<FStartPoint> startPointList;
-
     Dictionary<int, FObjectBase> objectMap = new Dictionary<int, FObjectBase>();
-    List<FObjectBase> sortedEnemyList = new List<FObjectBase>();
+    List<FObjectBase> enemyList = new List<FObjectBase>();
     List<FObjectBase> removeObjectList = new List<FObjectBase>();
 
     int enemySpawnCount = 0;
     int instanceID = 0;
 
     public FObjectBase FrontEnemy { get; private set; }
-    public int EnemyCount { get { return sortedEnemyList.Count; } }
+    public int EnemyCount { get { return enemyList.Count; } }
 
-    private void Start()
+    public void Clear()
     {
-        if (FGlobal.localPlayer.IsHost == false)
-            startPointList.Reverse();
+        foreach(var pair in objectMap)
+        {
+            if(pair.Value != FGlobal.localPlayer && pair.Value != null)
+            {
+                GameObject.Destroy(pair.Value.gameObject);
+            }
+        }
+        objectMap.Clear();
+        enemyList.Clear();
+
+        enemySpawnCount = 0;
+        instanceID = 0;
+        AddObject(instanceID++, FGlobal.localPlayer);
+    }
+
+    public void CreateLocalPlayer()
+    {
+        GameObject gameObject = new GameObject("localPlayer");
+        FGlobal.localPlayer = gameObject.AddComponent<FLocalPlayer>();
+        GameObject.DontDestroyOnLoad(gameObject);
+
+        AddObject(instanceID++, FGlobal.localPlayer);
+    }
+
+    public void CreateRemotePlayer()
+    {
+        GameObject gameObject = new GameObject("remotePlayer");
+        FGlobal.remotePlayer = gameObject.AddComponent<FRemotePlayer>();
+        FGlobal.remotePlayer.ObjectID = instanceID++;
+        FGlobal.remotePlayer.Initialize();
+
+        AddObject(FGlobal.remotePlayer.ObjectID, FGlobal.remotePlayer);
     }
 
     public int CreateLocalPlayerBattleDice(int InDiceID, int InEyeCount, int InSlotIndex)
@@ -65,42 +92,25 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
         AddObject(InObjectID, dice);
     }
 
-    public void CreateEnemy(int InID)
+    public FObjectBase CreateEnemy(int InID)
     {
-        FEnemyData enemyData = FObjectDataManager.Instance.FindEnemyData(InID);
-        if (enemyData == null)
-            return;
-
-        for (int i = 0; i < startPointList.Count; ++i)
-        {
-            if (FGlobal.localPlayer.IsHost)
-            {
-                P2P_SPAWN_ENEMY pkt = new P2P_SPAWN_ENEMY();
-                pkt.instanceId = instanceID;
-                pkt.enemyId = InID;
-                pkt.spawnPointIndex = i;
-                FServerManager.Instance.SendMessage(pkt);
-            }
-
-            CreateEnemy(instanceID++, InID, i);
-        }
+        return CreateEnemy(instanceID++, InID);
     }
 
-    public void CreateEnemy(int InInstanceID, int InID, int InSpawnPointIndex)
+    public FObjectBase CreateEnemy(int InInstanceID, int InID)
     {
-        if (InSpawnPointIndex < 0 || startPointList.Count <= InSpawnPointIndex)
-            return;
-
         FEnemyData enemyData = FObjectDataManager.Instance.FindEnemyData(InID);
         if (enemyData == null)
-            return;
+            return null;
 
         FEnemy newEnemy = Instantiate<FEnemy>(Resources.Load<FEnemy>(enemyData.prefabPath), transform);
-        newEnemy.Initialize(enemyData, startPointList[InSpawnPointIndex], enemySpawnCount++ / 2);
+        newEnemy.Initialize(enemyData, enemySpawnCount++ / 2);
         newEnemy.SortingOrder = -InInstanceID;
 
-        sortedEnemyList.Add(newEnemy);
+        enemyList.Add(newEnemy);
         AddObject(InInstanceID, newEnemy);
+
+        return newEnemy;
     }
 
     public void CreateCollisionObject(int InID, FObjectBase InOwner, Vector2 InPosition)
@@ -155,41 +165,6 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
         }
     }
 
-    public delegate void ForeachSortedEnemyDelegate(FObjectBase InObject);
-    public void ForeachSortedEnemy(ForeachSortedEnemyDelegate InFunc)
-    {
-        foreach (FObjectBase obj in sortedEnemyList)
-        {
-            if (obj.FindController<FIFFController>().IsEnumy(IFFType.LocalPlayer))
-            {
-                InFunc(obj);
-            }
-        }
-    }
-
-    public List<FObjectBase> GetSortedEnemyList(FObjectBase InStartObject, int InCount)
-    {
-        List<FObjectBase> retList = new List<FObjectBase>();
-
-        int startIndex = sortedEnemyList.FindIndex(i => i.ObjectID == InStartObject.ObjectID);
-        if (startIndex != -1)
-        {
-            for (int i = startIndex + 1; i < sortedEnemyList.Count; ++i)
-            {
-                FObjectBase enemy = sortedEnemyList[i];
-                if (enemy.FindController<FIFFController>().IsEnumy(IFFType.LocalPlayer))
-                {
-                    retList.Add(enemy);
-
-                    if (retList.Count == InCount)
-                        break;
-                }
-            }
-        }
-
-        return retList;
-    }
-
     public void DamageToTarget(FObjectBase InAttacker, FObjectBase InTarget, int InDamage)
     {
         if (InAttacker.IsOwnLocalPlayer() == false)
@@ -224,51 +199,14 @@ public class FObjectManager : FSceneLoadedSingleton<FObjectManager>
 
     private void Update()
     {
-        SortEnemyByRemainDistance();
         RemoveObjectAfterTick();
-    }
-
-    private void SortEnemyByRemainDistance()
-    {
-        bool dirty = false;
-        for (int i = 0; i < sortedEnemyList.Count - 1; ++i)
-        {
-            FObjectBase A = sortedEnemyList[i];
-            FObjectBase B = sortedEnemyList[i + 1];
-
-            float remainDistanceA = A.FindController<FMoveController>().RemainDistance;
-            float remainDistanceB = B.FindController<FMoveController>().RemainDistance;
-
-            if (remainDistanceB < remainDistanceA)
-            {
-                FObjectBase temp = sortedEnemyList[i];
-                sortedEnemyList[i] = sortedEnemyList[i + 1];
-                sortedEnemyList[i + 1] = temp;
-
-                B.SortingOrder = A.SortingOrder + 1;
-
-                dirty = true;
-            }
-        }
-
-        if (dirty || FrontEnemy == null)
-        {
-            foreach (FObjectBase obj in sortedEnemyList)
-            {
-                if (obj.FindController<FIFFController>().IsEnumy(IFFType.LocalPlayer))
-                {
-                    FrontEnemy = obj;
-                    break;
-                }
-            }
-        }
     }
 
     private void RemoveObjectAfterTick()
     {
         foreach (FObjectBase InObject in removeObjectList)
         {
-            sortedEnemyList.Remove(InObject);
+            enemyList.Remove(InObject);
 
             InObject.Release();
             GameObject.Destroy(InObject.gameObject);

@@ -7,22 +7,15 @@ public class FEnemy : FObjectBase, FStatObserver
     [SerializeField]
     TextMeshPro hpText;
 
-    public void Initialize(FEnemyData InData, FStartPoint InSpawnPoint, int InAccumulateCount)
+    public void Initialize(FEnemyData InData, int InAccumulateCount)
     {
         ContentID = InData.id;
 
-        AddController<FIFFController>();
         AddController<FStatController>();
         AddController<FMoveController>();
         AddController<FAbnormalityController>();
 
         FindController<FStatController>().AddObserver(this);
-
-        FIFFController iffController = FindController<FIFFController>();
-        iffController.IFFType = InSpawnPoint.IffType;
-
-        FMoveController moveController = FindController<FMoveController>();
-        moveController.SetStartPoint(InSpawnPoint);
 
         FStatController statController = FindController<FStatController>();
         statController.SetStat(StatType.HP, InData.hp + InData.hpIncreaseBySpawnCount * InAccumulateCount);
