@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class FProjectile : MonoBehaviour, FObjectStateObserver
 {
-    private static float CURVE_SECTION = 0.1f;
-    private static float MIN_SPEED = 100;
+    private static float MIN_SPEED = 50;
+    private static float CURVE_SECTION = 0.2f;
 
     private int speed;
     private int effectID;
@@ -15,17 +15,22 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
     private int distance;
     private ProjectileMoveType moveType;
     private Vector2 targetPosition;
+    private float pathRate;
+
     private FObjectBase owner;
     private FObjectBase target;
 
     public int InstanceID { get; set; }
     public Vector2 WorldPosition { get { return transform.position; } set { transform.position = value; } }
 
-    public void Initialize(int InProjectileID, FObjectBase InOwner, Vector2 InTargetPosition)
+    public void Initialize(int InProjectileID, FObjectBase InOwner, float InPathRate)
     {
         Initialize(InProjectileID, InOwner);
-    
-        targetPosition = InTargetPosition;
+
+        pathRate = InPathRate;
+
+        targetPosition = FPathManager.Instance.GetPointInPathByRate(InOwner.SummonOwner.UserIndex, InPathRate);
+
         if (moveType == ProjectileMoveType.Curve)
             distance = (int)Vector2.Distance(WorldPosition, targetPosition);
     }
@@ -43,6 +48,7 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
     private void Initialize(int InProjectileID, FObjectBase InOwner)
     {
         owner = InOwner;
+        owner.AddObserver(this);
 
         FProjectileData projectileData = FEffectDataManager.Instance.FindProjectileData(InProjectileID);
         if (projectileData != null)
@@ -70,7 +76,7 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
         {
             float remainDistance = Vector2.Distance(targetPos, WorldPosition);
             float section = remainDistance / distance;
-            moveDelta = section < CURVE_SECTION ? moveDelta : Mathf.Max(moveDelta * section, MIN_SPEED * InDeltaTime);
+            moveDelta = section <= CURVE_SECTION ? Mathf.Max(moveDelta * section, MIN_SPEED * InDeltaTime): moveDelta;
         }
 
         WorldPosition = Vector2.MoveTowards(WorldPosition, targetPos, moveDelta);
@@ -114,7 +120,19 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
 
     private void ActiveCollisionObject()
     {
+        if(owner.IsOwnLocalPlayer())
+        {
+            FObjectManager.Instance.CreateCollisionObject(collisionObjectID, owner, pathRate);
+        }
+        else
+        {
+            P2P_REQUEST_COLLISION_OBJECT pkt = new P2P_REQUEST_COLLISION_OBJECT();
+            pkt.ownerObjectId = owner.ObjectID;
+            pkt.collisionObjectId = collisionObjectID;
+            pkt.pathRate = pathRate;
 
+            FServerManager.Instance.SendMessage(pkt);
+        }
     }
 
     private void Remove()
@@ -123,6 +141,8 @@ public class FProjectile : MonoBehaviour, FObjectStateObserver
         {
             target.RemoveObserver(this);
         }
+        
+        owner.RemoveObserver(this);
 
         FEffectManager.Instance.RemoveProjectile(InstanceID);
     }

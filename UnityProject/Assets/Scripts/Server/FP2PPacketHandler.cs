@@ -20,7 +20,10 @@ public class FP2PPacketHandler
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_DAMAGE, Handle_P2P_DAMAGE);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_READY_BATTLE, Handle_P2P_READY_BATTLE);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_ON_SKILL, Handle_P2P_ON_SKILL);
+        FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_USE_SKILL_IN_PATH, Handle_P2P_USE_SKILL_IN_PATH);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_OFF_SKILL, Handle_P2P_OFF_SKILL);
+        FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_SPAWN_COLLISION_OBJECT, Handle_P2P_SPAWN_COLLISION_OBJECT);
+        FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_REQUEST_COLLISION_OBJECT, Handle_P2P_REQUEST_COLLISION_OBJECT);
     }
 
     static void Handle_P2P_READY_BATTLE(in byte[] InBuffer)
@@ -130,23 +133,11 @@ public class FP2PPacketHandler
     {
         P2P_SPAWN_ENEMY pkt = new P2P_SPAWN_ENEMY(InBuffer);
 
-        FObjectBase enemy = FObjectManager.Instance.CreateEnemy(pkt.instanceId, pkt.enemyId);
-        if (enemy == null)
+        FPath startPoint = FPathManager.Instance.FindStartPoint(pkt.spawnPointIndex);
+        if (startPoint == null)
             return;
 
-        FMoveController moveController = enemy.FindController<FMoveController>();
-        if (moveController == null)
-            return;
-
-        FBattleWaveController waveController = FGlobal.localPlayer.FindController<FBattleWaveController>();
-        if (waveController == null)
-            return;
-
-        FStartPoint spawnPoint = waveController.GetStartPoint(pkt.spawnPointIndex);
-        if (spawnPoint == null)
-            return;
-
-        moveController.SetStartPoint(spawnPoint);
+        FObjectManager.Instance.CreateEnemy(pkt.instanceId, pkt.enemyId, startPoint);
     }
 
     static void Handle_P2P_CHANGE_WAVE(in byte[] InBuffer)
@@ -192,6 +183,21 @@ public class FP2PPacketHandler
         skillController.OnSkill(pkt.skillId, pkt.targetId);
     }
 
+    static void Handle_P2P_USE_SKILL_IN_PATH(in byte[] InBuffer)
+    {
+        P2P_USE_SKILL_IN_PATH pkt = new P2P_USE_SKILL_IN_PATH(InBuffer);
+
+        FObjectBase objectBase = FObjectManager.Instance.FindObject(pkt.objectId);
+        if (objectBase == null)
+            return;
+
+        FSkillController skillController = objectBase.FindController<FSkillController>();
+        if (skillController == null)
+            return;
+
+        skillController.OnSkillInPath(pkt.skillId, pkt.pathRate);
+    }
+
     static void Handle_P2P_OFF_SKILL(in byte[] InBuffer)
     {
         P2P_OFF_SKILL pkt = new P2P_OFF_SKILL(InBuffer);
@@ -205,5 +211,27 @@ public class FP2PPacketHandler
             return;
 
         skillController.OffSkill(pkt.skillId);
+    }
+
+    static void Handle_P2P_SPAWN_COLLISION_OBJECT(in byte[] InBuffer)
+    {
+        P2P_SPAWN_COLLISION_OBJECT pkt = new P2P_SPAWN_COLLISION_OBJECT(InBuffer);
+
+        FObjectBase owner = FObjectManager.Instance.FindObject(pkt.ownerObjectId);
+        if(owner != null)
+        {
+            FObjectManager.Instance.CreateCollisionObject(pkt.objectId, pkt.collisionObjectId, owner, pkt.pathRate);
+        }
+    }
+
+    static void Handle_P2P_REQUEST_COLLISION_OBJECT(in byte[] InBuffer)
+    {
+        P2P_REQUEST_COLLISION_OBJECT pkt = new P2P_REQUEST_COLLISION_OBJECT(InBuffer);
+
+        FObjectBase owner = FObjectManager.Instance.FindObject(pkt.ownerObjectId);
+        if (owner != null)
+        {
+            FObjectManager.Instance.CreateCollisionObject(pkt.collisionObjectId, owner, pkt.pathRate);
+        }
     }
 }

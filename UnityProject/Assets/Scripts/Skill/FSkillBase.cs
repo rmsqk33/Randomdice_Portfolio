@@ -1,26 +1,45 @@
 using FEnum;
 using Packet;
+using UnityEngine;
 
-public class FSkillBase
+public class FSkillBase : FStatObserver
 {
+    private int checkAbnormalityID;
+    private bool toggle;
+    private float originInterval;
+    private FTimer intervalTimer = new FTimer();
+
     protected FObjectBase owner;
     protected int skillID;
     protected int projectileID;
     protected int abnormalityID;
-    protected int checkAbnormalityID;
-
     protected SkillTargetType targetType;
     protected FObjectBase target;
-    protected bool toggle;
-
-    protected float interval;
-    protected float elapsedTime;
+    
+    protected float OriginInterval 
+    {
+        set
+        {
+            FStatController statController = owner.FindController<FStatController>();
+            if (statController != null)
+            {
+                originInterval = value;
+                intervalTimer.Interval = originInterval / statController.GetStat(StatType.AttackSpeed);
+            }
+        }
+    }
 
     public FObjectBase Target { set { target = value; } }
     public bool Toggle { set { toggle = value; } }
 
     public FSkillBase(FObjectBase InOwner, FSkillData InSkillData)
     {
+        FStatController statController = InOwner.FindController<FStatController>();
+        if (statController == null)
+            return;
+
+        statController.AddObserver(this);
+
         owner = InOwner;
         skillID = InSkillData.id;
         targetType = InSkillData.targetType;
@@ -42,33 +61,51 @@ public class FSkillBase
             }
         }
 
-        interval = InSkillData.interval;
+        OriginInterval = InSkillData.interval;
+        intervalTimer.Start();
 
         Initialize(InSkillData);
-
-        if (interval == 0)
-        {
-            UseSkill();
-        }
     }
 
     protected virtual void Initialize(FSkillData InSkillData) { }
     public virtual void UseSkill() { }
+    public virtual void UseSkillInPath(float InPathRate) { }
 
     public virtual void Tick(float InDelta)
     {
         if (toggle == false)
             return;
 
-        if (interval == 0)
-            return;
-
-        elapsedTime += InDelta;
-
-        if (interval <= elapsedTime)
+        if (intervalTimer.IsElapsedCheckTime())
         {
-            UseSkill();
-            elapsedTime = 0;
+            if (owner.IsOwnLocalPlayer())
+            {
+                if (targetType == SkillTargetType.Path)
+                {
+                    float pathRate = Random.value;
+                    UseSkillInPath(pathRate);
+                    SendSkillInPath(pathRate);
+                }
+                else
+                {
+                    FObjectBase newTarget = GetTarget();
+                    if (newTarget != target)
+                    {
+                        target = newTarget;
+                        if (newTarget != null)
+                            SendOnSkill(newTarget);
+                        else
+                            SendOffSkill();
+                    }
+                }
+            }
+
+            if (target != null)
+            {
+                UseSkill();
+            }
+
+            intervalTimer.Restart();
         }
     }
 
@@ -78,6 +115,16 @@ public class FSkillBase
         pkt.objectId = owner.ObjectID;
         pkt.skillId = skillID;
         pkt.targetId = InTarget != null ? InTarget.ObjectID : 0;
+
+        FServerManager.Instance.SendMessage(pkt);
+    }
+
+    protected void SendSkillInPath(float InPathRate)
+    {
+        P2P_USE_SKILL_IN_PATH pkt = new P2P_USE_SKILL_IN_PATH();
+        pkt.objectId = owner.ObjectID;
+        pkt.skillId = skillID;
+        pkt.pathRate = InPathRate;
 
         FServerManager.Instance.SendMessage(pkt);
     }
@@ -116,5 +163,13 @@ public class FSkillBase
         }
 
         return newTarget;
+    }
+
+    public void OnStatChanged(StatType InType, float InValue)
+    {
+        if (InType != StatType.AttackSpeed)
+            return;
+
+        intervalTimer.Interval = originInterval / InValue;
     }
 }

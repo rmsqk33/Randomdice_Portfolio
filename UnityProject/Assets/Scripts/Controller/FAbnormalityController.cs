@@ -11,14 +11,21 @@ public class FAbnormalityController : FControllerBase
 
     public void AddAbnormality(FObjectBase InOwner, int InID)
     {
-        int index = FindAbnormalityIndex(InID);
+        FAbnormalityData abnormalityData = FAbnormalityDataManager.Instance.FindAbnormalityData(InID);
+        if (abnormalityData == null)
+            return;
+
+        int index = -1;
+        if (abnormalityData.nonOverlap == false)
+            index = FindAbnormalityIndex(InID);
+
         if (index != -1)
         {
             abnormalityList[index].Overlap();
         }
         else
         {
-            abnormalityList.Add(CreateAbnormality(InOwner, InID));
+            abnormalityList.Add(CreateAbnormality(InOwner, abnormalityData));
         }
     }
 
@@ -45,21 +52,17 @@ public class FAbnormalityController : FControllerBase
         return FindAbnormalityIndex(InID) != -1;
     }
 
-    private FAbnormality CreateAbnormality(FObjectBase InOwner, int InID)
+    private FAbnormality CreateAbnormality(FObjectBase InOwner, FAbnormalityData InData)
     {
-        FAbnormalityData abnormalityData = FAbnormalityDataManager.Instance.FindAbnormalityData(InID);
-        if (abnormalityData == null)
-            return null;
-
         FAbnormality abnormality = null;
 
-        switch (abnormalityData.type)
+        switch (InData.type)
         {
             case FEnum.AbnormalityType.Stat: abnormality = new FStatAbnormality(); break;
             case FEnum.AbnormalityType.Damage: abnormality = new FDamageAbnormality(); break;
         }
 
-        abnormality.Initialize(Owner, InOwner, abnormalityData);
+        abnormality.Initialize(Owner, InOwner, InData);
 
         return abnormality;
     }

@@ -23,10 +23,10 @@ public class FEffectManager : FSingleton<FEffectManager>
         }
     }
 
-    public void AddProjectile(int InProjectileID, FObjectBase InOwner, Vector2 InStart, Vector2 InEnd)
+    public void AddProjectile(int InProjectileID, FObjectBase InOwner, Vector2 InStart, float InPathRate)
     {
         FProjectile projectile = CreateProjectile(InProjectileID);
-        projectile.Initialize(InProjectileID, InOwner, InEnd);
+        projectile.Initialize(InProjectileID, InOwner, InPathRate);
         projectile.WorldPosition = InStart;
     }
 

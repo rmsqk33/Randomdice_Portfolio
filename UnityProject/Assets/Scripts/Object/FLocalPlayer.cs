@@ -7,6 +7,8 @@ public class FLocalPlayer : FObjectBase
     {
         base.Awake();
 
+        UserIndex = 0;
+
         AddController<FInventoryController>();
         AddController<FDiceController>();
         AddController<FBattlefieldController>();

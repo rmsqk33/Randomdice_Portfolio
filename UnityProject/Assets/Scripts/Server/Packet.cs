@@ -50,7 +50,10 @@ namespace Packet
 		PACKET_TYPE_P2P_CHANGE_WAVE,
 		PACKET_TYPE_P2P_READY_BATTLE,
 		PACKET_TYPE_P2P_ON_SKILL,
+		PACKET_TYPE_P2P_USE_SKILL_IN_PATH,
 		PACKET_TYPE_P2P_OFF_SKILL,
+		PACKET_TYPE_P2P_SPAWN_COLLISION_OBJECT,
+		PACKET_TYPE_P2P_REQUEST_COLLISION_OBJECT,
 		PACKET_TYPE_MAX,
 	}
 
@@ -2292,6 +2295,65 @@ namespace Packet
 
 	}
 
+	public class P2P_USE_SKILL_IN_PATH : PacketBase
+	{
+		public int objectId;
+
+		public int skillId;
+
+		public int pathIndex;
+
+		public float pathRate;
+
+		public P2P_USE_SKILL_IN_PATH()
+		{
+		}
+
+		public P2P_USE_SKILL_IN_PATH(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			size += sizeof(int);
+			size += sizeof(int);
+			size += sizeof(int);
+			size += sizeof(float);
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_P2P_USE_SKILL_IN_PATH;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+			InBuffer.AddRange(BitConverter.GetBytes(objectId));
+			InBuffer.AddRange(BitConverter.GetBytes(skillId));
+			InBuffer.AddRange(BitConverter.GetBytes(pathIndex));
+			InBuffer.AddRange(BitConverter.GetBytes(pathRate));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			objectId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			skillId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			pathIndex = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			pathRate = BitConverter.ToSingle(InBuffer, offset);
+			offset += sizeof(float);
+			return offset;
+		}
+
+	}
+
 	public class P2P_OFF_SKILL : PacketBase
 	{
 		public int objectId;
@@ -2334,6 +2396,118 @@ namespace Packet
 			offset += sizeof(int);
 			skillId = BitConverter.ToInt32(InBuffer, offset);
 			offset += sizeof(int);
+			return offset;
+		}
+
+	}
+
+	public class P2P_SPAWN_COLLISION_OBJECT : PacketBase
+	{
+		public int objectId;
+
+		public int ownerObjectId;
+
+		public int collisionObjectId;
+
+		public float pathRate;
+
+		public P2P_SPAWN_COLLISION_OBJECT()
+		{
+		}
+
+		public P2P_SPAWN_COLLISION_OBJECT(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			size += sizeof(int);
+			size += sizeof(int);
+			size += sizeof(int);
+			size += sizeof(float);
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_P2P_SPAWN_COLLISION_OBJECT;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+			InBuffer.AddRange(BitConverter.GetBytes(objectId));
+			InBuffer.AddRange(BitConverter.GetBytes(ownerObjectId));
+			InBuffer.AddRange(BitConverter.GetBytes(collisionObjectId));
+			InBuffer.AddRange(BitConverter.GetBytes(pathRate));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			objectId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			ownerObjectId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			collisionObjectId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			pathRate = BitConverter.ToSingle(InBuffer, offset);
+			offset += sizeof(float);
+			return offset;
+		}
+
+	}
+
+	public class P2P_REQUEST_COLLISION_OBJECT : PacketBase
+	{
+		public int ownerObjectId;
+
+		public int collisionObjectId;
+
+		public float pathRate;
+
+		public P2P_REQUEST_COLLISION_OBJECT()
+		{
+		}
+
+		public P2P_REQUEST_COLLISION_OBJECT(in byte[] InBuffer)
+		{
+			Deserialize(InBuffer);
+		}
+
+		public int GetSize()
+		{
+			int size = 0;
+			size += sizeof(int);
+			size += sizeof(int);
+			size += sizeof(float);
+			return size;
+		}
+
+		public override PacketType GetPacketType()
+		{
+			return PacketType.PACKET_TYPE_P2P_REQUEST_COLLISION_OBJECT;
+		}
+		public override void Serialize(List<byte> InBuffer)
+		{
+			int size = GetSize() + sizeof(int) + sizeof(PacketType);
+			InBuffer.AddRange(BitConverter.GetBytes(size));
+			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
+			InBuffer.AddRange(BitConverter.GetBytes(ownerObjectId));
+			InBuffer.AddRange(BitConverter.GetBytes(collisionObjectId));
+			InBuffer.AddRange(BitConverter.GetBytes(pathRate));
+		}
+
+		public int Deserialize(in byte[] InBuffer, int offset = 0)
+		{
+			ownerObjectId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			collisionObjectId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
+			pathRate = BitConverter.ToSingle(InBuffer, offset);
+			offset += sizeof(float);
 			return offset;
 		}
 

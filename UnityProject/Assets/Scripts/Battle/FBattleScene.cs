@@ -24,6 +24,7 @@ public class FBattleScene : MonoBehaviour
         FGlobal.localPlayer.AddController<FBattleWaveController>();
         FGlobal.localPlayer.AddController<FSkillAreaController>();
         FGlobal.localPlayer.FindController<FBattleWaveController>().StartBattle(FBattleDataManager.Instance.CoopBattleID);
+        FPathManager.Instance.OnStartBattle();
     }
 
     private void LeaveScene(Scene InScene1, Scene InScene2)

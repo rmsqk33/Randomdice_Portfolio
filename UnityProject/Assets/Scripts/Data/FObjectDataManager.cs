@@ -5,12 +5,16 @@ public class FCollisionData
 {
     public readonly int id;
     public readonly int abnormalityID;
+    public readonly int size;
+    public readonly float duration;
     public readonly string prefab;
 
     public FCollisionData(FDataNode InNode)
     {
         id = InNode.GetIntAttr("id");
         abnormalityID = InNode.GetIntAttr("abnormalityID");
+        size = InNode.GetIntAttr("size");
+        duration = InNode.GetFloatAttr("duration");
         prefab = InNode.GetStringAttr("prefab");
     }
 }

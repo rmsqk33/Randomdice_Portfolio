@@ -7,8 +7,7 @@ public class FBattleMatchingPopup : FPopupBase
     [SerializeField]
     TextMeshProUGUI elapsedTimeText;
 
-    int prevTime = 0;
-    FTimer timer = new FTimer();
+    FTimer timer = new FTimer(1);
 
     public void OpenPopup()
     {
@@ -19,11 +18,10 @@ public class FBattleMatchingPopup : FPopupBase
 
     private void Update()
     {
-        timer.Tick(Time.deltaTime);
-
-        if(prevTime != timer.TotalSeconds)
+        if(timer.IsElapsedCheckTime())
         {
             UpdateElapsedTimeText();
+            timer.Interval++;
         }
     }
 

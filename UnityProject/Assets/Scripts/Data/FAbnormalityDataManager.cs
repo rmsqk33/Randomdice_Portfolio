@@ -24,6 +24,7 @@ public class FAbnormalityData
     public readonly float valuePerBattleLevel;
     public readonly float interval;
     public readonly float duration;
+    public readonly bool nonOverlap;
     public readonly StatType statType;
     public readonly AbnormalityType type;
     public readonly AbilityType abilityType;
@@ -40,6 +41,8 @@ public class FAbnormalityData
 
         interval = InNode.GetFloatAttr("interval");
         duration = InNode.GetFloatAttr("duration");
+
+        nonOverlap = InNode.GetBoolAttr("nonOverlap");
 
         statType = (StatType)InNode.GetIntAttr("statType");
         type = (AbnormalityType)InNode.GetIntAttr("type");

@@ -1,19 +1,18 @@
-using System;
+
+using System.Diagnostics;
 
 public class FTimer
 {
     private float interval;
-    private float elapsed;
-    bool started;
 
     public float Interval { get { return interval; } set { interval = value; } }
-    public bool Started { get { return started; } }
+    Stopwatch stopWatch = new Stopwatch();
 
-    public int Hours { get { return (int)(elapsed / 3600) % 24; } }
-    public int Minutes { get { return (int)(elapsed / 60) % 60; } }
-    public int Seconds { get { return (int)(elapsed) % 60; } }
-    public int TotalSeconds { get { return (int)(elapsed); } }
-
+    public int Hours { get { return (int)(Elapsed / 3600) % 24; } }
+    public int Minutes { get { return (int)(Elapsed / 60) % 60; } }
+    public int Seconds { get { return (int)(Elapsed) % 60; } }
+    public int Elapsed { get { return (int)stopWatch.ElapsedMilliseconds / 1000; } }
+    
     public FTimer()
     {
     }
@@ -25,35 +24,25 @@ public class FTimer
 
     public void Start()
     {
-        started = true;
-        elapsed = 0;
+        stopWatch.Start();
+    }
+
+    public void Restart()
+    {
+        stopWatch.Restart();
     }
 
     public void Stop()
     {
-        started = false;
-    }
-
-    public void Tick(float InDeltaTime)
-    {
-        if (started == false)
-            return;
-     
-        elapsed += InDeltaTime;
+        stopWatch.Stop();
     }
 
     public bool IsElapsedCheckTime()
     {
-        if (started == false)
+        if (stopWatch.IsRunning == false)
             return false;
 
-        if (interval <= elapsed)
-        {
-            elapsed = 0;
-            return true;
-        }
-
-        return false;
+        return interval <= stopWatch.ElapsedMilliseconds / 1000.0f;
     }
 
     public string ToString(string InFormat)

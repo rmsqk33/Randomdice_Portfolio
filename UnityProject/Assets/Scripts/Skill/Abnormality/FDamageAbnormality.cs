@@ -1,6 +1,4 @@
 using FEnum;
-using Packet;
-using UnityEngine;
 
 public class FDamageAbnormality : FAbnormality
 {

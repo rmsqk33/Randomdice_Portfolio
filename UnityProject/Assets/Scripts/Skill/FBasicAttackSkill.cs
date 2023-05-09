@@ -2,11 +2,10 @@ using FEnum;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FBasicAttackSkill : FSkillBase, FStatObserver
+public class FBasicAttackSkill : FSkillBase
 {
     int eyeCount;
     int attackEyeIndex;
-    float originInterval;
 
     List<Transform> eyeList = new List<Transform>();
 
@@ -30,27 +29,11 @@ public class FBasicAttackSkill : FSkillBase, FStatObserver
         }
 
         eyeCount = statController.GetIntStat(StatType.DiceEye);
-        originInterval = InSkillData.interval / eyeCount;
-        interval = originInterval / statController.GetStat(StatType.AttackSpeed);
-
-        statController.AddObserver(this);
+        OriginInterval = InSkillData.interval / eyeCount;
     }
 
     public override void UseSkill()
     {
-        if (owner.IsOwnLocalPlayer())
-        {
-            FObjectBase newTarget = GetTarget();
-            if (newTarget != target)
-            {
-                target = newTarget;
-                if (newTarget != null)
-                    SendOnSkill(newTarget);
-                else
-                    SendOffSkill();
-            }
-        }
-
         if (target == null)
             return;
 
@@ -59,12 +42,9 @@ public class FBasicAttackSkill : FSkillBase, FStatObserver
         attackEyeIndex = (attackEyeIndex + 1) % eyeCount;
     }
 
-    public void OnStatChanged(StatType InType, float InValue)
+    public override void UseSkillInPath(float InPathRate)
     {
-        if (InType != StatType.AttackSpeed)
-            return;
-
-        interval = originInterval / InValue;
+        FEffectManager.Instance.AddProjectile(projectileID, owner, owner.WorldPosition, InPathRate);
     }
 
     private Vector2 GetEyePosition(int InEyeIndex)

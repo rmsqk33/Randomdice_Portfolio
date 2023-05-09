@@ -1,18 +1,32 @@
 using System.Collections.Generic;
 using UnityEngine;
+using FEnum;
 
 public class FCollisionObject : FObjectBase
 {
-    FObjectBase owner;
     int abnoramlityID;
-    float duration;
-    FTimer timer;
+    FTimer durationTimer;
 
     List<int> crashedObjectIDList = new List<int>();
 
-    public void Initialize(int InCollisionObjectID, FObjectBase InOwner)
+    public void Initialize(FCollisionData InData, FObjectBase InOwner)
     {
-        owner = InOwner;
+        FStatController ownerStatController = InOwner.FindController<FStatController>();
+        if (ownerStatController == null)
+            return;
+
+        ContentID = InOwner.ContentID;
+        SummonOwner = InOwner;
+        abnoramlityID = InData.abnormalityID;
+        durationTimer = new FTimer(InData.duration);
+        durationTimer.Start();
+
+        transform.localScale = new Vector2(InData.size, InData.size);
+
+        AddController<FStatController>();
+
+        FStatController statController = FindController<FStatController>();
+        statController.SetStat(StatType.Level, ownerStatController.GetStat(StatType.Level));
     }
 
     public override void Release()
@@ -33,7 +47,15 @@ public class FCollisionObject : FObjectBase
         }
     }
 
-    void OnCollisionEnter(Collision o)
+    private void Update()
+    {
+        if(durationTimer.IsElapsedCheckTime())
+        {
+            FObjectManager.Instance.RemoveObjectAndSendP2P(ObjectID);
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D o)
     {
         FObjectBase crashedObject = o.gameObject.GetComponent<FObjectBase>();
         if (crashedObject == null)
@@ -43,11 +65,11 @@ public class FCollisionObject : FObjectBase
         if (abnormaltiyController == null)
             return;
 
-        abnormaltiyController.AddAbnormality(owner, abnoramlityID);
+        abnormaltiyController.AddAbnormality(this, abnoramlityID);
         crashedObjectIDList.Add(crashedObject.ObjectID);
     }
 
-    void OnCollisionExit(Collision o)
+    void OnTriggerExit2D(Collider2D o)
     {
         FObjectBase crashedObject = o.gameObject.GetComponent<FObjectBase>();
         if (crashedObject == null)

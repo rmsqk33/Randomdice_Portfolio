@@ -1379,6 +1379,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 247084462}
     m_Modifications:
+    - target: {fileID: 955682830510544007, guid: a7f33570bb1d6cc44a5c7086d0bf233e, type: 3}
+      propertyPath: nextPath
+      value: 
+      objectReference: {fileID: 1524216739}
     - target: {fileID: 3701317855808061039, guid: a7f33570bb1d6cc44a5c7086d0bf233e, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -1431,7 +1435,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: StartPoint (1)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 9052070230650519087, guid: a7f33570bb1d6cc44a5c7086d0bf233e, type: 3}
+      propertyPath: m_TagString
+      value: StartPoint
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6576109917732967447, guid: a7f33570bb1d6cc44a5c7086d0bf233e, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a7f33570bb1d6cc44a5c7086d0bf233e, type: 3}
 --- !u!4 &624357499 stripped
 Transform:
@@ -4872,6 +4881,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 247084462}
     m_Modifications:
+    - target: {fileID: 955682830510544007, guid: a7f33570bb1d6cc44a5c7086d0bf233e, type: 3}
+      propertyPath: nextPath
+      value: 
+      objectReference: {fileID: 1524216739}
     - target: {fileID: 3701317855808061039, guid: a7f33570bb1d6cc44a5c7086d0bf233e, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -4928,7 +4941,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: StartPoint
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 9052070230650519087, guid: a7f33570bb1d6cc44a5c7086d0bf233e, type: 3}
+      propertyPath: m_TagString
+      value: StartPoint
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6576109917732967447, guid: a7f33570bb1d6cc44a5c7086d0bf233e, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a7f33570bb1d6cc44a5c7086d0bf233e, type: 3}
 --- !u!4 &8910946281553084253 stripped
 Transform:
@@ -4944,7 +4962,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 965742025143285998, guid: ae46ba67cf3f3c4449ab9229c8df69a5, type: 3}
       propertyPath: m_Name
-      value: Point
+      value: CenterPoint
       objectReference: {fileID: 0}
     - target: {fileID: 2500605726710970061, guid: ae46ba67cf3f3c4449ab9229c8df69a5, type: 3}
       propertyPath: m_Pivot.x

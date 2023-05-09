@@ -1,4 +1,5 @@
 using Packet;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -11,21 +12,11 @@ public class FBattleWaveController : FControllerBase, FServerStateObserver
     int summonCount = 0;
     bool startedWave = false;
 
-    FTimer enemySummonTimer = new FTimer();
-    FTimer waveEndCheckTimer = new FTimer(FBattleDataManager.Instance.WaveEndInterval);
+    FTimer enemySummonTimer;
+    FTimer waveEndCheckTimer;
 
     FBattleData battleData;
     FWaveData waveData;
-
-    FStartPoint [] startPointList;
-
-    public FBattleWaveController(FLocalPlayer InOwner) : base(InOwner)
-    {
-        startPointList = GameObject.FindObjectsOfType<FStartPoint>();
-
-        if (FGlobal.localPlayer.IsHost == false)
-            startPointList = startPointList.Reverse().ToArray();
-    }
 
     public bool IsEndBattle { get { return life == 0; } }
 
@@ -102,6 +93,10 @@ public class FBattleWaveController : FControllerBase, FServerStateObserver
         }
     }
 
+    public FBattleWaveController(FLocalPlayer InOwner) : base(InOwner)
+    {
+    }
+
     public override void Initialize() 
     {
         if (FServerManager.Instance.IsConnected)
@@ -131,7 +126,8 @@ public class FBattleWaveController : FControllerBase, FServerStateObserver
             return;
 
         life = battleData.life;
-        enemySummonTimer.Interval = battleData.summonInterval;
+        enemySummonTimer = new FTimer(battleData.summonInterval);
+        waveEndCheckTimer = new FTimer(FBattleDataManager.Instance.WaveEndInterval);
 
         SetNextWave(1);
     }
@@ -139,10 +135,7 @@ public class FBattleWaveController : FControllerBase, FServerStateObserver
     public void StartWave()
     {
         summonCount = 0;
-
         enemySummonTimer.Start();
-        waveEndCheckTimer.Start();
-
         startedWave = true;
     }
 
@@ -154,90 +147,8 @@ public class FBattleWaveController : FControllerBase, FServerStateObserver
         if (startedWave == false)
             return;
 
-        CreateEnemyProcess(InDeltaTime);
-        CheckEndWaveProcess(InDeltaTime);
-    }
-
-    public FStartPoint GetStartPoint(int InIndex)
-    {
-        if (InIndex < 0 || startPointList.Length <= InIndex)
-            return null;
-
-        return startPointList[InIndex];
-    }
-
-    private void CreateEnemyProcess(float InDeltaTime)
-    {
-        enemySummonTimer.Tick(InDeltaTime);
-        if (enemySummonTimer.IsElapsedCheckTime() == false)
-            return;
-
-        int enemyID = waveData.GetEnemyID(summonCount);
-        //for(int i = 0; i < startPointList.Length; ++i)
-        for(int i = 0; i < 1; ++i)
-        {
-            FObjectBase enemy = FObjectManager.Instance.CreateEnemy(enemyID);
-            if (enemy != null)
-            {
-                FMoveController moveController = enemy.FindController<FMoveController>();
-                if (moveController != null)
-                {
-                    moveController.SetStartPoint(startPointList[i]);
-                }
-
-                P2P_SPAWN_ENEMY pkt = new P2P_SPAWN_ENEMY();
-                pkt.instanceId = enemy.ObjectID;
-                pkt.enemyId = enemyID;
-                pkt.spawnPointIndex = i;
-                FServerManager.Instance.SendMessage(pkt);
-            }
-        }
-        
-        ++summonCount;
-
-        if (waveData.SummonCount <= summonCount)
-        {
-            enemySummonTimer.Stop();
-        }
-    }
-
-    private void CheckEndWaveProcess(float InDeltaTime)
-    {
-        if (summonCount < waveData.SummonCount)
-            return;
-
-        if (0 < FObjectManager.Instance.EnemyCount)
-            return;
-
-        waveEndCheckTimer.Tick(InDeltaTime);
-        if (waveEndCheckTimer.IsElapsedCheckTime())
-        {
-            waveEndCheckTimer.Stop();
-            SetNextWave(Wave + 1);
-        }
-    }
-
-    private void EndBattle()
-    {
-        if (startedWave == false)
-            return;
-
-        startedWave = false;
-        
-        FServerManager.Instance.CloseP2PServer();
-        FServerManager.Instance.DisconnectServer();
-        if(FServerManager.Instance.ConnectMainServer())
-        {
-            FAccountMananger.Instance.TryLogin();
-
-            C_BATTLE_RESULT packet = new C_BATTLE_RESULT();
-            packet.battleId = battleData.id;
-            packet.clearWave = wave - 1;
-
-            FServerManager.Instance.SendMessage(packet);
-        }
-
-        FPopupManager.Instance.OpenBattleResultPopup();
+        CreateEnemyProcess();
+        CheckEndWaveProcess();
     }
 
     public void SetNextWave(int InWave)
@@ -258,6 +169,81 @@ public class FBattleWaveController : FControllerBase, FServerStateObserver
         {
             battleUI.StartWaveAlarm(wave);
         }
+    }
+
+    private void CreateEnemyProcess()
+    {
+        if (enemySummonTimer.IsElapsedCheckTime() == false)
+            return;
+
+        int enemyID = waveData.GetEnemyID(summonCount);
+        FPathManager.Instance.ForeachStartPoint((int InIndex, FPath InStartPoint) =>
+        {
+            FObjectBase enemy = FObjectManager.Instance.CreateEnemy(enemyID, InStartPoint);
+            if (enemy != null)
+            {
+                P2P_SPAWN_ENEMY pkt = new P2P_SPAWN_ENEMY();
+                pkt.instanceId = enemy.ObjectID;
+                pkt.enemyId = enemyID;
+                pkt.spawnPointIndex = (InIndex + 1) % FPathManager.Instance.StartPointCount;
+                FServerManager.Instance.SendMessage(pkt);
+            }
+        });
+        
+        ++summonCount;
+
+        enemySummonTimer.Restart();
+
+        if (waveData.SummonCount <= summonCount)
+        {
+            enemySummonTimer.Stop();
+        }
+    }
+
+    private void CheckEndWaveProcess()
+    {
+        if (summonCount < waveData.SummonCount)
+        {
+            waveEndCheckTimer.Stop();
+            return;
+        }
+
+        if (0 < FObjectManager.Instance.EnemyCount)
+        {
+            waveEndCheckTimer.Stop();
+            return;
+        }
+
+        waveEndCheckTimer.Start();
+
+        if (waveEndCheckTimer.IsElapsedCheckTime())
+        {
+            waveEndCheckTimer.Stop();
+            SetNextWave(Wave + 1);
+        }
+    }
+
+    private void EndBattle()
+    {
+        if (startedWave == false)
+            return;
+
+        startedWave = false;
+
+        FServerManager.Instance.CloseP2PServer();
+        FServerManager.Instance.DisconnectServer();
+        if (FServerManager.Instance.ConnectMainServer())
+        {
+            FAccountMananger.Instance.TryLogin();
+
+            C_BATTLE_RESULT packet = new C_BATTLE_RESULT();
+            packet.battleId = battleData.id;
+            packet.clearWave = wave - 1;
+
+            FServerManager.Instance.SendMessage(packet);
+        }
+
+        FPopupManager.Instance.OpenBattleResultPopup();
     }
 
     private FBattlePanelUI FindBattlePanelUI()

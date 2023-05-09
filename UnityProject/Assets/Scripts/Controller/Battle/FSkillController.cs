@@ -39,6 +39,14 @@ public class FSkillController : FControllerBase
         }
     }
 
+    public void OnSkillInPath(int InSkillID, float InPathRate)
+    {
+        if (skillMap.ContainsKey(InSkillID))
+        {
+            skillMap[InSkillID].UseSkillInPath(InPathRate);
+        }
+    }
+
     public void OffSkill(int InSkillID)
     {
         if (skillMap.ContainsKey(InSkillID))
@@ -67,6 +75,7 @@ public class FSkillController : FControllerBase
         {
             case SkillType.Basic: skill = new FBasicAttackSkill(Owner, skillData); break;
             case SkillType.Abnormal: skill = new FAbnormalitySkill(Owner, skillData); break;
+            case SkillType.Summon: skill = new FSummonSkill(Owner, skillData); break;
         }
 
         return skill;

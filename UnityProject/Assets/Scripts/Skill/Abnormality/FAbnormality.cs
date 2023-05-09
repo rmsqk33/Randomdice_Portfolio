@@ -62,7 +62,6 @@ public abstract class FAbnormality
     {
         if (intervalTimer != null)
         {
-            intervalTimer.Tick(InDelta);
             if (intervalTimer.IsElapsedCheckTime())
             {
                 FAbnormalityOverlapData abnormalityData = FAbnormalityDataManager.Instance.FindAbnormalityOverlapData(abnormalityID, overlap);
@@ -70,12 +69,12 @@ public abstract class FAbnormality
                 {
                     OnEffect(abnormalityData);
                 }
+                intervalTimer.Restart();
             }
         }
 
         if (durationTimer != null)
         {
-            durationTimer.Tick(InDelta);
             if (durationTimer.IsElapsedCheckTime())
             {
                 FAbnormalityController abnormalityController = target.FindController<FAbnormalityController>();
@@ -89,7 +88,7 @@ public abstract class FAbnormality
 
     public void  Overlap()
     {
-        durationTimer.Start();
+        durationTimer.Restart();
 
         if (overlap == maxOverlap)
             return;

@@ -1,7 +1,5 @@
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -13,9 +11,13 @@ public class FObjectBase : MonoBehaviour
     
     public int ObjectID { get; set; }
     public int ContentID { get; set; }
+    public int UserIndex { get; set; }
+
     public FObjectBase SummonOwner { get; set; }
+
     public Vector2 WorldPosition { get { return transform.position; } set { transform.position = value; } }
     public Vector2 LocalPosition { get { return transform.localPosition; } set { transform.localPosition = value; } }
+
     public int SortingOrder 
     {
         set 
@@ -100,7 +102,16 @@ public class FObjectBase : MonoBehaviour
 
     public bool IsOwnLocalPlayer()
     {
-        return SummonOwner == FGlobal.localPlayer;
+        FObjectBase summonOwner = SummonOwner;
+        while(summonOwner != null)
+        {
+            if (summonOwner == FGlobal.localPlayer)
+                return true;
+
+            summonOwner = summonOwner.SummonOwner;
+        }
+
+        return false;
     }
 
     public void AddObserver(FObjectStateObserver InObserver)

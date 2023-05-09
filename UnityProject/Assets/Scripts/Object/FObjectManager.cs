@@ -53,6 +53,8 @@ public class FObjectManager : FSingleton<FObjectManager>
 
     public int CreateLocalPlayerBattleDice(int InDiceID, int InEyeCount, int InSlotIndex)
     {
+        InDiceID = 12;
+
         FObjectBase dice = FBattleDiceCreator.Instance.CreateLocalPlayerDice(InDiceID, InEyeCount, InSlotIndex);
         AddObject(instanceID++, dice);
 
@@ -92,19 +94,19 @@ public class FObjectManager : FSingleton<FObjectManager>
         AddObject(InObjectID, dice);
     }
 
-    public FObjectBase CreateEnemy(int InID)
+    public FObjectBase CreateEnemy(int InID, FPath InStartPoint)
     {
-        return CreateEnemy(instanceID++, InID);
+        return CreateEnemy(instanceID++, InID, InStartPoint);
     }
 
-    public FObjectBase CreateEnemy(int InInstanceID, int InID)
+    public FObjectBase CreateEnemy(int InInstanceID, int InID, FPath InStartPoint)
     {
         FEnemyData enemyData = FObjectDataManager.Instance.FindEnemyData(InID);
         if (enemyData == null)
             return null;
 
         FEnemy newEnemy = Instantiate<FEnemy>(Resources.Load<FEnemy>(enemyData.prefabPath), transform);
-        newEnemy.Initialize(enemyData, enemySpawnCount++ / 2);
+        newEnemy.Initialize(enemyData, enemySpawnCount++ / 2, InStartPoint);
         newEnemy.SortingOrder = -InInstanceID;
 
         enemyList.Add(newEnemy);
@@ -113,15 +115,34 @@ public class FObjectManager : FSingleton<FObjectManager>
         return newEnemy;
     }
 
-    public void CreateCollisionObject(int InID, FObjectBase InOwner, Vector2 InPosition)
+    public void CreateCollisionObject(int InID, FObjectBase InOwner, float InPathRate)
+    {
+        FObjectBase objectBase = CreateCollisionObject(instanceID++, InID, InOwner, InPathRate);
+        if (objectBase == null)
+            return;
+
+        P2P_SPAWN_COLLISION_OBJECT pkt = new P2P_SPAWN_COLLISION_OBJECT();
+        pkt.collisionObjectId = InID;
+        pkt.objectId = objectBase.ObjectID;
+        pkt.ownerObjectId = InOwner.ObjectID;
+        pkt.pathRate = InPathRate;
+
+        FServerManager.Instance.SendMessage(pkt);
+    }
+
+    public FObjectBase CreateCollisionObject(int InInstanceID, int InID, FObjectBase InOwner, float InPathRate)
     {
         FCollisionData collisionData = FObjectDataManager.Instance.FindCollisionData(InID);
         if (collisionData == null)
-            return;
+            return null;
 
         FCollisionObject collision = Instantiate<FCollisionObject>(Resources.Load<FCollisionObject>(collisionData.prefab), transform);
-        collision.WorldPosition = InPosition;
+        collision.Initialize(collisionData, InOwner);
+        collision.WorldPosition = FPathManager.Instance.GetPointInPathByRate(InOwner.SummonOwner.UserIndex, InPathRate);
 
+        AddObject(InInstanceID, collision);
+
+        return collision;
     }
 
     private void AddObject(int InObjectID, FObjectBase InObject)
