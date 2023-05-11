@@ -15,8 +15,8 @@ public class FSkillBase : FStatObserver
     protected int abnormalityID;
     protected SkillTargetType targetType;
     protected FObjectBase target;
-    
-    protected float OriginInterval 
+
+    protected float OriginInterval
     {
         set
         {
@@ -68,8 +68,29 @@ public class FSkillBase : FStatObserver
     }
 
     protected virtual void Initialize(FSkillData InSkillData) { }
-    public virtual void UseSkill() { }
-    public virtual void UseSkillInPath(float InPathRate) { }
+    public virtual void UseSkill()
+    {
+        if (owner.IsOwnLocalPlayer() == false)
+            return;
+
+        FObjectBase newTarget = GetTarget();
+        if (target == newTarget)
+            return;
+
+        target = newTarget;
+        if (target != null)
+            SendOnSkill(target);
+        else
+            SendOffSkill();
+    }
+
+    public virtual void UseSkillInPath(float InPathRate)
+    {
+        if (owner.IsOwnLocalPlayer() == false)
+            return;
+
+        SendSkillInPath(InPathRate);
+    }
 
     public virtual void Tick(float InDelta)
     {
@@ -78,32 +99,10 @@ public class FSkillBase : FStatObserver
 
         if (intervalTimer.IsElapsedCheckTime())
         {
-            if (owner.IsOwnLocalPlayer())
-            {
-                if (targetType == SkillTargetType.Path)
-                {
-                    float pathRate = Random.value;
-                    UseSkillInPath(pathRate);
-                    SendSkillInPath(pathRate);
-                }
-                else
-                {
-                    FObjectBase newTarget = GetTarget();
-                    if (newTarget != target)
-                    {
-                        target = newTarget;
-                        if (newTarget != null)
-                            SendOnSkill(newTarget);
-                        else
-                            SendOffSkill();
-                    }
-                }
-            }
-
-            if (target != null)
-            {
+            if (targetType == SkillTargetType.RandomPath)
+                UseSkillInPath(Random.value);
+            else
                 UseSkill();
-            }
 
             intervalTimer.Restart();
         }

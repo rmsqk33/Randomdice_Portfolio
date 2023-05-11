@@ -22,6 +22,10 @@ public class FBattleDice : FObjectBase, IBeginDragHandler, IDragHandler, IDropHa
     
     public void Initialize(int InDiceID, int InEyeCount, int InSlotIndex)
     {
+        FDiceData diceData = FDiceDataManager.Instance.FindDiceData(InDiceID);
+        if (diceData == null)
+            return;
+
         ContentID = InDiceID;
         slotIndex = InSlotIndex;
 
@@ -31,6 +35,8 @@ public class FBattleDice : FObjectBase, IBeginDragHandler, IDragHandler, IDropHa
         InitDiceStat(InEyeCount, InDiceID);
 
         AddController<FSkillController>();
+        FindController<FSkillController>().Initialize(diceData.skillIDList);
+
         AddController<FAbnormalityController>();
     }
 

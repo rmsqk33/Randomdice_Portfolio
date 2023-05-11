@@ -7,6 +7,8 @@ public class FAbnormalitySkill : FSkillBase
 
     public override void UseSkill()
     {
+        base.UseSkill();
+
         if (target == null)
             return;
 

@@ -9,15 +9,12 @@ public class FSkillController : FControllerBase
     {
     }
 
-    public override void Initialize()
+    public void Initialize(List<int> InSkillIDList)
     {
-        FDiceData diceData = FDiceDataManager.Instance.FindDiceData(Owner.ContentID);
-        if (diceData == null)
-            return;
-
-        diceData.ForeachSkillID((int InID) => {
-            skillMap.Add(InID, CreateSkill(InID));
-        });
+        foreach(int id in InSkillIDList)
+        {
+            skillMap.Add(id, CreateSkill(id));
+        }
     }
 
     public override void Tick(float InDeltaTime)

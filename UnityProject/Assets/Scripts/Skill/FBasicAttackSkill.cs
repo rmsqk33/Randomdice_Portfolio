@@ -34,6 +34,8 @@ public class FBasicAttackSkill : FSkillBase
 
     public override void UseSkill()
     {
+        base.UseSkill();
+
         if (target == null)
             return;
 
