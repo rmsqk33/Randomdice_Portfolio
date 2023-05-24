@@ -12,17 +12,21 @@ public class FEnemy : FObjectBase, FStatObserver
         ContentID = InData.id;
 
         AddController<FStatController>();
-        AddController<FMoveController>();
-        AddController<FAbnormalityController>();
-
-        FindController<FStatController>().AddObserver(this);
-
+        
         FStatController statController = FindController<FStatController>();
+        statController.AddObserver(this);
         statController.SetStat(StatType.HP, InData.hp + InData.hpIncreaseBySpawnCount * InAccumulateCount);
         statController.SetStat(StatType.SP, InData.sp);
         statController.SetStat(StatType.MoveSpeed, InData.moveSpeed);
-     
+        statController.SetStat(StatType.AttackSpeed, 1);
+
+        AddController<FMoveController>();
         FindController<FMoveController>().SetStartPoint(InStartPoint);
+     
+        AddController<FSkillController>();
+        FindController<FSkillController>().Initialize(InData.skillIDList);
+     
+        AddController<FAbnormalityController>();
     }
     public void OnStatChanged(StatType InType, float InValue)
     {

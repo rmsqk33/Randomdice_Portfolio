@@ -4,5 +4,7 @@
     <SkillData id="3" skillType="0" targetType="1" interval="0.45" projectileID="3" />
     <SkillData id="4" skillType="0" targetType="3" interval="1.3" projectileID="4"/>
     <SkillData id="5" skillType="0" targetType="1" interval="1.3" projectileID="5"/>
-    <SkillData id="12" skillType="0" targetType="4" interval="5" projectileID="12"/>
+    <SkillData id="12" skillType="0" targetType="4" interval="5" projectileID="12" pathMinRate="0" pathMaxRate="1"/>
+    <SkillData id="40000" skillType="2" targetType="4" interval="5" pathMinRate="0" pathMaxRate="0" summonEnemyID="2" summonCount="2" effectID="40000"/>
+    <SkillData id="40001" skillType="1" targetType="2" interval="5" abnormalityID="40001"/>
 </SkillDataList>

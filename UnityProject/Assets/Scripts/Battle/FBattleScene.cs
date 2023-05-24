@@ -1,4 +1,5 @@
 using Packet;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,6 +24,9 @@ public class FBattleScene : MonoBehaviour
         FGlobal.localPlayer.AddController<FBattleDiceController>();
         FGlobal.localPlayer.AddController<FBattleWaveController>();
         FGlobal.localPlayer.AddController<FSkillAreaController>();
+
+        FObjectManager.Instance.AddLocalPlayer(Convert.ToInt32(FGlobal.localPlayer.IsHost), FGlobal.localPlayer);
+
         FGlobal.localPlayer.FindController<FBattleWaveController>().StartBattle(FBattleDataManager.Instance.CoopBattleID);
         FPathManager.Instance.OnStartBattle();
     }

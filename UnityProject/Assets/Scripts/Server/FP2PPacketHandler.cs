@@ -1,5 +1,6 @@
 using FEnum;
 using Packet;
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -44,6 +45,7 @@ public class FP2PPacketHandler
         playerDataPkt.name = statController.Name;
         playerDataPkt.level = statController.Level;
         playerDataPkt.criticalDamageRate = statController.CriticalDamageRate;
+        playerDataPkt.instanceId = FGlobal.localPlayer.ObjectID;
 
         int i = 0;
         presetController.ForeachDicePreset(presetController.SelectedPresetIndex, (int InDiceID) =>
@@ -65,7 +67,7 @@ public class FP2PPacketHandler
     {
         P2P_PLAYER_DATA pkt = new P2P_PLAYER_DATA(InBuffer);
 
-        FObjectManager.Instance.CreateRemotePlayer();
+        FObjectManager.Instance.CreateRemotePlayer(pkt.instanceId);
 
         FRemotePlayerBattleController battleController = FGlobal.remotePlayer.FindController<FRemotePlayerBattleController>();
         if(battleController != null)
@@ -133,11 +135,11 @@ public class FP2PPacketHandler
     {
         P2P_SPAWN_ENEMY pkt = new P2P_SPAWN_ENEMY(InBuffer);
 
-        FPath startPoint = FPathManager.Instance.FindStartPoint(pkt.spawnPointIndex);
-        if (startPoint == null)
+        FObjectBase owner = FObjectManager.Instance.FindObject(pkt.ownerId);
+        if (owner == null)
             return;
 
-        FObjectManager.Instance.CreateEnemy(pkt.instanceId, pkt.enemyId, startPoint);
+        FObjectManager.Instance.CreateEnemy(pkt.instanceId, pkt.enemyId, owner);
     }
 
     static void Handle_P2P_CHANGE_WAVE(in byte[] InBuffer)

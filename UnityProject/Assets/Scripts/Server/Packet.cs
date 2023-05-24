@@ -1650,6 +1650,8 @@ namespace Packet
 
 		public DICE_DATA[] diceList = new DICE_DATA[5];
 
+		public int instanceId;
+
 		public P2P_PLAYER_DATA()
 		{
 			for(int i = 0; i < 5; ++i)
@@ -1678,6 +1680,7 @@ namespace Packet
 			{
 				size += diceList[i].GetSize();
 			}
+			size += sizeof(int);
 			return size;
 		}
 
@@ -1698,6 +1701,7 @@ namespace Packet
 			{
 				diceList[i].Serialize(InBuffer); 
 			}
+			InBuffer.AddRange(BitConverter.GetBytes(instanceId));
 		}
 
 		public int Deserialize(in byte[] InBuffer, int offset = 0)
@@ -1714,6 +1718,8 @@ namespace Packet
 			{
 				offset = diceList[i].Deserialize(InBuffer, offset);
 			}
+			instanceId = BitConverter.ToInt32(InBuffer, offset);
+			offset += sizeof(int);
 			return offset;
 		}
 
@@ -1772,7 +1778,7 @@ namespace Packet
 
 		public int enemyId;
 
-		public int spawnPointIndex;
+		public int ownerId;
 
 		public P2P_SPAWN_ENEMY()
 		{
@@ -1803,7 +1809,7 @@ namespace Packet
 			InBuffer.AddRange(BitConverter.GetBytes((int)GetPacketType()));
 			InBuffer.AddRange(BitConverter.GetBytes(instanceId));
 			InBuffer.AddRange(BitConverter.GetBytes(enemyId));
-			InBuffer.AddRange(BitConverter.GetBytes(spawnPointIndex));
+			InBuffer.AddRange(BitConverter.GetBytes(ownerId));
 		}
 
 		public int Deserialize(in byte[] InBuffer, int offset = 0)
@@ -1812,7 +1818,7 @@ namespace Packet
 			offset += sizeof(int);
 			enemyId = BitConverter.ToInt32(InBuffer, offset);
 			offset += sizeof(int);
-			spawnPointIndex = BitConverter.ToInt32(InBuffer, offset);
+			ownerId = BitConverter.ToInt32(InBuffer, offset);
 			offset += sizeof(int);
 			return offset;
 		}

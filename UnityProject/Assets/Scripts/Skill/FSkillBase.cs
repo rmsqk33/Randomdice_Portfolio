@@ -4,15 +4,18 @@ using UnityEngine;
 
 public class FSkillBase : FStatObserver
 {
+    private int effectID;
     private int checkAbnormalityID;
     private bool toggle;
     private float originInterval;
     private FTimer intervalTimer = new FTimer();
 
+    private float pathMinRate;
+    private float pathMaxRate;
+
     protected FObjectBase owner;
     protected int skillID;
     protected int projectileID;
-    protected int abnormalityID;
     protected SkillTargetType targetType;
     protected FObjectBase target;
 
@@ -42,11 +45,14 @@ public class FSkillBase : FStatObserver
 
         owner = InOwner;
         skillID = InSkillData.id;
+        effectID = InSkillData.effectID;
         targetType = InSkillData.targetType;
         toggle = owner.IsOwnLocalPlayer();
 
         projectileID = InSkillData.projectileID;
-        abnormalityID = InSkillData.abnormalityID;
+
+        pathMinRate = InSkillData.pathMinRate;
+        pathMaxRate = InSkillData.pathMaxRate;
 
         if (targetType == SkillTargetType.NoneAbnormalityFront)
         {
@@ -77,6 +83,9 @@ public class FSkillBase : FStatObserver
         if (target == newTarget)
             return;
 
+        if (effectID != 0)
+            FEffectManager.Instance.AddEffect(effectID, owner, owner.WorldPosition);
+
         target = newTarget;
         if (target != null)
             SendOnSkill(target);
@@ -89,6 +98,9 @@ public class FSkillBase : FStatObserver
         if (owner.IsOwnLocalPlayer() == false)
             return;
 
+        if (effectID != 0)
+            FEffectManager.Instance.AddEffect(effectID, owner, owner.WorldPosition);
+
         SendSkillInPath(InPathRate);
     }
 
@@ -99,8 +111,8 @@ public class FSkillBase : FStatObserver
 
         if (intervalTimer.IsElapsedCheckTime())
         {
-            if (targetType == SkillTargetType.RandomPath)
-                UseSkillInPath(Random.value);
+            if (targetType == SkillTargetType.Path)
+                UseSkillInPath(Random.Range(pathMinRate, pathMaxRate));
             else
                 UseSkill();
 

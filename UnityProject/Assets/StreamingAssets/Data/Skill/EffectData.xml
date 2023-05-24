@@ -4,4 +4,5 @@
     <EffectData id="3" type="0" value="5" valuePerLevel="5" valuePerBattleLevel="5" prefab="Prefabs/Effect/BasicAttack"/>
     <EffectData id="4" type="0" value="5" valuePerLevel="5" valuePerBattleLevel="5" prefab="Prefabs/Effect/BasicAttack"/>
     <EffectData id="5" type="0" value="5" valuePerLevel="5" valuePerBattleLevel="5" prefab="Prefabs/Effect/BasicAttack"/>
+    <EffectData id="40000" type="0" prefab="Prefabs/Effect/Summon"/>
 </EffectDataList>

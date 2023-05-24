@@ -1,15 +1,6 @@
 <BattleData id="1" life="1" summonInterval="1.0">
     <Wave wave="1" card="1" exp="10">
-        <Enemy id="1" />
-        <Enemy id="1" />
-        <Enemy id="1" />
-        <Enemy id="1" />
-        <Enemy id="2" />
-        <Enemy id="1" />
-        <Enemy id="1" />
-        <Enemy id="1" />
-        <Enemy id="1" />
-        <Enemy id="1" />
+        <Enemy id="4"/>
     </Wave>
     <Wave wave="2" card="1" exp="10">
         <Enemy id="1" />

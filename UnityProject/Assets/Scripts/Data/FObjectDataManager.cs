@@ -28,6 +28,7 @@ public class FEnemyData
     public readonly int moveSpeed;
     public readonly EnemyType enemyType;
     public readonly string prefabPath;
+    public readonly List<int> skillIDList = new List<int>();
 
     public FEnemyData(FDataNode InNode)
     {
@@ -38,6 +39,14 @@ public class FEnemyData
         moveSpeed = InNode.GetIntAttr("moveSpeed");
         enemyType = (EnemyType)InNode.GetIntAttr("type");
         prefabPath = InNode.GetStringAttr("prefab");
+
+        FDataNode skillListNode = InNode.FindChildNode("SkillList");
+        if (skillListNode != null)
+        {
+            skillListNode.ForeachChildNodes("Skill", (in FDataNode InNode) => {
+                skillIDList.Add(InNode.GetIntAttr("id"));
+            });
+        }
     }
 }
 

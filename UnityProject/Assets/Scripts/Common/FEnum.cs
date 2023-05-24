@@ -82,7 +82,7 @@ namespace FEnum
         Front,
         Myself,
         NoneAbnormalityFront,
-        RandomPath,
+        Path,
     }
 
     public enum SkillEffectType

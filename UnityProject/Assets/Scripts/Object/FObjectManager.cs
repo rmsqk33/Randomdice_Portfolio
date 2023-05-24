@@ -7,10 +7,11 @@ public class FObjectManager : FSingleton<FObjectManager>
 {
     Dictionary<int, FObjectBase> objectMap = new Dictionary<int, FObjectBase>();
     List<FObjectBase> enemyList = new List<FObjectBase>();
+    List<FObjectBase> userList = new List<FObjectBase>();
     List<FObjectBase> removeObjectList = new List<FObjectBase>();
 
     int enemySpawnCount = 0;
-    int instanceID = 0;
+    int instanceID = 10;
 
     public FObjectBase FrontEnemy { get; private set; }
     public int EnemyCount { get { return enemyList.Count; } }
@@ -24,31 +25,32 @@ public class FObjectManager : FSingleton<FObjectManager>
                 GameObject.Destroy(pair.Value.gameObject);
             }
         }
+        
         objectMap.Clear();
         enemyList.Clear();
+        userList.Clear();
 
         enemySpawnCount = 0;
-        instanceID = 0;
-        AddObject(instanceID++, FGlobal.localPlayer);
+        instanceID = 10;
     }
 
-    public void CreateLocalPlayer()
+    public void AddLocalPlayer(int InInstanceID, FObjectBase InLocalPlayer)
     {
-        GameObject gameObject = new GameObject("localPlayer");
-        FGlobal.localPlayer = gameObject.AddComponent<FLocalPlayer>();
-        GameObject.DontDestroyOnLoad(gameObject);
-
-        AddObject(instanceID++, FGlobal.localPlayer);
+        AddObject(InInstanceID, InLocalPlayer);
+     
+        userList.Add(InLocalPlayer);
     }
 
-    public void CreateRemotePlayer()
+    public void CreateRemotePlayer(int InInstanceID)
     {
         GameObject gameObject = new GameObject("remotePlayer");
         FGlobal.remotePlayer = gameObject.AddComponent<FRemotePlayer>();
-        FGlobal.remotePlayer.ObjectID = instanceID++;
+        FGlobal.remotePlayer.ObjectID = InInstanceID;
         FGlobal.remotePlayer.Initialize();
 
-        AddObject(FGlobal.remotePlayer.ObjectID, FGlobal.remotePlayer);
+        AddObject(InInstanceID, FGlobal.remotePlayer);
+     
+        userList.Add(FGlobal.remotePlayer);
     }
 
     public int CreateLocalPlayerBattleDice(int InDiceID, int InEyeCount, int InSlotIndex)
@@ -94,19 +96,28 @@ public class FObjectManager : FSingleton<FObjectManager>
         AddObject(InObjectID, dice);
     }
 
-    public FObjectBase CreateEnemy(int InID, FPath InStartPoint)
+    public void CreateEnemy(int InID, FObjectBase InOwner)
     {
-        return CreateEnemy(instanceID++, InID, InStartPoint);
+        FObjectBase enemy = CreateEnemy(instanceID++, InID, InOwner);
+        if (enemy != null)
+        {
+            P2P_SPAWN_ENEMY pkt = new P2P_SPAWN_ENEMY();
+            pkt.instanceId = enemy.ObjectID;
+            pkt.enemyId = InID;
+            pkt.ownerId = InOwner.ObjectID;
+            FServerManager.Instance.SendMessage(pkt);
+        }
     }
 
-    public FObjectBase CreateEnemy(int InInstanceID, int InID, FPath InStartPoint)
+    public FObjectBase CreateEnemy(int InInstanceID, int InID, FObjectBase InOwner)
     {
         FEnemyData enemyData = FObjectDataManager.Instance.FindEnemyData(InID);
         if (enemyData == null)
             return null;
 
         FEnemy newEnemy = Instantiate<FEnemy>(Resources.Load<FEnemy>(enemyData.prefabPath), transform);
-        newEnemy.Initialize(enemyData, enemySpawnCount++ / 2, InStartPoint);
+        newEnemy.SummonOwner = InOwner;
+        newEnemy.Initialize(enemyData, enemySpawnCount++ / 2, FPathManager.Instance.FindStartPoint(InOwner.UserIndex));
         newEnemy.SortingOrder = -InInstanceID;
 
         enemyList.Add(newEnemy);
@@ -139,6 +150,7 @@ public class FObjectManager : FSingleton<FObjectManager>
         FCollisionObject collision = Instantiate<FCollisionObject>(Resources.Load<FCollisionObject>(collisionData.prefab), transform);
         collision.Initialize(collisionData, InOwner);
         collision.WorldPosition = FPathManager.Instance.GetPointInPathByRate(InOwner.SummonOwner.UserIndex, InPathRate);
+        collision.transform.Rotate(new Vector3(0, 0, 1), FPathManager.Instance.GetAngleByRate(InOwner.SummonOwner.UserIndex, InPathRate));
 
         AddObject(InInstanceID, collision);
 
@@ -147,6 +159,9 @@ public class FObjectManager : FSingleton<FObjectManager>
 
     private void AddObject(int InObjectID, FObjectBase InObject)
     {
+        if (objectMap.ContainsKey(InObjectID))
+            return;
+
         InObject.ObjectID = InObjectID;
         objectMap.Add(InObjectID, InObject);
     }
@@ -183,6 +198,14 @@ public class FObjectManager : FSingleton<FObjectManager>
         foreach (var pair in objectMap)
         {
             InFunc(pair.Value);
+        }
+    }
+
+    public void ForeachUser(ForeachObjectDelegate InFunc)
+    {
+        foreach (FObjectBase user in userList)
+        {
+            InFunc(user);
         }
     }
 

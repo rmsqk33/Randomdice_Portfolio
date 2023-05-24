@@ -1,8 +1,15 @@
 
 public class FAbnormalitySkill : FSkillBase
 {
+    private int abnormalityID;
+
     public FAbnormalitySkill(FObjectBase InOwner, FSkillData InSkillData) : base(InOwner, InSkillData)
     {
+    }
+
+    protected override void Initialize(FSkillData InSkillData)
+    {
+        abnormalityID = InSkillData.abnormalityID;
     }
 
     public override void UseSkill()

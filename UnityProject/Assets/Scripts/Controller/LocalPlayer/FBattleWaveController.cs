@@ -177,17 +177,8 @@ public class FBattleWaveController : FControllerBase, FServerStateObserver
             return;
 
         int enemyID = waveData.GetEnemyID(summonCount);
-        FPathManager.Instance.ForeachStartPoint((int InIndex, FPath InStartPoint) =>
-        {
-            FObjectBase enemy = FObjectManager.Instance.CreateEnemy(enemyID, InStartPoint);
-            if (enemy != null)
-            {
-                P2P_SPAWN_ENEMY pkt = new P2P_SPAWN_ENEMY();
-                pkt.instanceId = enemy.ObjectID;
-                pkt.enemyId = enemyID;
-                pkt.spawnPointIndex = (InIndex + 1) % FPathManager.Instance.StartPointCount;
-                FServerManager.Instance.SendMessage(pkt);
-            }
+        FObjectManager.Instance.ForeachUser((FObjectBase InUser) => {
+            FObjectManager.Instance.CreateEnemy(enemyID, InUser);
         });
         
         ++summonCount;
