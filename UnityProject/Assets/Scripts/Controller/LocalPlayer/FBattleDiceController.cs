@@ -2,6 +2,7 @@ using FEnum;
 using Packet;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class FEquipBattleDice
@@ -405,5 +406,28 @@ public class FBattleDiceController : FControllerBase
     private FBattlePanelUI FindBattlePanelUI()
     {
         return FUIManager.Instance.FindUI<FBattlePanelUI>();
+    }
+
+    public FObjectBase FindNotHaveAbnormality(int InAbnormalityID)
+    {
+        List<FObjectBase> diceObjectList = new List<FObjectBase>();
+        foreach (var pair in summonDiceIDMap)
+        {
+            FObjectBase dice = FObjectManager.Instance.FindObject(pair.Value);
+            if (dice == null)
+                continue;
+
+            FAbnormalityController abnormalityController = dice.FindController<FAbnormalityController>();
+            if (abnormalityController == null)
+                continue;
+
+            if (abnormalityController.HasAbnormality(InAbnormalityID) == false)
+                diceObjectList.Add(dice);
+        }
+
+        if (diceObjectList.Count == 0)
+            return null;
+
+        return diceObjectList[Random.Range(0, diceObjectList.Count - 1)];
     }
 }

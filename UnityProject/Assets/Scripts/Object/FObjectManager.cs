@@ -55,7 +55,7 @@ public class FObjectManager : FSingleton<FObjectManager>
 
     public int CreateLocalPlayerBattleDice(int InDiceID, int InEyeCount, int InSlotIndex)
     {
-        InDiceID = 12;
+        InDiceID = 5;
 
         FObjectBase dice = FBattleDiceCreator.Instance.CreateLocalPlayerDice(InDiceID, InEyeCount, InSlotIndex);
         AddObject(instanceID++, dice);

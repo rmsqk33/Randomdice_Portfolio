@@ -5,13 +5,13 @@ public class FAbnormalityOverlapData
 {
     public readonly int overlap;
     public readonly float effectPercentage;
-    public readonly string effectImage;
+    public readonly string effectPrefab;
 
     public FAbnormalityOverlapData(FDataNode InNode)
     {
         overlap = InNode.GetIntAttr("overlap");
         effectPercentage = InNode.GetFloatAttr("effectPercentage");
-        effectImage = InNode.GetStringAttr("effectImage");
+        effectPrefab = InNode.GetStringAttr("effectPrefab");
     }
 }
 

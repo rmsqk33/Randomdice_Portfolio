@@ -60,6 +60,7 @@ public class FAbnormalityController : FControllerBase
         {
             case FEnum.AbnormalityType.Stat: abnormality = new FStatAbnormality(); break;
             case FEnum.AbnormalityType.Damage: abnormality = new FDamageAbnormality(); break;
+            case FEnum.AbnormalityType.Lock: abnormality = new FLockAbnormality(); break;
         }
 
         abnormality.Initialize(Owner, InOwner, InData);

@@ -1,6 +1,7 @@
 using FEnum;
 using Packet;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class FSkillBase : FStatObserver
 {
@@ -53,19 +54,7 @@ public class FSkillBase : FStatObserver
 
         pathMinRate = InSkillData.pathMinRate;
         pathMaxRate = InSkillData.pathMaxRate;
-
-        if (targetType == SkillTargetType.NoneAbnormalityFront)
-        {
-            checkAbnormalityID = InSkillData.abnormalityID;
-            if (checkAbnormalityID == 0)
-            {
-                FProjectileData projectileData = FEffectDataManager.Instance.FindProjectileData(InSkillData.projectileID);
-                if (projectileData != null)
-                {
-                    checkAbnormalityID = projectileData.abnormalityID;
-                }
-            }
-        }
+        checkAbnormalityID = InSkillData.checkAbnormalityID;
 
         OriginInterval = InSkillData.interval;
         intervalTimer.Start();
@@ -79,13 +68,13 @@ public class FSkillBase : FStatObserver
         if (owner.IsOwnLocalPlayer() == false)
             return;
 
-        FObjectBase newTarget = GetTarget();
-        if (target == newTarget)
-            return;
-
         if (effectID != 0)
             FEffectManager.Instance.AddEffect(effectID, owner, owner.WorldPosition);
 
+        FObjectBase newTarget = GetTarget();
+        if (target == newTarget)
+            return;
+        
         target = newTarget;
         if (target != null)
             SendOnSkill(target);
@@ -151,25 +140,35 @@ public class FSkillBase : FStatObserver
 
     protected FObjectBase GetTarget()
     {
-        if (owner.SummonOwner == null)
-            return null;
-
-        FSkillAreaController skillAreaController = owner.SummonOwner.FindController<FSkillAreaController>();
-        if (skillAreaController == null)
-            return null;
-
         FObjectBase newTarget = null;
         switch (targetType)
         {
             case SkillTargetType.Front:
-                newTarget = skillAreaController.FrontEnemy;
-                break;
-            case SkillTargetType.Myself: newTarget = owner; break;
-            case SkillTargetType.NoneAbnormalityFront:
-                newTarget = skillAreaController.FindNotHaveAbnormality(checkAbnormalityID);
+                if (owner.SummonOwner == null)
+                    return null;
+
+                FSkillAreaController skillAreaController = owner.SummonOwner.FindController<FSkillAreaController>();
+                if (skillAreaController == null)
+                    return null;
+
+                if (checkAbnormalityID != 0)
+                    newTarget = skillAreaController.FindNotHaveAbnormality(checkAbnormalityID);
+                 
                 if (newTarget == null)
                     newTarget = skillAreaController.FrontEnemy;
 
+                break;
+
+            case SkillTargetType.Myself: 
+                newTarget = owner; 
+                break;
+
+            case SkillTargetType.Dice:
+                FBattleDiceController battleDiceController = FGlobal.localPlayer.FindController<FBattleDiceController>();
+                if (battleDiceController == null)
+                    return null;
+
+                newTarget = battleDiceController.FindNotHaveAbnormality(checkAbnormalityID);
                 break;
         }
 

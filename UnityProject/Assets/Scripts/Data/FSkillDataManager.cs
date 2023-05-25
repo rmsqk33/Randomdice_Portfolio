@@ -10,6 +10,7 @@ public class FSkillData
     public readonly int effectID;
 
     public readonly int abnormalityID;
+    public readonly int checkAbnormalityID;
     public readonly float interval;
     public readonly float duration;
     public readonly float pathMinRate;
@@ -27,6 +28,8 @@ public class FSkillData
         effectID = InNode.GetIntAttr("effectID");
         
         abnormalityID = InNode.GetIntAttr("abnormalityID");
+        checkAbnormalityID = InNode.GetIntAttr("checkAbnormalityID");
+        
         interval = InNode.GetFloatAttr("interval");
         duration = InNode.GetFloatAttr("duration");
         pathMinRate = InNode.GetFloatAttr("pathMinRate");

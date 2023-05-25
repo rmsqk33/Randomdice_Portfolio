@@ -14,7 +14,7 @@ public class FSkillAreaController : FControllerBase, FObjectStateObserver
         FSkillArea[] skillAreaList = GameObject.FindObjectsOfType<FSkillArea>();
         foreach (FSkillArea skillArea in skillAreaList)
         {
-            if (skillArea.index == ObjectID)
+            if (skillArea.index == Owner.UserIndex)
             {
                 skillArea.SkillAreaController = this;
                 break;

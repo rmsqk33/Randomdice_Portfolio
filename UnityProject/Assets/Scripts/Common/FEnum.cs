@@ -81,8 +81,8 @@ namespace FEnum
         None,
         Front,
         Myself,
-        NoneAbnormalityFront,
         Path,
+        Dice,
     }
 
     public enum SkillEffectType
@@ -133,7 +133,8 @@ namespace FEnum
     public enum AbnormalityType
     { 
         Stat,
-        Damage
+        Damage,
+        Lock,
     }
 
     public enum AbilityType

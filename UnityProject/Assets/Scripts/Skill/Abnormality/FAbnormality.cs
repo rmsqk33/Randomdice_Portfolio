@@ -77,11 +77,7 @@ public abstract class FAbnormality
         {
             if (durationTimer.IsElapsedCheckTime())
             {
-                FAbnormalityController abnormalityController = target.FindController<FAbnormalityController>();
-                if (abnormalityController != null)
-                {
-                    abnormalityController.RemoveAbnormality(abnormalityID);
-                }
+                RemoveAbnormality();
             }
         }
     }
@@ -104,18 +100,23 @@ public abstract class FAbnormality
         if (abnormalityData == null)
             return;
 
-        if (abnormalityData.effectImage != null)
+        if (abnormalityData.effectPrefab != null)
         {
             if (effect != null)
                 GameObject.Destroy(effect);
 
-            effect = new GameObject("effect");
-            SpriteRenderer spriteRenderer = effect.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = Resources.Load<Sprite>(abnormalityData.effectImage);
-            spriteRenderer.sortingLayerName = "Object";
-            effect.transform.SetParent(target.transform, false);
+            effect = GameObject.Instantiate(Resources.Load<GameObject>(abnormalityData.effectPrefab), target.transform);
         }
 
         OnEffect(abnormalityData);
+    }
+
+    protected void RemoveAbnormality()
+    {
+        FAbnormalityController abnormalityController = target.FindController<FAbnormalityController>();
+        if (abnormalityController != null)
+        {
+            abnormalityController.RemoveAbnormality(abnormalityID);
+        }
     }
 }
