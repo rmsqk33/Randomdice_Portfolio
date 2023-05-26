@@ -32,23 +32,35 @@ public class FBasicAttackSkill : FSkillBase
         OriginInterval = InSkillData.interval / eyeCount;
     }
 
-    public override void UseSkill()
+    protected override void UseSkillLocal()
     {
-        base.UseSkill();
-
+        target = GetTarget();
         if (target == null)
             return;
 
+        base.UseSkillLocal();
+
+        AttackToTarget(target);
+        SendUseSkill(target);
+    }
+
+    public override void UseSkillRemote()
+    {
+        if (target == null)
+            return;
+
+        base.UseSkillRemote();
+
+        AttackToTarget(target);
+    }
+
+    private void AttackToTarget(FObjectBase InTarget)
+    {
         PlayAttackAnim(attackEyeIndex);
-        FEffectManager.Instance.AddProjectile(projectileID, owner, GetEyePosition(attackEyeIndex), target);
+        FEffectManager.Instance.AddProjectile(projectileID, owner, GetEyePosition(attackEyeIndex), InTarget);
         attackEyeIndex = (attackEyeIndex + 1) % eyeCount;
     }
-
-    public override void UseSkillInPath(float InPathRate)
-    {
-        FEffectManager.Instance.AddProjectile(projectileID, owner, owner.WorldPosition, InPathRate);
-    }
-
+    
     private Vector2 GetEyePosition(int InEyeIndex)
     {
         if (InEyeIndex < 0 || eyeList.Count <= InEyeIndex)

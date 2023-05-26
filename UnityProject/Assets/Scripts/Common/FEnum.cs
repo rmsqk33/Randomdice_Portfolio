@@ -74,6 +74,7 @@ namespace FEnum
         Basic,
         Abnormal,
         Summon,
+        SummonBasic,
     }
 
     public enum SkillTargetType
@@ -82,7 +83,7 @@ namespace FEnum
         Front,
         Myself,
         Path,
-        Dice,
+        DiceForEnemy,
     }
 
     public enum SkillEffectType

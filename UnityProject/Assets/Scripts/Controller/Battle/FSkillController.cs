@@ -25,14 +25,13 @@ public class FSkillController : FControllerBase
         }
     }
 
-    public void OnSkill(int InSkillID, int InTargetID)
+    public void OnUseSkill(int InSkillID, int InTargetID)
     {
         if(skillMap.ContainsKey(InSkillID))
         {
             FSkillBase skill = skillMap[InSkillID];
             skill.Target = FObjectManager.Instance.FindObject(InTargetID);
-            skill.Toggle = true;
-            skill.UseSkill();
+            skill.UseSkillRemote();
         }
     }
 
@@ -41,14 +40,6 @@ public class FSkillController : FControllerBase
         if (skillMap.ContainsKey(InSkillID))
         {
             skillMap[InSkillID].UseSkillInPath(InPathRate);
-        }
-    }
-
-    public void OffSkill(int InSkillID)
-    {
-        if (skillMap.ContainsKey(InSkillID))
-        {
-            skillMap[InSkillID].Toggle = false;
         }
     }
 

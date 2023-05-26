@@ -12,18 +12,38 @@ public class FAbnormalitySkill : FSkillBase
         abnormalityID = InSkillData.abnormalityID;
     }
 
-    public override void UseSkill()
+    protected override void UseSkillLocal()
     {
-        base.UseSkill();
+        base.UseSkillLocal();
+    
+        for (int i = 0; i < loopCount; ++i)
+        {
+            target = GetTarget();
+            if (target == null)
+                break;
 
+            AddAbnormality(target);
+
+            if (owner.IsOwnLocalPlayer())
+                SendUseSkill(target);
+        }
+    }
+
+    public override void UseSkillRemote()
+    {
         if (target == null)
             return;
 
-        FAbnormalityController abnormalityController = target.FindController<FAbnormalityController>();
+        base.UseSkillRemote();
+        AddAbnormality(target);
+    }
+
+    private void AddAbnormality(FObjectBase InTarget)
+    {
+        FAbnormalityController abnormalityController = InTarget.FindController<FAbnormalityController>();
         if (abnormalityController == null)
             return;
 
-        abnormalityController.AddAbnormality(owner, abnormalityID);
+        abnormalityController.AddAbnormality(owner, abnormalityID);        
     }
-
 }

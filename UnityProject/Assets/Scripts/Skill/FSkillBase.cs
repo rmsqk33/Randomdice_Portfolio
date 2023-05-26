@@ -1,24 +1,23 @@
 using FEnum;
 using Packet;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class FSkillBase : FStatObserver
 {
     private int effectID;
     private int checkAbnormalityID;
-    private bool toggle;
     private float originInterval;
     private FTimer intervalTimer = new FTimer();
 
-    private float pathMinRate;
-    private float pathMaxRate;
+    protected float pathMinRate;
+    protected float pathMaxRate;
 
     protected FObjectBase owner;
     protected int skillID;
     protected int projectileID;
     protected SkillTargetType targetType;
     protected FObjectBase target;
+    protected int loopCount;
 
     protected float OriginInterval
     {
@@ -34,7 +33,6 @@ public class FSkillBase : FStatObserver
     }
 
     public FObjectBase Target { set { target = value; } }
-    public bool Toggle { set { toggle = value; } }
 
     public FSkillBase(FObjectBase InOwner, FSkillData InSkillData)
     {
@@ -48,7 +46,7 @@ public class FSkillBase : FStatObserver
         skillID = InSkillData.id;
         effectID = InSkillData.effectID;
         targetType = InSkillData.targetType;
-        toggle = owner.IsOwnLocalPlayer();
+        loopCount = InSkillData.loopCount;
 
         projectileID = InSkillData.projectileID;
 
@@ -63,53 +61,33 @@ public class FSkillBase : FStatObserver
     }
 
     protected virtual void Initialize(FSkillData InSkillData) { }
-    public virtual void UseSkill()
+    public virtual void UseSkillInPath(float InPathRate) { }
+    protected virtual void UseSkillLocal()
     {
-        if (owner.IsOwnLocalPlayer() == false)
-            return;
-
         if (effectID != 0)
             FEffectManager.Instance.AddEffect(effectID, owner, owner.WorldPosition);
-
-        FObjectBase newTarget = GetTarget();
-        if (target == newTarget)
-            return;
-        
-        target = newTarget;
-        if (target != null)
-            SendOnSkill(target);
-        else
-            SendOffSkill();
     }
 
-    public virtual void UseSkillInPath(float InPathRate)
+    public virtual void UseSkillRemote()
     {
-        if (owner.IsOwnLocalPlayer() == false)
-            return;
-
         if (effectID != 0)
             FEffectManager.Instance.AddEffect(effectID, owner, owner.WorldPosition);
-
-        SendSkillInPath(InPathRate);
     }
 
     public virtual void Tick(float InDelta)
     {
-        if (toggle == false)
-            return;
-
         if (intervalTimer.IsElapsedCheckTime())
         {
-            if (targetType == SkillTargetType.Path)
-                UseSkillInPath(Random.Range(pathMinRate, pathMaxRate));
+            if(owner.IsOwnLocalPlayer())
+                UseSkillLocal();
             else
-                UseSkill();
+                UseSkillRemote();
 
             intervalTimer.Restart();
         }
     }
 
-    protected void SendOnSkill(FObjectBase InTarget = null)
+    protected void SendUseSkill(FObjectBase InTarget = null)
     {
         P2P_ON_SKILL pkt = new P2P_ON_SKILL();
         pkt.objectId = owner.ObjectID;
@@ -125,15 +103,6 @@ public class FSkillBase : FStatObserver
         pkt.objectId = owner.ObjectID;
         pkt.skillId = skillID;
         pkt.pathRate = InPathRate;
-
-        FServerManager.Instance.SendMessage(pkt);
-    }
-
-    protected void SendOffSkill()
-    {
-        P2P_OFF_SKILL pkt = new P2P_OFF_SKILL();
-        pkt.objectId = owner.ObjectID;
-        pkt.skillId = skillID;
 
         FServerManager.Instance.SendMessage(pkt);
     }
@@ -163,7 +132,7 @@ public class FSkillBase : FStatObserver
                 newTarget = owner; 
                 break;
 
-            case SkillTargetType.Dice:
+            case SkillTargetType.DiceForEnemy:
                 FBattleDiceController battleDiceController = FGlobal.localPlayer.FindController<FBattleDiceController>();
                 if (battleDiceController == null)
                     return null;
@@ -175,6 +144,11 @@ public class FSkillBase : FStatObserver
         return newTarget;
     }
 
+    protected float GetRandomPathRate()
+    {
+        return Random.Range(pathMinRate, pathMaxRate);
+    }
+
     public void OnStatChanged(StatType InType, float InValue)
     {
         if (InType != StatType.AttackSpeed)
@@ -182,4 +156,5 @@ public class FSkillBase : FStatObserver
 
         intervalTimer.Interval = originInterval / InValue;
     }
+
 }

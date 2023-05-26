@@ -22,7 +22,6 @@ public class FP2PPacketHandler
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_READY_BATTLE, Handle_P2P_READY_BATTLE);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_ON_SKILL, Handle_P2P_ON_SKILL);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_USE_SKILL_IN_PATH, Handle_P2P_USE_SKILL_IN_PATH);
-        FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_OFF_SKILL, Handle_P2P_OFF_SKILL);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_SPAWN_COLLISION_OBJECT, Handle_P2P_SPAWN_COLLISION_OBJECT);
         FServerManager.Instance.AddPacketHandler(Packet.PacketType.PACKET_TYPE_P2P_REQUEST_COLLISION_OBJECT, Handle_P2P_REQUEST_COLLISION_OBJECT);
     }
@@ -182,7 +181,7 @@ public class FP2PPacketHandler
         if (skillController == null)
             return;
 
-        skillController.OnSkill(pkt.skillId, pkt.targetId);
+        skillController.OnUseSkill(pkt.skillId, pkt.targetId);
     }
 
     static void Handle_P2P_USE_SKILL_IN_PATH(in byte[] InBuffer)
@@ -198,21 +197,6 @@ public class FP2PPacketHandler
             return;
 
         skillController.OnSkillInPath(pkt.skillId, pkt.pathRate);
-    }
-
-    static void Handle_P2P_OFF_SKILL(in byte[] InBuffer)
-    {
-        P2P_OFF_SKILL pkt = new P2P_OFF_SKILL(InBuffer);
-
-        FObjectBase objectBase = FObjectManager.Instance.FindObject(pkt.objectId);
-        if (objectBase == null)
-            return;
-
-        FSkillController skillController = objectBase.FindController<FSkillController>();
-        if (skillController == null)
-            return;
-
-        skillController.OffSkill(pkt.skillId);
     }
 
     static void Handle_P2P_SPAWN_COLLISION_OBJECT(in byte[] InBuffer)

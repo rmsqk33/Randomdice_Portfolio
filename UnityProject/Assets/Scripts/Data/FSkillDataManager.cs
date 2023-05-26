@@ -1,5 +1,6 @@
 using FEnum;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class FSkillData
 {
@@ -8,6 +9,7 @@ public class FSkillData
     public readonly SkillTargetType targetType;
     public readonly int projectileID;
     public readonly int effectID;
+    public readonly int loopCount;
 
     public readonly int abnormalityID;
     public readonly int checkAbnormalityID;
@@ -26,6 +28,7 @@ public class FSkillData
         targetType = (SkillTargetType)InNode.GetIntAttr("targetType");
         projectileID = InNode.GetIntAttr("projectileID");
         effectID = InNode.GetIntAttr("effectID");
+        loopCount = Mathf.Max(1, InNode.GetIntAttr("loopCount"));
         
         abnormalityID = InNode.GetIntAttr("abnormalityID");
         checkAbnormalityID = InNode.GetIntAttr("checkAbnormalityID");

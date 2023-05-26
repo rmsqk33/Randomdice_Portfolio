@@ -68,6 +68,22 @@ public class FBattleDice : FObjectBase, IBeginDragHandler, IDragHandler, IDropHa
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        StopDrag();
+    }
+
+    public void OnEnable()
+    {
+        SetEnableCollider(true);
+    }
+
+    public void OnDisable()
+    {
+        StopDrag();
+        SetEnableCollider(false);
+    }
+
+    private void StopDrag()
+    {
         LocalPosition = Vector2.zero;
         SetEnableCollider(true);
         SetSortingOrder(0);
